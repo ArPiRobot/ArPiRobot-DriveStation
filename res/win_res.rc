@@ -1,0 +1,42 @@
+#include "winuser.h"
+#include "Windows.h"
+
+#define STRINGIZE_(x) #x 
+#define STRINGIZE(x) STRINGIZE_(x) 
+
+
+IDI_ICON1 ICON DISCARDABLE "icon.ico"
+icon ICON "icon.ico"
+
+VS_VERSION_INFO    VERSIONINFO
+FILEVERSION        1,0,0,0
+PRODUCTVERSION     WIN_RC_VER_MAJ,WIN_RC_VER_MIN,WIN_RC_VER_PAT,0
+FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+  FILEFLAGS        VS_FF_DEBUG | VS_FF_PRERELEASE
+#else
+  FILEFLAGS        0
+#endif
+FILEOS             VOS_NT_WINDOWS32
+FILETYPE           VFT_APP
+FILESUBTYPE        VFT2_UNKNOWN
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904b0"
+    BEGIN
+      VALUE "CompanyName", ""
+      VALUE "FileDescription", "ArPiRobot Drive Station"
+      VALUE "FileVersion", "1.0.0"
+      VALUE "InternalName", "ArPiRobot-DriveStation"
+      VALUE "LegalCopyright", "2021 Marcus Behel"
+      VALUE "OriginalFilename", "ArPiRobot-DriveStation.exe"
+      VALUE "ProductName", "ArPiRobot-DriveStation"
+      VALUE "ProductVersion", STRINGIZE(WIN_RC_VER_STR)
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409, 1200
+  END
+END
