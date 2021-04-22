@@ -10,6 +10,17 @@ endif()
 project(ArPiRobot-DriveStation CXX)
 set (CMAKE_CXX_STANDARD 11)
 
+# Enable automatic handling of resource and UI files
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+# If using VCPKG, set correct uic and rcc paths
+# If not using VCPKG, these should be in the path
+if(${CMAKE_TOOLCHAIN_FILE} MATCHES "vcpkg.cmake$")
+    set(AUTORCC_EXECUTABLE ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/qt5/bin/rcc)
+    set(AUTOUIC_EXECUTABLE ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/qt5/bin/uic)
+endif()
+
 ################################################################################
 # Compiler / Platform Specific Settings
 ################################################################################
@@ -78,7 +89,8 @@ endif()
 ################################################################################
 # Find Dependencies
 ################################################################################
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5Core CONFIG REQUIRED)
+find_package(Qt5Gui CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
 
@@ -90,12 +102,14 @@ find_package(asio CONFIG REQUIRED)
 file(GLOB_RECURSE SOURCES
     "src/*.cpp"
     "src/*.c"
+    "res/*.qrc"
+    "ui/*.ui"
 )
 
 add_executable(ArPiRobot-DriveStation WIN32 MACOSX_BUNDLE ${SOURCES} ${OTHER_SRC})
 target_compile_definitions(ArPiRobot-DriveStation PUBLIC WIN_RC_VER_MAJ=1)
 target_include_directories(ArPiRobot-DriveStation PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(ArPiRobot-DriveStation Qt5::Widgets SDL2::SDL2 asio asio::asio)
+target_link_libraries(ArPiRobot-DriveStation Qt5::Core Qt5::Gui SDL2::SDL2 asio asio::asio)
 
 
 ################################################################################
