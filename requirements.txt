@@ -1,0 +1,4 @@
+pyside2
+pysdl2
+pysdl2-dll
+shiboken2
