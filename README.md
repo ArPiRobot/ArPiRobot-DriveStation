@@ -1,5 +1,8 @@
 # ArPiRobot-Drive Station
 
+## TODO
+- VCPKG as a submodule
+
 ## Building
 
 ### Required Tools
@@ -13,7 +16,7 @@
 - ASIO
 - SDL2
 
-Install with vcpkg
+Install with vcpkg (vcpkg must be in your path)
 
 ```sh
 vcpkg install asio sdl2 qt5-base --triplet=TRIPLET
