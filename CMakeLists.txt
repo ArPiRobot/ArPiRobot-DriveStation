@@ -1,21 +1,21 @@
-cmake_minimum_required(VERSION 3.4)
-
-# Support versions in VCPKG manifest
-# If vcpkg is not used, this will be ignored
-if(${CMAKE_TOOLCHAIN_FILE} MATCHES "vcpkg.cmake$")
-    set(VCPKG_FEATURE_FLAGS "versions")
-endif()
-
-
+cmake_minimum_required(VERSION 3.16)
 project(ArPiRobot-DriveStation CXX)
-set (CMAKE_CXX_STANDARD 11)
+
+
+################################################################################
+# Project Settings
+################################################################################
+
+set (CMAKE_CXX_STANDARD 14)
 
 # Enable automatic handling of resource and UI files
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${PROJECT_SOURCE_DIR}/ui)
 
 # If using VCPKG, set correct uic and rcc paths
-# If not using VCPKG, these should be in the path
+# If not using VCPKG, these should be in the system path and will be detected
 if(${CMAKE_TOOLCHAIN_FILE} MATCHES "vcpkg.cmake$")
     set(AUTORCC_EXECUTABLE ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/qt5/bin/rcc)
     set(AUTOUIC_EXECUTABLE ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/qt5/bin/uic)
@@ -91,6 +91,7 @@ endif()
 ################################################################################
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
+find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
 
@@ -101,16 +102,23 @@ find_package(asio CONFIG REQUIRED)
 
 file(GLOB_RECURSE SOURCES
     "src/*.cpp"
-    "src/*.c"
     "res/*.qrc"
-    "ui/*.ui"
+    "include/*.h"
 )
 
 add_executable(ArPiRobot-DriveStation WIN32 MACOSX_BUNDLE ${SOURCES} ${OTHER_SRC})
 target_compile_definitions(ArPiRobot-DriveStation PUBLIC WIN_RC_VER_MAJ=1)
 target_include_directories(ArPiRobot-DriveStation PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(ArPiRobot-DriveStation Qt5::Core Qt5::Gui SDL2::SDL2 asio asio::asio)
+target_link_libraries(ArPiRobot-DriveStation Qt5::Widgets Qt5::WinMain Qt5::Core Qt5::Gui SDL2::SDL2 asio::asio)
 
+# Not necessary, but fixes issues where some IDEs may not detect files
+target_include_directories(ArPiRobot-DriveStation PUBLIC
+    ${CMAKE_CURRENT_BINARY_DIR}/ArPiRobot-DriveStation_autogen/include
+    ${CMAKE_CURRENT_BINARY_DIR}/ArPiRobot-DriveStation_autogen/include_Debug
+    ${CMAKE_CURRENT_BINARY_DIR}/ArPiRobot-DriveStation_autogen/include_Release
+    ${CMAKE_CURRENT_BINARY_DIR}/ArPiRobot-DriveStation_autogen/include_MinSizeRel
+    ${CMAKE_CURRENT_BINARY_DIR}/ArPiRobot-DriveStation_autogen/include_RelWithDebInfo
+)
 
 ################################################################################
 # CPack

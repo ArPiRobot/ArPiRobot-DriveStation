@@ -2,10 +2,31 @@
 
 ## Building
 
-### Requirements
+### Required Tools
 - Cmake
 - VCPKG (optional, but recommended)
 - Visual Studio (if using VCPKG on Windows)
+- A C++ Toolchain
+
+### Dependencies
+- Qt5
+- ASIO
+- SDL2
+
+Install with vcpkg
+
+```sh
+vcpkg install asio sdl2 qt5-base --triplet=TRIPLET
+```
+
+Common triplets:
+- Windows MSVC (x64): `x64-windows`
+- Windows MSVC (x86): `x86-windows`
+- Windows MinGW (x64): `x64-mingw-dynamic`
+- Windows MinGW (x86): `x86-mingw-dynamic`
+- macOS (x64): `x64-osx-dyanmic`
+- Linux (x64): `x64-linux`
+
 
 ### Build using VCPKG for Libraries
 
@@ -18,6 +39,7 @@ cmake .. `
     -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
     -DVCPKG_TARGET_TRIPLET=x86-windows `
     -A Win32
+cmake --build . --config Release
 ```
 
 #### Windows x64 (MSVC)
@@ -27,6 +49,7 @@ cmake .. `
     -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
     -DVCPKG_TARGET_TRIPLET=x64-windows `
     -A x64
+cmake --build . --config Release
 ```
 
 #### macOS (x64)
@@ -35,6 +58,8 @@ cmake .. `
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="~/vcpkg/scripts/buildsystems/vcpkg.cmake" \
     -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 ```
 
 #### Linux (x64)
@@ -43,6 +68,8 @@ cmake .. \
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="~/vcpkg/scripts/buildsystems/vcpkg.cmake" \
     -DVCPKG_TARGET_TRIPLET=x64-linux \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 ```
 
 #### Cross Compilation

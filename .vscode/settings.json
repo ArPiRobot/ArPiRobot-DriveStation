@@ -1,5 +1,10 @@
 {
+    "cmake.configureOnOpen": true,
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+    },
     "files.associations": {
-        "*.rc": "c"
-    }
+        "qvariant": "cpp"
+    },
 }
