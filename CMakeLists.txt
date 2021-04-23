@@ -67,9 +67,12 @@ endif()
 # Setup defines for version in windows resource file
 if(WIN32)
     file(STRINGS ${PROJECT_SOURCE_DIR}/res/version.txt VER_STR)
+    string(REGEX REPLACE "\-.*" "" VER_STR ${VER_STR})
     string(REPLACE "." ";" VERSION_LIST ${VER_STR})
     string(REPLACE "\n" "" VER_STR ${VER_STR})
     string(REPLACE "\r" "" VER_STR ${VER_STR})
+
+    message(STATUS "VersionString: ${VER_STR}")
 
     list(GET VERSION_LIST 0 VER_MAJ)
     list(GET VERSION_LIST 1 VER_MIN)
