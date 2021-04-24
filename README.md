@@ -31,3 +31,24 @@ python3 -m venv --system-site-packages env
 ```sh
 python -m pip install -r requirements.txt
 ```
+
+**Compiling UI and Resource Files**
+
+```sh
+# Both UI and Resources
+./compile-all
+
+# Only UI
+./compile-ui
+
+# Only Resources
+./compile-res
+```
+
+**Running**
+
+TODO
+
+**Packaging**
+
+TODO
