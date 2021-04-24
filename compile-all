@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+DIR=$(realpath $(dirname $0))
+cd $DIR
+
+./compile-ui
+./compile-res
