@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="title">
-       <string>NetworkTable</string>
+       <string>Network Table</string>
       </property>
       <property name="flat">
        <bool>false</bool>
@@ -984,7 +984,7 @@ QGroupBox::title{
    </widget>
    <widget class="QMenu" name="menuNetworkTable">
     <property name="title">
-     <string>NetworkTable</string>
+     <string>Network Table</string>
     </property>
     <addaction name="actionAdd_Indicator"/>
     <addaction name="actionClear"/>
@@ -1013,5 +1013,6 @@ QGroupBox::title{
    </property>
   </action>
  </widget>
+ <resources/>
  <connections/>
 </ui>
