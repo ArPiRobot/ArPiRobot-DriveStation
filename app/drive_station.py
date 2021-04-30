@@ -1,10 +1,8 @@
 
-import typing
-from PySide6.QtWidgets import QApplication, QMainWindow
-import PySide2
-from PySide6.QtGui import QColor, QIcon, QPalette
-from PySide6.QtCore import QFile, QIODevice
-from ui_drive_station import Ui_DriveStation
+from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide2.QtGui import QColor, QIcon, QPalette
+from PySide2.QtCore import QFile, QIODevice
+from .ui_drive_station import Ui_DriveStation
 
 class DriveStation(QMainWindow):
     def __init__(self, parent = None) -> None:

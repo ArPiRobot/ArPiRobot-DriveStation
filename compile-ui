@@ -3,11 +3,11 @@
 DIR=$(realpath $(dirname $0))
 cd $DIR
 
-rm -rf ./src/ui_*.py
+rm -rf ./app/ui_*.py
 
 for f in ./ui/*.ui; do
     FILE_NAME=$(basename -s .ui $f)
     echo "[Compiling]: ${FILE_NAME}.ui ---> ui_${FILE_NAME}.py"
-    pyside6-uic $f -o "./src/ui_${FILE_NAME}.py"
+    pyside2-uic $f -o "./app/ui_${FILE_NAME}.py"
 done
 
