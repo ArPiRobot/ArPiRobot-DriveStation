@@ -1,8 +1,8 @@
 
 import sys
 
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
 
 import rc_resources
 from drive_station import DriveStation

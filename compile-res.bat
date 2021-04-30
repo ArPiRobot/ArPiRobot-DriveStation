@@ -11,6 +11,6 @@ for  %%f in (".\res\*.qrc") do (
     set FILE_NAME=%%~nf
     set "message=[Compiling]: !FILE_NAME!.qrc ---> rc_!FILE_NAME!.py"
     echo !message!
-    pyside2-rcc %%f -o "./src/rc_!FILE_NAME!.py"
+    pyside6-rcc %%f -o "./src/rc_!FILE_NAME!.py"
 )
 endlocal

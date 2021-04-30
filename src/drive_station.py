@@ -1,9 +1,9 @@
 
 import typing
-from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow
 import PySide2
-from PySide2.QtGui import QColor, QIcon, QPalette
-from PySide2.QtCore import QFile, QIODevice
+from PySide6.QtGui import QColor, QIcon, QPalette
+from PySide6.QtCore import QFile, QIODevice
 from ui_drive_station import Ui_DriveStation
 
 class DriveStation(QMainWindow):
@@ -58,7 +58,7 @@ class DriveStation(QMainWindow):
 
         # Set initial battery color
         palette = self.ui.pnlVbatBackground.palette()
-        palette.setColor(QPalette.Background, self.COLOR_BAT_LOW)
+        palette.setColor(QPalette.Window, self.COLOR_BAT_LOW)
         self.ui.pnlVbatBackground.setPalette(palette)
 
         # Set icon from resources

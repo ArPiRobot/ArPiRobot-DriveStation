@@ -8,6 +8,6 @@ rm -rf ./src/rc_*.py
 for f in ./res/*.qrc; do
     FILE_NAME=$(basename -s .qrc $f)
     echo "[Compiling]: ${FILE_NAME}.qrc ---> ui_${FILE_NAME}.py"
-    pyside2-rcc $f -o "./src/rc_${FILE_NAME}.py"
+    pyside6-rcc $f -o "./src/rc_${FILE_NAME}.py"
 done
 
