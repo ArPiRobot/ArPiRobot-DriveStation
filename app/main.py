@@ -2,10 +2,11 @@
 import sys
 
 from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt
+from PySide2.QtCore import QFile, Qt
 
 from . import rc_resources
 from .drive_station import DriveStation
+
 
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

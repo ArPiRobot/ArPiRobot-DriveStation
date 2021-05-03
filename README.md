@@ -36,13 +36,7 @@ python -m pip install -r requirements.txt
 
 ```sh
 # Both UI and Resources
-./compile-all
-
-# Only UI
-./compile-ui
-
-# Only Resources
-./compile-res
+python compile.py
 ```
 
 **Running**
