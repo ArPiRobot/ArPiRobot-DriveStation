@@ -45,6 +45,11 @@ class DriveStation(QMainWindow):
                 palette.setColor(QPalette.HighlightedText, palette.color(QPalette.Text))
                 bar.setPalette(palette)
         
+        # b/c of colored background need to use black border on this groupbox
+        palette = self.ui.gbxBatLabel.palette()
+        palette.setColor(QPalette.Base, QColor(100, 100, 0))
+        self.ui.gbxBatLabel.setPalette(palette)
+        
         # Append version to window title
         version_file = QFile(":/version.txt")
         if(version_file.open(QIODevice.ReadOnly)):

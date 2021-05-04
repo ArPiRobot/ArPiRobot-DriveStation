@@ -811,16 +811,16 @@
               <number>6</number>
              </property>
              <item row="0" column="0">
-              <widget class="QGroupBox" name="groupBox_2">
+              <widget class="QGroupBox" name="gbxBatLabel">
                <property name="styleSheet">
-                <string notr="true">QGroupBox{
+                <string notr="true">QGroupBox#gbxBatLabel{
 	border: 1px solid black;
 	margin-top: 1ex;
 	padding-left: 3ex;
 	padding-right: 3ex;
 	padding-top: 5px;
 }
-QGroupBox::title{
+QGroupBox#gbxBatLabel::title{
 	subcontrol-origin: margin;
 	subcontrol-position: top center;
 	padding-left : 2px;
@@ -972,7 +972,7 @@ QGroupBox::title{
      <x>0</x>
      <y>0</y>
      <width>830</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

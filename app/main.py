@@ -8,7 +8,6 @@ from . import rc_resources
 from .drive_station import DriveStation
 
 
-
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
