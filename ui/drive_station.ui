@@ -18,24 +18,42 @@
     <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QProgressBar{
-    color: black;
-    background-color: #EEEEEEEE;
+   <string notr="true">.QWidget{
+	background-color: #AAAAAA;
 }
-QProgressBar::chunk{
-	background-color: #FC8B28;
+
+.QLineEdit{
+	background-color: #888888;
+}
+
+.QProgressBar{
+    color: #000000;
+    background-color: #888888;
+    border-radius: 3px;
+}
+.QProgressBar::chunk{
+	background-color: #cc7a00;
+    border-radius: 3px;
 }
 
 QGroupBox { 
     border: 1px solid black;
+    border-radius: 3px;
     margin-top: 7px;
     padding: 5px;
 }
-
 QGroupBox::title {
     subcontrol-origin: margin;
-    left: 3px;
+    left: 4px;
     top: 0px;
+}
+
+QTabWidget::pane{
+	border: 2px solid #444444;
+    border-radius: 3px;
+}
+QTabWidget::tab-bar {
+    top: 1px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -64,19 +82,37 @@ QGroupBox::title {
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
       <property name="currentIndex">
        <number>0</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Controllers</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,1,1">
+        <property name="spacing">
+         <number>3</number>
+        </property>
         <property name="leftMargin">
-         <number>11</number>
+         <number>3</number>
         </property>
         <property name="topMargin">
-         <number>11</number>
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
         </property>
         <item>
          <widget class="QWidget" name="widget_5" native="true">
@@ -723,6 +759,11 @@ QGroupBox::title {
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>6</string>
              </property>
@@ -738,6 +779,11 @@ QGroupBox::title {
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
              </property>
              <property name="text">
               <string>8</string>
@@ -773,6 +819,11 @@ QGroupBox::title {
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>2</string>
              </property>
@@ -788,6 +839,11 @@ QGroupBox::title {
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
              </property>
              <property name="text">
               <string>4</string>
@@ -1275,7 +1331,7 @@ QWidget#pnlBatBgGreen{
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
