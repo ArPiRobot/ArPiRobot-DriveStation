@@ -1,7 +1,7 @@
 
 import sys
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStyleFactory
 from PySide6.QtCore import QFile, QIODevice, Qt
 
 from .drive_station import DriveStationWindow
@@ -18,9 +18,8 @@ except ImportError:
 
 app = QApplication(sys.argv)
 
-app_stylesheet = QFile(":/theme.css")
-if(app_stylesheet.open(QIODevice.ReadOnly)):
-    app.setStyleSheet(bytes(app_stylesheet.readAll()).decode())
+# Custom stylesheet used in UI files designed for fusion base
+app.setStyle(QStyleFactory.create("Fusion"))
 
 ds = DriveStationWindow()
 ds.show()

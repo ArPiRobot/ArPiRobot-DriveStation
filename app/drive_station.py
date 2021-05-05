@@ -61,21 +61,45 @@ class DriveStationWindow(QMainWindow):
     
 
     def set_state_no_network(self):
+        self.ui.btnDisable.setChecked(True)
+        self.ui.btnEnable.setChecked(False)
+        self.ui.btnDisable.setEnabled(False)
+        self.ui.btnEnable.setEnabled(False)
+
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
         self.set_network_label_color(self.COLOR_STATUS_BAD)
         self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
     
     def set_state_no_program(self):
+        self.ui.btnDisable.setChecked(True)
+        self.ui.btnEnable.setChecked(False)
+        self.ui.btnDisable.setEnabled(False)
+        self.ui.btnEnable.setEnabled(False)
+
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_PROGRAM)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
     
     def set_state_disabled(self):
+        self.ui.btnDisable.setChecked(True)
+        self.ui.btnEnable.setChecked(False)
+
+        # When connected to robot, these buttons should be enabled
+        self.ui.btnDisable.setEnabled(True)
+        self.ui.btnEnable.setEnabled(True)
+
         self.ui.statusbar.showMessage(self.MSG_STATE_DISABLED)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
 
     def set_state_enabled(self):
+        self.ui.btnDisable.setChecked(True)
+        self.ui.btnEnable.setChecked(False)
+
+        # When connected to robot, these buttons should be enabled
+        self.ui.btnDisable.setEnabled(True)
+        self.ui.btnEnable.setEnabled(True)
+
         self.ui.statusbar.showMessage(self.MSG_STATE_ENABLED)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)

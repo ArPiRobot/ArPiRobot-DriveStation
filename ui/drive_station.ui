@@ -93,13 +93,13 @@ QGroupBox::title {
             <number>3</number>
            </property>
            <property name="topMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="bottomMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <item>
             <widget class="QLabel" name="label">
@@ -151,16 +151,16 @@ QGroupBox::title {
             <number>3</number>
            </property>
            <property name="leftMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="topMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="bottomMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <item>
             <widget class="QLabel" name="label_2">
@@ -358,16 +358,16 @@ QGroupBox::title {
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <property name="leftMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="topMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="bottomMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="verticalSpacing">
             <number>3</number>
@@ -700,16 +700,16 @@ QGroupBox::title {
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
            <property name="leftMargin">
-            <number>1</number>
+            <number>3</number>
            </property>
            <property name="topMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="bottomMargin">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="spacing">
             <number>3</number>
@@ -1043,7 +1043,7 @@ QGroupBox::title {
              <string>Disable</string>
             </property>
             <property name="checkable">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="checked">
              <bool>false</bool>
@@ -1070,7 +1070,7 @@ QGroupBox::title {
              <string>Enable</string>
             </property>
             <property name="checkable">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1111,6 +1111,9 @@ QGroupBox::title {
               <bold>true</bold>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="text">
              <string>Network</string>
             </property>
@@ -1125,6 +1128,9 @@ QGroupBox::title {
              <font>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Robot Program</string>
@@ -1149,15 +1155,19 @@ QGroupBox::title {
           <string notr="true">/* State is selected using ID. */
 QWidget#pnlBatBgRed{
     background-color: #c80000;
+    border-radius: 3px;
 }
 QWidget#pnlBatBgOrange{
     background-color: #00c800;
+    border-radius: 3px;
 }
 QWidget#pnlBatBgYellow{
     background-color: #e6e600;
+    border-radius: 3px;
 }
 QWidget#pnlBatBgGreen{
     background-color: #c80000;
+    border-radius: 3px;
 }
 </string>
          </property>
