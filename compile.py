@@ -9,20 +9,22 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 uic = ""
 rcc = ""
 
-# Find UIC and RCC
-if uic == "" and rcc == "":
-    try:
-        import PySide2
-        uic = "pyside2-uic"
-        rcc = "pyside2-rcc"
-    except ImportError:
-        pass
 
+
+# Find UIC and RCC
 if uic == "" and rcc == "":
     try:
         import PySide6
         uic = "pyside6-uic"
         rcc = "pyside6-rcc"
+    except ImportError:
+        pass
+
+if uic == "" and rcc == "":
+    try:
+        import PySide2
+        uic = "pyside2-uic"
+        rcc = "pyside2-rcc"
     except ImportError:
         pass
 

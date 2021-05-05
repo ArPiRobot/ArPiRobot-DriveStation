@@ -13,7 +13,7 @@ QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 try:
     import ctypes
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("com.arpirobot.arpirobot-drivestation")
-except ImportError:
+except AttributeError:
     pass
 
 app = QApplication(sys.argv)

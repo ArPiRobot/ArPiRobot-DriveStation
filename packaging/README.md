@@ -14,7 +14,7 @@ PyInstaller and other tools do not support cross building. Therefore, any change
 
 
 #### Windows Template (x86)
-- Install a 32-bit python interpreter. Using 32-bit interpreter ensures compatibility with 32-bit and 64-bit windows.
+- 64-bit only as PySide6 does not support 32-bit windows
 
 #### macOS Template (x64)
 - Currently x64 only. No ARM support is possible as I do not have access to recent mac hardware to build the template on.
