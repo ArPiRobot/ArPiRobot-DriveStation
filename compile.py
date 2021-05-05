@@ -34,7 +34,7 @@ if uic == "" and rcc == "":
 # Remove old generated files
 for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "app")):
     for src_file in filenames:
-        if src_file.endswith('.py') and (src_file.startswith("ui_") or src_file.startswith("rc_")):
+        if src_file.endswith('.py') and (src_file.startswith("ui_") or src_file.endswith("_rc.py")):
             print("[Deleting]: {0}".format(src_file))
             os.remove(os.path.join(dirpath, src_file))
 
@@ -46,13 +46,13 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "ui")):
             src_path = os.path.join(dirpath, src_file)
             dest_path = os.path.join(script_dir, "app", dest_file)
             print("[Compiling]: {0} --> {1}".format(src_file, dest_file))
-            subprocess.run([uic, src_path, "-o", dest_path])
+            subprocess.run([uic, src_path, "-o", dest_path, "--from-imports"])
 
 # Compile QRC files
 for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "res")):
     for src_file in filenames:
         if src_file.endswith('.qrc'):
-            dest_file = "rc_" + src_file.replace(".qrc", ".py")
+            dest_file = src_file.replace(".qrc", "") + "_rc.py"
             src_path = os.path.join(dirpath, src_file)
             dest_path = os.path.join(script_dir, "app", dest_file)
             print("[Compiling]: {0} --> {1}".format(src_file, dest_file))

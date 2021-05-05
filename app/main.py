@@ -1,10 +1,9 @@
 
 import sys
 
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import QFile, Qt
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QFile, QIODevice, Qt
 
-from . import rc_resources
 from .drive_station import DriveStationWindow
 
 
@@ -12,12 +11,17 @@ QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 try:
-    from PySide2.QtWinExtras import QtWin
-    QtWin.setCurrentProcessExplicitAppUserModelID("com.arpirobot.arpirobot-drivestation")
+    import ctypes
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("com.arpirobot.arpirobot-drivestation")
 except ImportError:
     pass
 
 app = QApplication(sys.argv)
+
+app_stylesheet = QFile(":/theme.css")
+if(app_stylesheet.open(QIODevice.ReadOnly)):
+    app.setStyleSheet(bytes(app_stylesheet.readAll()).decode())
+
 ds = DriveStationWindow()
 ds.show()
 app.exec_()

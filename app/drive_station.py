@@ -1,7 +1,7 @@
 
-from PySide2.QtWidgets import QApplication, QListWidgetItem, QMainWindow
-from PySide2.QtGui import QColor, QIcon, QPalette
-from PySide2.QtCore import QFile, QIODevice, QStringListModel, Qt
+from PySide6.QtWidgets import QApplication, QListWidgetItem, QMainWindow
+from PySide6.QtGui import QColor, QIcon, QPalette
+from PySide6.QtCore import QFile, QIODevice, QStringListModel, Qt
 from .ui_drive_station import Ui_DriveStationWindow
 
 class DriveStationWindow(QMainWindow):
@@ -10,7 +10,6 @@ class DriveStationWindow(QMainWindow):
     COLOR_BAT_HIGH = QColor(0, 200, 0)
     COLOR_BAT_MED_HIGH = QColor(230, 230, 0)
     COLOR_BAT_MED_LOW = QColor(255, 153, 0)
-    COLOR_BAT_LOW = QColor(200, 0, 0)
 
     # Network and robot program indicator colors
     COLOR_STATUS_BAD = QColor(255, 0, 0)
@@ -39,9 +38,6 @@ class DriveStationWindow(QMainWindow):
         if(version_file.open(QIODevice.ReadOnly)):
             ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
-
-        # Set icon from resources
-        self.setWindowIcon(QIcon(':/icon.png'))
     
         # TODO: Load this from preferences file
         self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
@@ -66,42 +62,31 @@ class DriveStationWindow(QMainWindow):
 
     def set_state_no_network(self):
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
-        self.ui.btnDisable.setEnabled(False)
-        self.ui.btnEnable.setEnabled(False)
         self.set_network_label_color(self.COLOR_STATUS_BAD)
         self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
     
     def set_state_no_program(self):
-        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
-        self.ui.btnDisable.setEnabled(False)
-        self.ui.btnEnable.setEnabled(False)
+        self.ui.statusbar.showMessage(self.MSG_STATE_NO_PROGRAM)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
     
     def set_state_disabled(self):
-        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
-        self.ui.btnDisable.setEnabled(False)
-        self.ui.btnEnable.setEnabled(True)
+        self.ui.statusbar.showMessage(self.MSG_STATE_DISABLED)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
 
     def set_state_enabled(self):
-        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
-        self.ui.btnDisable.setEnabled(True)
-        self.ui.btnEnable.setEnabled(False)
+        self.ui.statusbar.showMessage(self.MSG_STATE_ENABLED)
         self.set_network_label_color(self.COLOR_STATUS_GOOD)
         self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
     
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
         if(voltage >= nominal_bat_voltage):
-            color = self.COLOR_BAT_HIGH
+            self.ui.pnlBatBg.setObjectName("pnlBatBgGreen")
         elif (voltage >= nominal_bat_voltage * 0.85):
-            color = self.COLOR_BAT_MED_HIGH
+            self.ui.pnlBatBg.setObjectName("pnlBatBgYellow")
         elif(voltage >= nominal_bat_voltage * 0.7):
-            color = self.COLOR_BAT_MED_LOW
+            self.ui.pnlBatBg.setObjectName("pnlBatBgOrange")
         else:
-            color = self.COLOR_BAT_LOW
-
-        # TODO: Do this in a better way...
-        self.ui.pnlBatBg.setStyleSheet("background-color: {0}".format(color.name()))
+            self.ui.pnlBatBg.setObjectName("pnlBatBgRed")
         self.ui.lblBatteryVoltage.setText("{:.2f} V".format(voltage))
