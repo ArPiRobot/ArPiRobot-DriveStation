@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import QFile, Qt
 
 from . import rc_resources
-from .drive_station import DriveStation
+from .drive_station import DriveStationWindow
 
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -18,6 +18,6 @@ except ImportError:
     pass
 
 app = QApplication(sys.argv)
-ds = DriveStation()
+ds = DriveStationWindow()
 ds.show()
 app.exec_()

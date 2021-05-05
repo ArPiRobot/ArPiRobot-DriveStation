@@ -1,54 +1,38 @@
 
-from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide2.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 from PySide2.QtGui import QColor, QIcon, QPalette
-from PySide2.QtCore import QFile, QIODevice
-from .ui_drive_station import Ui_DriveStation
+from PySide2.QtCore import QFile, QIODevice, QStringListModel, Qt
+from .ui_drive_station import Ui_DriveStationWindow
 
-class DriveStation(QMainWindow):
+class DriveStationWindow(QMainWindow):
+
+    # Battery level colors
+    COLOR_BAT_HIGH = QColor(0, 200, 0)
+    COLOR_BAT_MED_HIGH = QColor(230, 230, 0)
+    COLOR_BAT_MED_LOW = QColor(255, 153, 0)
+    COLOR_BAT_LOW = QColor(200, 0, 0)
+
+    # Network and robot program indicator colors
+    COLOR_STATUS_BAD = QColor(255, 0, 0)
+    COLOR_STATUS_GOOD = QColor(0, 255, 0)
+
+    # State messages
+    MSG_STATE_NO_NETWORK = "Could not connect to given address."
+    MSG_STATE_NO_PROGRAM = "No program running on robot."
+    MSG_STATE_DISABLED = "Robot disabled."
+    MSG_STATE_ENABLED = "Robot enabled."
+
+    DEFAULT_ROBOT_ADDRESS = "192.168.10.1"
+
+
     def __init__(self, parent = None) -> None:
         super().__init__(parent=parent)
-        
-        ########################################################################
-        # Constants
-        ########################################################################
-
-        # Status messages to be displayed above connect button
-        self.STATUS_NOT_CONNECTED = self.tr("Not Connected")
-        self.STATUS_CONNECTED = self.tr("Connected")
-        self.STATUS_ENABLED = self.tr("Enabled")
-        self.STATUS_DISABLED = self.tr("Disabled")
-
-        # Battery level colors
-        self.COLOR_BAT_HIGH = QColor(0, 200, 0)
-        self.COLOR_BAT_MED_HIGH = QColor(230, 230, 0)
-        self.COLOR_BAT_MED_LOW = QColor(255, 153, 0)
-        self.COLOR_BAT_LOW = QColor(200, 0, 0)
-
-
         ########################################################################
         # UI Setup
         ########################################################################
 
-        self.ui = Ui_DriveStation()
+        self.ui = Ui_DriveStationWindow()
         self.ui.setupUi(self)
-
-        # White text in progress bars on Windows does not work well...
-        if(QApplication.style().metaObject().className().startswith("QWindows")):
-            allBars = [
-                self.ui.pbarLX, self.ui.pbarLY, self.ui.pbarRX, self.ui.pbarRY, self.ui.pbarL2, self.ui.pbarR2,
-                self.ui.pbarA, self.ui.pbarB, self.ui.pbarX, self.ui.pbarY, self.ui.pbarBack, self.ui.pbarGuide, 
-                    self.ui.pbarStart, self.ui.pbarL3, self.ui.pbarR3, self.ui.pbarL1, self.ui.pbarL2,
-                self.ui.pbarDpadUp, self.ui.pbarDpadDown, self.ui.pbarDpadLeft, self.ui.pbarDpadRight
-            ]
-            for bar in allBars:
-                palette = bar.palette()
-                palette.setColor(QPalette.HighlightedText, palette.color(QPalette.Text))
-                bar.setPalette(palette)
-        
-        # b/c of colored background need to use black border on this groupbox
-        palette = self.ui.gbxBatLabel.palette()
-        palette.setColor(QPalette.Base, QColor(100, 100, 0))
-        self.ui.gbxBatLabel.setPalette(palette)
         
         # Append version to window title
         version_file = QFile(":/version.txt")
@@ -56,13 +40,68 @@ class DriveStation(QMainWindow):
             ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
 
-        # Set initial status message
-        self.ui.lblStatus.setText(self.STATUS_NOT_CONNECTED)
-
-        # Set initial battery color
-        palette = self.ui.pnlVbatBackground.palette()
-        palette.setColor(QPalette.Window, self.COLOR_BAT_LOW)
-        self.ui.pnlVbatBackground.setPalette(palette)
-
         # Set icon from resources
         self.setWindowIcon(QIcon(':/icon.png'))
+    
+        # TODO: Load this from preferences file
+        self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
+
+        self.set_state_no_network()
+        self.set_battery_voltage(5.0, 7.2)
+    
+
+    # TODO: General custom stylesheet...
+
+    ############################################################################
+    # Connection/Robot States
+    ############################################################################
+
+    # TODO: Better way to do this color change...
+    def set_network_label_color(self, color: QColor):
+        self.ui.lblNetworkStatus.setStyleSheet("padding: 2px; background-color: {0}".format(color.name()))
+    
+    def set_robot_program_label_color(self, color: QColor):
+        self.ui.lblRobotProgram.setStyleSheet("padding: 2px; background-color: {0}".format(color.name()))
+    
+
+    def set_state_no_network(self):
+        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
+        self.ui.btnDisable.setEnabled(False)
+        self.ui.btnEnable.setEnabled(False)
+        self.set_network_label_color(self.COLOR_STATUS_BAD)
+        self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
+    
+    def set_state_no_program(self):
+        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
+        self.ui.btnDisable.setEnabled(False)
+        self.ui.btnEnable.setEnabled(False)
+        self.set_network_label_color(self.COLOR_STATUS_GOOD)
+        self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
+    
+    def set_state_disabled(self):
+        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
+        self.ui.btnDisable.setEnabled(False)
+        self.ui.btnEnable.setEnabled(True)
+        self.set_network_label_color(self.COLOR_STATUS_GOOD)
+        self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
+
+    def set_state_enabled(self):
+        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
+        self.ui.btnDisable.setEnabled(True)
+        self.ui.btnEnable.setEnabled(False)
+        self.set_network_label_color(self.COLOR_STATUS_GOOD)
+        self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
+    
+    def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
+        if(voltage >= nominal_bat_voltage):
+            color = self.COLOR_BAT_HIGH
+        elif (voltage >= nominal_bat_voltage * 0.85):
+            color = self.COLOR_BAT_MED_HIGH
+        elif(voltage >= nominal_bat_voltage * 0.7):
+            color = self.COLOR_BAT_MED_LOW
+        else:
+            color = self.COLOR_BAT_LOW
+
+        # TODO: Do this in a better way...
+        self.ui.pnlBatBg.setStyleSheet("background-color: {0}".format(color.name()))
+        self.ui.lblBatteryVoltage.setText("{:.2f} V".format(voltage))
