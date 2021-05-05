@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ArPiRobot Drive Station</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../res/resources.qrc">
@@ -28,12 +28,13 @@ QProgressBar::chunk{
 
 QGroupBox { 
     border: 1px solid black;
-    margin-top: 2ex;
+    margin-top: 7px;
+    padding: 5px;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    left: 5px;
+    left: 3px;
     top: 0px;
 }</string>
   </property>
@@ -1197,7 +1198,7 @@ QWidget#pnlBatBgGreen{
             </property>
             <property name="minimumSize">
              <size>
-              <width>85</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>
