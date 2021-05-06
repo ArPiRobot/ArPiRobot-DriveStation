@@ -52,6 +52,11 @@ class DriveStationWindow(QMainWindow):
         # TODO: Load this from preferences file
         self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
 
+        for i in range(10):
+            item = QListWidgetItem("Controller {0}".format(i))
+            item.setCheckState(Qt.CheckState.Unchecked)
+            self.ui.lstControllers.addItem(item)
+
         self.state: State = None
         self.set_state_no_network()
         self.set_battery_voltage(7.0, 7.2)
@@ -68,8 +73,6 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
-        self.ui.btnDisable.setEnabled(False)
-        self.ui.btnEnable.setEnabled(False)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
         self.set_network_good(False)
@@ -81,8 +84,6 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
-        self.ui.btnDisable.setEnabled(False)
-        self.ui.btnEnable.setEnabled(False)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_PROGRAM)
         self.set_network_good(True)
@@ -95,9 +96,6 @@ class DriveStationWindow(QMainWindow):
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
 
-        self.ui.btnDisable.setEnabled(True)
-        self.ui.btnEnable.setEnabled(True)
-
         self.ui.statusbar.showMessage(self.MSG_STATE_DISABLED)
         self.set_network_good(True)
         self.set_robot_program_good(True)
@@ -108,9 +106,6 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.btnDisable.setChecked(False)
         self.ui.btnEnable.setChecked(True)
-
-        self.ui.btnDisable.setEnabled(True)
-        self.ui.btnEnable.setEnabled(True)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_ENABLED)
         self.set_network_good(True)
