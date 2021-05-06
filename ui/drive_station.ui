@@ -97,27 +97,7 @@ QTabBar::tab:selected {
 QTabBar::tab:!selected {
     margin-top: 3px;
 }
-
-QPushButton {
-    border: 2px solid #8f8f91;
-    border-radius: 6px;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #f6f7fa, stop: 1 #dadbde);
-    min-width: 80px;
-}
-
-QPushButton:pressed, QPushButton:checked {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #dadbde, stop: 1 #f6f7fa);
-}
-
-QPushButton:flat {
-    border: none;
-}
-
-QPushButton:default {
-    /*border-color: navy;*/
-}</string>
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -1491,8 +1471,39 @@ QWidget#pnlBatBgGreen{
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuNetwork_Table">
+    <property name="title">
+     <string>Network Table</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Indicator"/>
+    <addaction name="actionClear_Indicators"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuNetwork_Table"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionAdd_Indicator">
+   <property name="text">
+    <string>Add Indicator</string>
+   </property>
+  </action>
+  <action name="actionClear_Indicators">
+   <property name="text">
+    <string>Clear Indicators</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../res/resources.qrc"/>
