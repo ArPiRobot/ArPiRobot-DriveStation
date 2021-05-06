@@ -4,6 +4,16 @@ from PySide6.QtGui import QColor, QIcon, QPalette
 from PySide6.QtCore import QFile, QIODevice, QStringListModel, Qt
 from .ui_drive_station import Ui_DriveStationWindow
 
+from enum import Enum
+
+
+class State(Enum):
+    NoNetwork = 0
+    NoRobotProgram = 1
+    Disabled = 2
+    Enabled = 3
+
+
 class DriveStationWindow(QMainWindow):
 
     # Battery level colors
@@ -42,68 +52,71 @@ class DriveStationWindow(QMainWindow):
         # TODO: Load this from preferences file
         self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
 
+        self.state: State = None
         self.set_state_no_network()
-        self.set_battery_voltage(5.0, 7.2)
+        self.set_battery_voltage(7.0, 7.2)
     
 
     # TODO: General custom stylesheet...
 
     ############################################################################
     # Connection/Robot States
-    ############################################################################
-
-    # TODO: Better way to do this color change...
-    def set_network_label_color(self, color: QColor):
-        self.ui.lblNetworkStatus.setStyleSheet("padding: 2px; background-color: {0}".format(color.name()))
-    
-    def set_robot_program_label_color(self, color: QColor):
-        self.ui.lblRobotProgram.setStyleSheet("padding: 2px; background-color: {0}".format(color.name()))
-    
+    ############################################################################   
 
     def set_state_no_network(self):
+        self.state = State.NoNetwork
+
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
         self.ui.btnDisable.setEnabled(False)
         self.ui.btnEnable.setEnabled(False)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
-        self.set_network_label_color(self.COLOR_STATUS_BAD)
-        self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
+        self.set_network_good(False)
+        self.set_robot_program_good(False)
+        
     
     def set_state_no_program(self):
+        self.state = State.NoRobotProgram
+
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
         self.ui.btnDisable.setEnabled(False)
         self.ui.btnEnable.setEnabled(False)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_NO_PROGRAM)
-        self.set_network_label_color(self.COLOR_STATUS_GOOD)
-        self.set_robot_program_label_color(self.COLOR_STATUS_BAD)
+        self.set_network_good(True)
+        self.set_robot_program_good(False)
+        
     
     def set_state_disabled(self):
+        self.state = State.Disabled
+
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
 
-        # When connected to robot, these buttons should be enabled
         self.ui.btnDisable.setEnabled(True)
         self.ui.btnEnable.setEnabled(True)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_DISABLED)
-        self.set_network_label_color(self.COLOR_STATUS_GOOD)
-        self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
+        self.set_network_good(True)
+        self.set_robot_program_good(True)
+        
 
     def set_state_enabled(self):
-        self.ui.btnDisable.setChecked(True)
-        self.ui.btnEnable.setChecked(False)
+        self.state = State.Enabled
 
-        # When connected to robot, these buttons should be enabled
+        self.ui.btnDisable.setChecked(False)
+        self.ui.btnEnable.setChecked(True)
+
         self.ui.btnDisable.setEnabled(True)
         self.ui.btnEnable.setEnabled(True)
 
         self.ui.statusbar.showMessage(self.MSG_STATE_ENABLED)
-        self.set_network_label_color(self.COLOR_STATUS_GOOD)
-        self.set_robot_program_label_color(self.COLOR_STATUS_GOOD)
+        self.set_network_good(True)
+        self.set_robot_program_good(True)
     
+
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
         if(voltage >= nominal_bat_voltage):
             self.ui.pnlBatBg.setObjectName("pnlBatBgGreen")
@@ -114,3 +127,17 @@ class DriveStationWindow(QMainWindow):
         else:
             self.ui.pnlBatBg.setObjectName("pnlBatBgRed")
         self.ui.lblBatteryVoltage.setText("{:.2f} V".format(voltage))
+    
+
+    def set_network_good(self, good: bool):
+        if(good):
+            self.ui.pnlNetBg.setObjectName("pnlNetBgGreen")
+        else:
+            self.ui.pnlNetBg.setObjectName("pnlNetBgRed")
+
+
+    def set_robot_program_good(self, good: bool):
+        if(good):
+            self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgGreen")
+        else:
+            self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgRed")

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>816</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,8 +22,23 @@
 	background-color: #AAAAAA;
 }
 
+.QStatusBar{
+    border-top: 1px solid #444444;
+    background-color: #AAAAAA;
+}
+
 .QLineEdit{
+    color: #000000;
+    selection-color: #000000;
 	background-color: #888888;
+    border: 1px solid #656565;
+    border-radius: 3px;
+    selection-background-color: #cc7a00;
+    padding: 2px;
+}
+.QLineEdit::focus{
+    border: 1px solid #b36b00;
+    border-radius: 3px;
 }
 
 .QProgressBar{
@@ -54,6 +69,54 @@ QTabWidget::pane{
 }
 QTabWidget::tab-bar {
     top: 1px;
+}
+QTabBar::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #A1A1A1, stop: 0.4 #9D9D9D,
+                                stop: 0.5 #989898, stop: 1.0 #939393);
+    border: 1px solid #656565;
+    border-bottom-color: #444444;
+    border-bottom-width: 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    min-width: 8ex;
+    padding: 2px;
+}
+
+QTabBar::tab:hover,  QTabBar::tab:selected {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #AAAAAA, stop: 0.4 #A4A4A4,
+                                stop: 0.5 #9F9F9F, stop: 1.0 #AAAAAA);
+}
+
+QTabBar::tab:selected {
+    border-color: #656565;
+    border-bottom-color: #444444;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 3px;
+}
+
+QPushButton {
+    border: 2px solid #8f8f91;
+    border-radius: 6px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #f6f7fa, stop: 1 #dadbde);
+    min-width: 80px;
+}
+
+QPushButton:pressed, QPushButton:checked {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #dadbde, stop: 1 #f6f7fa);
+}
+
+QPushButton:flat {
+    border: none;
+}
+
+QPushButton:default {
+    /*border-color: navy;*/
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -227,7 +290,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="styleSheet">
@@ -257,7 +320,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="minimum">
@@ -284,7 +347,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="minimum">
@@ -311,7 +374,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="minimum">
@@ -338,7 +401,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="minimum">
@@ -365,7 +428,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="minimum">
@@ -419,7 +482,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -446,7 +509,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -473,7 +536,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -500,7 +563,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -527,7 +590,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -554,7 +617,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -581,7 +644,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -608,7 +671,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -635,7 +698,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -662,7 +725,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -689,7 +752,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -761,7 +824,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -782,7 +845,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -821,7 +884,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -842,7 +905,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -869,7 +932,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -902,7 +965,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -935,7 +998,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -968,7 +1031,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -1001,7 +1064,7 @@ QTabWidget::tab-bar {
              </property>
              <property name="font">
               <font>
-               <bold>true</bold>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -1044,17 +1107,20 @@ QTabWidget::tab-bar {
        </sizepolicy>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>3</number>
+       </property>
        <property name="leftMargin">
-        <number>0</number>
+        <number>3</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>3</number>
        </property>
        <property name="rightMargin">
-        <number>0</number>
+        <number>3</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number>
+        <number>3</number>
        </property>
        <item>
         <widget class="QWidget" name="widget_2" native="true">
@@ -1137,64 +1203,139 @@ QTabWidget::tab-bar {
        <item alignment="Qt::AlignVCenter">
         <widget class="QWidget" name="widget_7" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
+           <verstretch>1</verstretch>
           </sizepolicy>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="spacing">
+           <number>3</number>
+          </property>
           <property name="leftMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="topMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="rightMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="lblNetworkStatus">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
+          <item>
+           <widget class="QWidget" name="pnlNetBg" native="true">
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">QWidget#pnlNetBg{
+	border: 1px solid black;
+    border-radius: 3px;
+}
+
+QWidget#pnlNetBgRed{
+	border: 1px solid black;
+    border-radius: 3px;
+    background-color: #c80000;
+}
+
+QWidget#pnlNetBgGreen{
+	border: 1px solid black;
+    border-radius: 3px;
+    background-color: #00c800;
+}</string>
             </property>
-            <property name="text">
-             <string>Network</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>3</number>
+             </property>
+             <property name="topMargin">
+              <number>3</number>
+             </property>
+             <property name="rightMargin">
+              <number>3</number>
+             </property>
+             <property name="bottomMargin">
+              <number>3</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="lblNetworkStatus">
+               <property name="font">
+                <font>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Network</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="lblRobotProgram">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
+          <item>
+           <widget class="QWidget" name="pnlRobotProgramBg" native="true">
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">QWidget#pnlRobotProgramBg{
+	border: 1px solid black;
+    border-radius: 3px;
+}
+
+QWidget#pnlRobotProgramBgRed{
+	border: 1px solid black;
+    border-radius: 3px;
+    background-color: #c80000;
+}
+
+QWidget#pnlRobotProgramBgGreen{
+	border: 1px solid black;
+    border-radius: 3px;
+    background-color: #00c800;
+}</string>
             </property>
-            <property name="text">
-             <string>Robot Program</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>3</number>
+             </property>
+             <property name="topMargin">
+              <number>3</number>
+             </property>
+             <property name="rightMargin">
+              <number>3</number>
+             </property>
+             <property name="bottomMargin">
+              <number>3</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="lblRobotProgram">
+               <property name="font">
+                <font>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Robot Program</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -1203,7 +1344,7 @@ QTabWidget::tab-bar {
        <item>
         <widget class="QWidget" name="pnlBatBg" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -1215,7 +1356,7 @@ QWidget#pnlBatBgRed{
     border-radius: 3px;
 }
 QWidget#pnlBatBgOrange{
-    background-color: #00c800;
+    background-color: #e59900;
     border-radius: 3px;
 }
 QWidget#pnlBatBgYellow{
@@ -1223,7 +1364,7 @@ QWidget#pnlBatBgYellow{
     border-radius: 3px;
 }
 QWidget#pnlBatBgGreen{
-    background-color: #c80000;
+    background-color: #00c800;
     border-radius: 3px;
 }
 </string>
@@ -1265,6 +1406,21 @@ QWidget#pnlBatBgGreen{
              <string>Main Battery</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
              <item>
               <widget class="QLabel" name="lblBatteryVoltage">
                <property name="text">
@@ -1282,40 +1438,41 @@ QWidget#pnlBatBgGreen{
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="widget_8" native="true">
+        <widget class="QGroupBox" name="groupBox_8">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <property name="title">
+          <string>Robot IP Address</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>3</number>
+          </property>
           <property name="leftMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="topMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="rightMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>3</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_12">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Robot IP</string>
-            </property>
-           </widget>
+           <widget class="QLineEdit" name="txtRobotIp"/>
           </item>
           <item>
-           <widget class="QLineEdit" name="txtRobotIp"/>
+           <widget class="QPushButton" name="btnIpApply">
+            <property name="text">
+             <string>Apply</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -1330,7 +1487,7 @@ QWidget#pnlBatBgGreen{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>816</width>
      <height>21</height>
     </rect>
    </property>
