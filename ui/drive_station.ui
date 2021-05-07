@@ -23,6 +23,7 @@
 }
 
 .QMenuBar{
+    color: #000000;
 	background-color: #909090;
     border-bottom: 1px solid #444444;
 }
@@ -41,14 +42,14 @@
 	background-color: #cc7a00;
 }
 
-.QMenuBar::item {
+QMenuBar::item {
     padding: 3px;
     padding-bottom: 4px;
     background: transparent;
     border-bottom: 1px solid #444444;
 }
 
-.QMenuBar::item:selected {
+QMenuBar::item:selected {
     padding-bottom: 3px;
     border-bottom: 2px solid #cc7a00;
 }
@@ -1563,7 +1564,7 @@ QWidget#pnlBatBgGreen{
      <x>0</x>
      <y>0</y>
      <width>816</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

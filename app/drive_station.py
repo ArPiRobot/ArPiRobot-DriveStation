@@ -59,8 +59,7 @@ class DriveStationWindow(QMainWindow):
 
         self.state: State = None
         self.set_state_no_network()
-        self.set_battery_voltage(7.0, 7.2)
-    
+        self.set_battery_voltage(7.0, 7.2)    
 
     # TODO: General custom stylesheet...
 
