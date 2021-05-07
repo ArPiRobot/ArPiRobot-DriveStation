@@ -59,7 +59,9 @@ class DriveStationWindow(QMainWindow):
 
         self.state: State = None
         self.set_state_no_network()
-        self.set_battery_voltage(7.0, 7.2)  
+
+        # TODO: Load this from some setting
+        self.set_battery_voltage(0.0, 7.2)  
 
         ########################################################################
         # Signal / slot setup
