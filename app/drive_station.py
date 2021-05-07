@@ -59,13 +59,52 @@ class DriveStationWindow(QMainWindow):
 
         self.state: State = None
         self.set_state_no_network()
-        self.set_battery_voltage(7.0, 7.2)    
+        self.set_battery_voltage(7.0, 7.2)  
 
-    # TODO: General custom stylesheet...
+        ########################################################################
+        # Signal / slot setup
+        ########################################################################
+        self.ui.btnDisable.clicked.connect(self.disable_clicked)
+        self.ui.btnEnable.clicked.connect(self.enable_clicked)
+
+
+    ############################################################################
+    # Event Handlers (slots)
+    ############################################################################
+    def disable_clicked(self):
+        # If connected to the robot, send disable command.
+        if(self.state == State.Enabled or self.state == State.Disabled):
+            # TODO: Send disable command to robot
+            self.set_state_disabled()
+        else:
+            # Clicking the button toggles the checked state.
+            # Always run the set_state function to ensure the UI is in the correct state
+            self.set_current_state()
+
+    def enable_clicked(self):
+        # If connected to the robot, send enable command.
+        if(self.state == State.Enabled or self.state == State.Disabled):
+            # TODO: Send enable command to robot
+            self.set_state_enabled()
+        else:
+            # Clicking the button toggles the checked state.
+            # Always run the set_state function to ensure the UI is in the correct state
+            self.set_current_state()
+
 
     ############################################################################
     # Connection/Robot States
     ############################################################################   
+
+    def set_current_state(self):
+        if self.state == State.Disabled:
+            self.set_state_disabled()
+        elif self.state == State.Enabled:
+            self.set_state_enabled()
+        elif self.state == State.NoNetwork:
+            self.set_state_no_network()
+        elif self.state == State.NoRobotProgram:
+            self.set_state_no_program()
 
     def set_state_no_network(self):
         self.state = State.NoNetwork
