@@ -43,7 +43,7 @@
 }
 
 .QMenu::item:selected{
-	background-color: #cc7a00;
+	background-color: #e68a00;
 }
 
 QMenuBar::item {
