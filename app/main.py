@@ -9,6 +9,7 @@ from .drive_station import DriveStationWindow
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+QApplication.setAttribute(Qt.AA_DontUseNativeMenuBar)
 
 try:
     import ctypes

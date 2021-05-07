@@ -22,6 +22,10 @@
 	background-color: #AAAAAA;
 }
 
+.QLabel{
+	color: #000000;
+}
+
 .QMenuBar{
     color: #000000;
 	background-color: #909090;
@@ -43,6 +47,7 @@
 }
 
 QMenuBar::item {
+    color: #000000;
     padding: 3px;
     padding-bottom: 4px;
     background: transparent;
@@ -55,6 +60,7 @@ QMenuBar::item:selected {
 }
 
 .QStatusBar{
+    color: #000000;
     border-top: 1px solid #444444;
     background-color: #909090;
 }
@@ -90,6 +96,7 @@ QGroupBox {
     padding: 5px;
 }
 QGroupBox::title {
+    color: #000000;
     subcontrol-origin: margin;
     left: 4px;
     top: 0px;
@@ -103,6 +110,7 @@ QTabWidget::tab-bar {
     top: 1px;
 }
 QTabBar::tab {
+    color: #000000;
     background-color: #888888;
     border: 1px solid #656565;
     border-bottom-color: #444444;
@@ -1564,7 +1572,7 @@ QWidget#pnlBatBgGreen{
      <x>0</x>
      <y>0</y>
      <width>816</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
