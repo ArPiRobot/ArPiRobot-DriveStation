@@ -79,6 +79,20 @@ QMenuBar::item:selected {
     border-radius: 3px;
 }
 
+.QPlainTextEdit{
+    color: #000000;
+    selection-color: #000000;
+	background-color: #888888;
+    border: 1px solid #656565;
+    border-radius: 3px;
+    selection-background-color: #cc7a00;
+    padding: 2px;
+}
+.QPlainTextEdit:focus{
+    border: 1px solid #b36b00;
+    border-radius: 3px;
+}
+
 .QProgressBar{
     color: #000000;
     background-color: #888888;
@@ -152,11 +166,107 @@ QPushButton:pressed, QPushButton:checked {
     background-color: #757575;
 }
 
-.QListWidget, .QListView{
+QListView{
     color: #000000;
     background-color: #888888;
     border: 2px inset #656565;
 }
+
+QListView::item{
+    color : #000000;
+}
+
+QListView::item:selected{
+    background : #e68a00;
+    color: #000000;
+}
+
+QScrollBar:vertical {
+    border: 2px solid #444444;
+    background: #444444;
+    width: 15px;
+    margin: 22px 0 22px 0;
+}
+QScrollBar::handle:vertical {
+    background: #C0C0C0;
+    min-height: 20px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+QScrollBar::add-line:vertical {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    height: 20px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:vertical{
+	image: url(:/up_arrow.png);
+    height: 4px; 
+    width: 8px;
+}
+QScrollBar::down-arrow:vertical {
+    image: url(:/down_arrow.png);
+    height: 4px; 
+    width: 8px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+QScrollBar:horizontal {
+    border: 2px solid #444444;
+    background: #444444;
+    height: 15px;
+    margin: 0px 20px 0 20px;
+}
+QScrollBar::handle:horizontal {
+    background: #C0C0C0;
+    min-width: 20px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+QScrollBar::add-line:horizontal {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    width: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:left-arrow:horizontal{
+    image: url(:/left_arrow.png);
+    height: 8px; 
+    width: 4px;
+}
+
+QScrollBar::right-arrow:horizontal {
+    image: url(:/right_arrow.png);
+    height: 8px; 
+    width: 4px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -1136,6 +1246,36 @@ QPushButton:pressed, QPushButton:checked {
        <attribute name="title">
         <string>Drive Station Log</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QPlainTextEdit" name="txtDsLog">
+          <property name="undoRedoEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QPlainTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">

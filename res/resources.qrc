@@ -2,5 +2,9 @@
 <qresource>
     <file>icon.png</file>
     <file>version.txt</file>
+    <file>down_arrow.png</file>
+    <file>up_arrow.png</file>
+    <file>right_arrow.png</file>
+    <file>left_arrow.png</file>
 </qresource>
 </RCC>

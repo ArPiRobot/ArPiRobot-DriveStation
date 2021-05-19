@@ -2,7 +2,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication, QStyleFactory
-from PySide6.QtCore import QFile, QIODevice, Qt
+from PySide6.QtCore import Qt
 
 from .drive_station import DriveStationWindow
 

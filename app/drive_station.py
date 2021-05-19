@@ -1,7 +1,7 @@
 
-from PySide6.QtWidgets import QApplication, QListWidgetItem, QMainWindow
-from PySide6.QtGui import QColor, QIcon, QPalette
-from PySide6.QtCore import QFile, QIODevice, QStringListModel, Qt
+from PySide6.QtWidgets import QListWidgetItem, QMainWindow
+from PySide6.QtGui import QColor
+from PySide6.QtCore import QFile, QIODevice, Qt
 from .ui_drive_station import Ui_DriveStationWindow
 
 from enum import Enum
@@ -52,7 +52,7 @@ class DriveStationWindow(QMainWindow):
         # TODO: Load this from preferences file
         self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
 
-        for i in range(10):
+        for i in range(25):
             item = QListWidgetItem("Controller {0}".format(i))
             item.setCheckState(Qt.CheckState.Unchecked)
             self.ui.lstControllers.addItem(item)
@@ -62,6 +62,12 @@ class DriveStationWindow(QMainWindow):
 
         # TODO: Load this from some setting
         self.set_battery_voltage(0.0, 7.2)  
+
+        # TODO: Remove this
+        self.ui.txtDsLog.appendHtml("<font color='#ff0000'>This is a really long message designed so I can see the horizontal scroll bar and adjust it's stylesheet. This is more stuff stuff stuff stuff stuffs afdsf asdf asdf f sdf aads d sa adas sad </font>");
+
+        for i in range(100):
+            self.ui.txtDsLog.appendPlainText("Test {0}".format(i+1))
 
         ########################################################################
         # Signal / slot setup
