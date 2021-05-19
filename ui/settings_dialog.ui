@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>150</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">.QWidget{
+	background-color: #AAAAAA;
+}
+
+QDialog{
+	background-color: #AAAAAA;
+}
+
+.QLabel{
+	color: #000000;
+}
+
+.QMenuBar{
+    color: #000000;
+	background-color: #909090;
+    border-bottom: 1px solid #444444;
+}
+
+.QMenu{
+	color: #000000;
+	background-color: #909090;
+}
+
+.QMenu::item{
+    color: #000000;
+	background-color: #909090;
+}
+
+.QMenu::item:selected{
+	background-color: #e68a00;
+}
+
+QMenuBar::item {
+    color: #000000;
+    padding: 3px;
+    padding-bottom: 4px;
+    background: transparent;
+    border-bottom: 1px solid #444444;
+}
+
+QMenuBar::item:selected {
+    padding-bottom: 3px;
+    border-bottom: 2px solid #cc7a00;
+}
+
+.QStatusBar{
+    color: #000000;
+    border-top: 1px solid #444444;
+    background-color: #909090;
+}
+
+.QLineEdit{
+    color: #000000;
+    selection-color: #000000;
+	background-color: #888888;
+    border: 1px solid #656565;
+    border-radius: 3px;
+    selection-background-color: #cc7a00;
+    padding: 2px;
+}
+.QLineEdit:focus{
+    border: 1px solid #b36b00;
+    border-radius: 3px;
+}
+
+.QPlainTextEdit{
+    color: #000000;
+    selection-color: #000000;
+	background-color: #888888;
+    border: 1px solid #656565;
+    border-radius: 3px;
+    selection-background-color: #cc7a00;
+    padding: 2px;
+}
+.QPlainTextEdit:focus{
+    border: 1px solid #b36b00;
+    border-radius: 3px;
+}
+
+.QProgressBar{
+    color: #000000;
+    background-color: #888888;
+    border-radius: 3px;
+}
+.QProgressBar::chunk{
+	background-color: #cc7a00;
+    border-radius: 3px;
+}
+
+QGroupBox { 
+    border: 1px solid black;
+    border-radius: 3px;
+    margin-top: 7px;
+    padding: 5px;
+}
+QGroupBox::title {
+    color: #000000;
+    subcontrol-origin: margin;
+    left: 4px;
+    top: 0px;
+}
+
+QTabWidget::pane{
+	border: 2px solid #444444;
+    border-radius: 3px;
+}
+QTabWidget::tab-bar {
+    top: 1px;
+}
+QTabBar::tab {
+    color: #000000;
+    background-color: #888888;
+    border: 1px solid #656565;
+    border-bottom-color: #444444;
+    border-bottom-width: 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    min-width: 8ex;
+    padding: 2px;
+}
+
+QTabBar::tab:hover {
+    background-color: #929292;
+}
+QTabBar::tab:selected {
+    border-color: #444444;
+    background-color: #888888;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 3px;
+}
+
+QPushButton{
+	color: #000000;
+    background-color: #888888;
+    border: 1px solid #656565;
+    border-radius: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+QPushButton:hover {
+    background-color: #929292;
+}
+
+QPushButton:pressed, QPushButton:checked {
+    background-color: #757575;
+}
+
+QListView{
+    color: #000000;
+    background-color: #888888;
+    border: 2px inset #656565;
+}
+
+QListView::item{
+    color : #000000;
+}
+
+QListView::item:selected{
+    background : #e68a00;
+    color: #000000;
+}
+
+QScrollBar:vertical {
+    border: 2px solid #444444;
+    background: #444444;
+    width: 15px;
+    margin: 22px 0 22px 0;
+}
+QScrollBar::handle:vertical {
+    background: #C0C0C0;
+    min-height: 20px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+QScrollBar::add-line:vertical {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    height: 20px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:vertical{
+	image: url(:/up_arrow.png);
+    height: 4px; 
+    width: 8px;
+}
+QScrollBar::down-arrow:vertical {
+    image: url(:/down_arrow.png);
+    height: 4px; 
+    width: 8px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+QScrollBar:horizontal {
+    border: 2px solid #444444;
+    background: #444444;
+    height: 15px;
+    margin: 0px 20px 0 20px;
+}
+QScrollBar::handle:horizontal {
+    background: #C0C0C0;
+    min-width: 20px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+QScrollBar::add-line:horizontal {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 2px solid #444444;
+    background: #C0C0C0;
+    width: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:left-arrow:horizontal{
+    image: url(:/left_arrow.png);
+    height: 8px; 
+    width: 4px;
+}
+
+QScrollBar::right-arrow:horizontal {
+    image: url(:/right_arrow.png);
+    height: 8px; 
+    width: 4px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+
+</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0" colspan="2">
+    <widget class="QWidget" name="widget" native="true"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="txtMainBatteryVoltage"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Robot Address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="txtRobotAddress"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Main Battery Voltage</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

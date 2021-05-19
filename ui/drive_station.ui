@@ -1281,6 +1281,33 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
        <attribute name="title">
         <string>Robot Log</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QPlainTextEdit" name="txtRobotLog">
+          <property name="undoRedoEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -1662,17 +1689,14 @@ QWidget#pnlBatBgGreen{
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_8">
+        <widget class="QWidget" name="widget_8" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title">
-          <string>Robot IP Address</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="spacing">
            <number>3</number>
           </property>
@@ -1689,14 +1713,7 @@ QWidget#pnlBatBgGreen{
            <number>3</number>
           </property>
           <item>
-           <widget class="QLineEdit" name="txtRobotIp"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnIpApply">
-            <property name="text">
-             <string>Apply</string>
-            </property>
-           </widget>
+           <widget class="QWidget" name="widget_9" native="true"/>
           </item>
          </layout>
         </widget>
@@ -1719,6 +1736,7 @@ QWidget#pnlBatBgGreen{
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionPreferences"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuNetwork_Table">
@@ -1746,6 +1764,11 @@ QWidget#pnlBatBgGreen{
   <action name="actionClear_Indicators">
    <property name="text">
     <string>Clear Indicators</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,5 @@
 
+from app.settings_dialog import SettingsDialog
 from PySide6.QtWidgets import QListWidgetItem, QMainWindow
 from PySide6.QtGui import QColor
 from PySide6.QtCore import QFile, QIODevice, Qt
@@ -26,7 +27,7 @@ class DriveStationWindow(QMainWindow):
     COLOR_STATUS_GOOD = QColor(0, 255, 0)
 
     # State messages
-    MSG_STATE_NO_NETWORK = "Could not connect to given address."
+    MSG_STATE_NO_NETWORK = "Could not connect to robot at given address."
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
     MSG_STATE_ENABLED = "Robot enabled."
@@ -43,15 +44,13 @@ class DriveStationWindow(QMainWindow):
         self.ui = Ui_DriveStationWindow()
         self.ui.setupUi(self)
         
-        # Append version to window title
+        # Append version to about label
         version_file = QFile(":/version.txt")
         if(version_file.open(QIODevice.ReadOnly)):
             ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
     
-        # TODO: Load this from preferences file
-        self.ui.txtRobotIp.setText(self.DEFAULT_ROBOT_ADDRESS)
-
+        # TODO: Temporary. Get rid of this.
         for i in range(25):
             item = QListWidgetItem("Controller {0}".format(i))
             item.setCheckState(Qt.CheckState.Unchecked)
@@ -60,20 +59,15 @@ class DriveStationWindow(QMainWindow):
         self.state: State = None
         self.set_state_no_network()
 
-        # TODO: Load this from some setting
+        # TODO: Load this from some setting, along with robot address
         self.set_battery_voltage(0.0, 7.2)  
-
-        # TODO: Remove this
-        self.ui.txtDsLog.appendHtml("<font color='#ff0000'>This is a really long message designed so I can see the horizontal scroll bar and adjust it's stylesheet. This is more stuff stuff stuff stuff stuffs afdsf asdf asdf f sdf aads d sa adas sad </font>");
-
-        for i in range(100):
-            self.ui.txtDsLog.appendPlainText("Test {0}".format(i+1))
 
         ########################################################################
         # Signal / slot setup
         ########################################################################
         self.ui.btnDisable.clicked.connect(self.disable_clicked)
         self.ui.btnEnable.clicked.connect(self.enable_clicked)
+        self.ui.actionPreferences.triggered.connect(self.open_settings)
 
 
     ############################################################################
@@ -120,7 +114,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.MSG_STATE_NO_NETWORK)
+        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_NETWORK))
         self.set_network_good(False)
         self.set_robot_program_good(False)
         
@@ -131,7 +125,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.MSG_STATE_NO_PROGRAM)
+        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_PROGRAM))
         self.set_network_good(True)
         self.set_robot_program_good(False)
         
@@ -142,7 +136,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btnDisable.setChecked(True)
         self.ui.btnEnable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.MSG_STATE_DISABLED)
+        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_DISABLED))
         self.set_network_good(True)
         self.set_robot_program_good(True)
         
@@ -153,7 +147,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btnDisable.setChecked(False)
         self.ui.btnEnable.setChecked(True)
 
-        self.ui.statusbar.showMessage(self.MSG_STATE_ENABLED)
+        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_ENABLED))
         self.set_network_good(True)
         self.set_robot_program_good(True)
     
@@ -182,3 +176,14 @@ class DriveStationWindow(QMainWindow):
             self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgGreen")
         else:
             self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgRed")
+    
+    ############################################################################
+    # Settings
+    ############################################################################
+
+    # TODO: Load/save from/to a file
+    # TODO: Handle changing settings when settings dialog is closed
+
+    def open_settings(self):
+        dialog = SettingsDialog(self)
+        res = dialog.exec_()
