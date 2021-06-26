@@ -41,20 +41,32 @@ python compile.py
 
 **Running**
 
-TODO
+```sh
+python src/main.py
+```
+
 
 ## Packaging
 
-Packaging GUI python apps is fairly simple using pyinstaller or other similar tools, however there is one major limitation: no cross building support. This means that each update to the app would require building on each supported OS. This is very inconvenient. 
+**Changing Version Number**:
 
-To address this issue, the app itself is designed as a python module. There is a single python script (`launcher.py`) outside of the `app` module. This script is converted into a platform specific executable (containing python interpreter and required libraries). The code for the `app` module can then be manually copied into the package.
+```sh
+python change-version.py NEW_VERSION
+```
 
-This means that the platform specific code builds using pyinstaller will never need to change, unless dependencies change. Using this configuration, auto-detecting dependencies is not possible. See `launcher.spec` for more details. The packages built with the `launcher` spec file will be referred to as template packages.
+*Inno Setup must be installed to create installer.*
 
-### Package Using Existing Templates
+**Windows**:
+```shell
+cd packaging
+pyinstaller windows.spec
+C:/"Program Files (x86)"/"Inno Setup 6"/Compil32.exe /cc win_installer.iss
+```
 
-Download the existing template zip files for each platform. Extract each to its own directory. Copy the app source folder into the extracted template directories. Then, either re-zip the templates (now they contain a specific version of the app code) or use another tool to generate an installer. For macOS, zipping the .app folder is sufficient. For windows, it is recommended to use Inno Setup to generate an installer using the provided `win_installer.iss` script.
+**macOS**:
 
-### Building the Templates
+TODO
 
-***This requires access to Windows, macOS, and Linux systems.***
+**Linux**:
+
+TODO
