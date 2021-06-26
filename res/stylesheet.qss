@@ -1,24 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>SettingsDialog</class>
- <widget class="QDialog" name="SettingsDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>400</width>
-    <height>150</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Settings</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">.QWidget{
-	background-color: #AAAAAA;
-}
-
-QDialog{
+.QWidget{
 	background-color: #AAAAAA;
 }
 
@@ -103,7 +83,7 @@ QMenuBar::item:selected {
     border-radius: 3px;
 }
 
-QGroupBox { 
+QGroupBox {
     border: 1px solid black;
     border-radius: 3px;
     margin-top: 7px;
@@ -170,6 +150,7 @@ QListView{
     color: #000000;
     background-color: #888888;
     border: 2px inset #656565;
+    border-radius: 1px;
 }
 
 QListView::item{
@@ -192,6 +173,7 @@ QScrollBar::handle:vertical {
     min-height: 20px;
     margin-top: 1px;
     margin-bottom: 1px;
+    border-radius: 1px;
 }
 QScrollBar::add-line:vertical {
     border: 2px solid #444444;
@@ -209,12 +191,12 @@ QScrollBar::sub-line:vertical {
 }
 QScrollBar::up-arrow:vertical{
 	image: url(:/up_arrow.png);
-    height: 4px; 
+    height: 4px;
     width: 8px;
 }
 QScrollBar::down-arrow:vertical {
     image: url(:/down_arrow.png);
-    height: 4px; 
+    height: 4px;
     width: 8px;
 }
 
@@ -233,6 +215,7 @@ QScrollBar::handle:horizontal {
     min-width: 20px;
     margin-left: 1px;
     margin-right: 1px;
+    border-radius: 1px;
 }
 QScrollBar::add-line:horizontal {
     border: 2px solid #444444;
@@ -252,13 +235,13 @@ QScrollBar::sub-line:horizontal {
 
 QScrollBar:left-arrow:horizontal{
     image: url(:/left_arrow.png);
-    height: 8px; 
+    height: 8px;
     width: 4px;
 }
 
 QScrollBar::right-arrow:horizontal {
     image: url(:/right_arrow.png);
-    height: 8px; 
+    height: 8px;
     width: 4px;
 }
 
@@ -267,92 +250,3 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 }
 
 
-</string>
-  </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <widget class="QWidget" name="widget" native="true"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="txt_bat_voltage"/>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Robot Address</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	min-width: 70px;
-}</string>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="txt_robot_address"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Main Battery Voltage</string>
-     </property>
-    </widget>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>SettingsDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>SettingsDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
-</ui>

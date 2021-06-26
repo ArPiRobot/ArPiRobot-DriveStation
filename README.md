@@ -7,7 +7,7 @@ First, make sure python3 is installed. On windows, the executable name may be `p
 
 **Create a Virtual Environment**
 ```sh
-python3 -m venv --system-site-packages env
+python3 -m venv env
 ```
 
 **Activate the environment**

@@ -8,3 +8,5 @@ class SettingsDialog(QDialog):
 
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)
+
+        self.ui.txt_robot_address.setFocus()

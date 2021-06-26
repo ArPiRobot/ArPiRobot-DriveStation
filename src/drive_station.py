@@ -1,10 +1,11 @@
+from typing import Any, Callable
 
-from model import Controller, ControllerListModel
+
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QAbstractItemView, QMainWindow
-from PySide6.QtGui import QColor
-from PySide6.QtCore import QFile, QIODevice
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem
+from PySide6.QtCore import QFile, QIODevice, Qt
 from ui_drive_station import Ui_DriveStationWindow
+from util import HTMLDelegate
 
 from enum import Enum
 
@@ -16,27 +17,42 @@ class State(Enum):
     Enabled = 3
 
 
+class ControllerListItem(QListWidgetItem):
+    def __init__(self, name: str, handle: int, index_getter: Callable[['ControllerListItem'], int]):
+        super().__init__()
+        self.name = name
+        self.handle = handle
+        self.checked = False
+        self.__index_getter = index_getter
+
+    def data(self, role: int) -> Any:
+        if role == Qt.DisplayRole:
+            idx = self.__index_getter(self)
+            return f"({idx}) <i>{self.name}</i>"
+        elif role == Qt.CheckStateRole:
+            return self.checked
+        return super().data(role)
+
+    def setData(self, role: int, value: Any):
+        if role == Qt.CheckStateRole:
+            self.checked = value
+        else:
+            super().setData(role, value)
+
+    def flags(self) -> Qt.ItemFlags:
+        return Qt.ItemIsDropEnabled | Qt.ItemIsEnabled | Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
+
+
 class DriveStationWindow(QMainWindow):
-
-    # Battery level colors
-    COLOR_BAT_HIGH = QColor(0, 200, 0)
-    COLOR_BAT_MED_HIGH = QColor(230, 230, 0)
-    COLOR_BAT_MED_LOW = QColor(255, 153, 0)
-
-    # Network and robot program indicator colors
-    COLOR_STATUS_BAD = QColor(255, 0, 0)
-    COLOR_STATUS_GOOD = QColor(0, 255, 0)
-
     # State messages
-    MSG_STATE_NO_NETWORK = "Could not connect to robot at {0}."
+    MSG_STATE_NO_NETWORK = "Could not connect to robot at {0}"
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
     MSG_STATE_ENABLED = "Robot enabled."
 
     DEFAULT_ROBOT_ADDRESS = "192.168.10.1"
 
-
-    def __init__(self, parent = None) -> None:
+    def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
         ########################################################################
         # UI Setup
@@ -44,31 +60,29 @@ class DriveStationWindow(QMainWindow):
 
         self.ui = Ui_DriveStationWindow()
         self.ui.setupUi(self)
-        
+
         # Append version to about label
         version_file = QFile(":/version.txt")
-        if(version_file.open(QIODevice.ReadOnly)):
+        if version_file.open(QIODevice.ReadOnly):
             ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
-    
-        self.state: State = None
+        version_file.close()
+
+        # Configure label for permanent status bar message
+        # This is not supported in QT Designer, so done in code
+        self.lbl_status_msg = QLabel()
+        self.ui.statusbar.addPermanentWidget(self.lbl_status_msg)
+        self.ui.statusbar.addPermanentWidget(QLabel(), 1)  # Spacer so msg label is on left
+
+        self.state: State = State.NoNetwork
         self.set_state_no_network()
 
         # TODO: Load this from some setting, along with robot address
-        self.set_battery_voltage(0.0, 7.2)  
+        self.set_battery_voltage(0.0, 7.2)
 
-        self.controller_model = ControllerListModel(self.ui.lst_controllers)
-        self.ui.lst_controllers.setModel(self.controller_model)
-
-        self.ui.lst_controllers.setDragEnabled(True)
-        self.ui.lst_controllers.viewport().setAcceptDrops(True)
-        self.ui.lst_controllers.setAcceptDrops(True)
-        self.ui.lst_controllers.setDropIndicatorShown(True)
-        self.ui.lst_controllers.setDragDropMode(QAbstractItemView.InternalMove)
-
-        for i in range(5):
-            c = Controller("Controller", i)
-            self.controller_model.add_controller(c)
+        self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
+        for i in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']:
+            self.ui.lst_controllers.addItem(ControllerListItem(f"Controller {i}", -1, self.ui.lst_controllers.row))
 
         ########################################################################
         # Signal / slot setup
@@ -77,13 +91,13 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_enable.clicked.connect(self.enable_clicked)
         self.ui.btn_settings.clicked.connect(self.open_settings)
 
-
     ############################################################################
     # Event Handlers (slots)
     ############################################################################
+
     def disable_clicked(self):
         # If connected to the robot, send disable command.
-        if(self.state == State.Enabled or self.state == State.Disabled):
+        if self.state == State.Enabled or self.state == State.Disabled:
             # TODO: Send disable command to robot
             self.set_state_disabled()
         else:
@@ -93,7 +107,7 @@ class DriveStationWindow(QMainWindow):
 
     def enable_clicked(self):
         # If connected to the robot, send enable command.
-        if(self.state == State.Enabled or self.state == State.Disabled):
+        if self.state == State.Enabled or self.state == State.Disabled:
             # TODO: Send enable command to robot
             self.set_state_enabled()
         else:
@@ -101,10 +115,9 @@ class DriveStationWindow(QMainWindow):
             # Always run the set_state function to ensure the UI is in the correct state
             self.set_current_state()
 
-
     ############################################################################
     # Connection/Robot States
-    ############################################################################   
+    ############################################################################
 
     def set_current_state(self):
         if self.state == State.Disabled:
@@ -123,32 +136,29 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_enable.setChecked(False)
 
         # TODO: Don't use default address. Load from settings
-        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_NETWORK).format(self.DEFAULT_ROBOT_ADDRESS))
+        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_NO_NETWORK).format(self.DEFAULT_ROBOT_ADDRESS))
         self.set_network_good(False)
         self.set_robot_program_good(False)
-        
-    
+
     def set_state_no_program(self):
         self.state = State.NoRobotProgram
 
         self.ui.btn_disable.setChecked(True)
         self.ui.btn_enable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_PROGRAM))
+        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_NO_PROGRAM))
         self.set_network_good(True)
         self.set_robot_program_good(False)
-        
-    
+
     def set_state_disabled(self):
         self.state = State.Disabled
 
         self.ui.btn_disable.setChecked(True)
         self.ui.btn_enable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_DISABLED))
+        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_DISABLED))
         self.set_network_good(True)
         self.set_robot_program_good(True)
-        
 
     def set_state_enabled(self):
         self.state = State.Enabled
@@ -156,36 +166,33 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_disable.setChecked(False)
         self.ui.btn_enable.setChecked(True)
 
-        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_ENABLED))
+        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_ENABLED))
         self.set_network_good(True)
         self.set_robot_program_good(True)
-    
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
-        if(voltage >= nominal_bat_voltage):
+        if voltage >= nominal_bat_voltage:
             self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_green")
-        elif (voltage >= nominal_bat_voltage * 0.85):
+        elif voltage >= nominal_bat_voltage * 0.85:
             self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_yellow")
-        elif(voltage >= nominal_bat_voltage * 0.7):
+        elif voltage >= nominal_bat_voltage * 0.7:
             self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_orange")
         else:
             self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_red")
         self.ui.lbl_bat_voltage.setText("{:.2f} V".format(voltage))
-    
 
     def set_network_good(self, good: bool):
-        if(good):
+        if good:
             self.ui.pnl_net_bg.setObjectName("pnl_net_bg_green")
         else:
             self.ui.pnl_net_bg.setObjectName("pnl_net_bg_red")
 
-
     def set_robot_program_good(self, good: bool):
-        if(good):
+        if good:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
-    
+
     ############################################################################
     # Settings
     ############################################################################
@@ -195,4 +202,4 @@ class DriveStationWindow(QMainWindow):
 
     def open_settings(self):
         dialog = SettingsDialog(self)
-        res = dialog.exec_()
+        dialog.exec()
