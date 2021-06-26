@@ -1,7 +1,7 @@
 
 from model import Controller, ControllerListModel
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QAbstractItemView, QMainWindow
 from PySide6.QtGui import QColor
 from PySide6.QtCore import QFile, QIODevice
 from ui_drive_station import Ui_DriveStationWindow
@@ -60,6 +60,12 @@ class DriveStationWindow(QMainWindow):
         self.controller_model = ControllerListModel(self.ui.lst_controllers)
         self.ui.lst_controllers.setModel(self.controller_model)
 
+        self.ui.lst_controllers.setDragEnabled(True)
+        self.ui.lst_controllers.viewport().setAcceptDrops(True)
+        self.ui.lst_controllers.setAcceptDrops(True)
+        self.ui.lst_controllers.setDropIndicatorShown(True)
+        self.ui.lst_controllers.setDragDropMode(QAbstractItemView.InternalMove)
+
         for i in range(5):
             c = Controller("Controller", i)
             self.controller_model.add_controller(c)
@@ -69,6 +75,7 @@ class DriveStationWindow(QMainWindow):
         ########################################################################
         self.ui.btn_disable.clicked.connect(self.disable_clicked)
         self.ui.btn_enable.clicked.connect(self.enable_clicked)
+        self.ui.btn_settings.clicked.connect(self.open_settings)
 
 
     ############################################################################
