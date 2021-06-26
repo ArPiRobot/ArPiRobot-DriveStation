@@ -170,6 +170,7 @@ QListView{
     color: #000000;
     background-color: #888888;
     border: 2px inset #656565;
+    border-radius: 1px;
 }
 
 QListView::item{
@@ -192,6 +193,7 @@ QScrollBar::handle:vertical {
     min-height: 20px;
     margin-top: 1px;
     margin-bottom: 1px;
+    border-radius: 1px;
 }
 QScrollBar::add-line:vertical {
     border: 2px solid #444444;
@@ -233,6 +235,7 @@ QScrollBar::handle:horizontal {
     min-width: 20px;
     margin-left: 1px;
     margin-right: 1px;
+    border-radius: 1px;
 }
 QScrollBar::add-line:horizontal {
     border: 2px solid #444444;
@@ -269,10 +272,10 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 
 </string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="gbx_net_table">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -288,7 +291,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tabs">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -307,7 +310,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
       <property name="usesScrollButtons">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tab_controller">
        <attribute name="title">
         <string>Controllers</string>
        </attribute>
@@ -328,7 +331,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          <number>3</number>
         </property>
         <item>
-         <widget class="QWidget" name="widget_5" native="true">
+         <widget class="QWidget" name="pnl_controllers" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -352,7 +355,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             <number>3</number>
            </property>
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="lbl_controllers">
              <property name="font">
               <font>
                <bold>true</bold>
@@ -364,7 +367,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="lstControllers">
+            <widget class="QListView" name="lst_controllers">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -386,8 +389,14 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
              <property name="sizeAdjustPolicy">
               <enum>QAbstractScrollArea::AdjustToContents</enum>
              </property>
+             <property name="dragEnabled">
+              <bool>true</bool>
+             </property>
              <property name="dragDropMode">
               <enum>QAbstractItemView::InternalMove</enum>
+             </property>
+             <property name="defaultDropAction">
+              <enum>Qt::MoveAction</enum>
              </property>
             </widget>
            </item>
@@ -395,7 +404,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="widget_4" native="true">
+         <widget class="QWidget" name="pnl_axes" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -419,7 +428,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             <number>3</number>
            </property>
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="lbl_axes">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -437,7 +446,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarLx">
+            <widget class="QProgressBar" name="pbar_lx">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -467,7 +476,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarLy">
+            <widget class="QProgressBar" name="pbar_ly">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -494,7 +503,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarRx">
+            <widget class="QProgressBar" name="pbar_rx">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -521,7 +530,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarRy">
+            <widget class="QProgressBar" name="pbar_ry">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -548,7 +557,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarL2">
+            <widget class="QProgressBar" name="pbar_l2">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -575,7 +584,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item>
-            <widget class="QProgressBar" name="pbarR2">
+            <widget class="QProgressBar" name="pbar_r2">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -605,7 +614,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="widget_6" native="true">
+         <widget class="QWidget" name="pnl_buttons" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -629,7 +638,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             <number>3</number>
            </property>
            <item row="3" column="0">
-            <widget class="QProgressBar" name="pbarBack">
+            <widget class="QProgressBar" name="pbar_back">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -656,7 +665,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QProgressBar" name="pbarStart">
+            <widget class="QProgressBar" name="pbar_start">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -683,7 +692,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QProgressBar" name="pbarL3">
+            <widget class="QProgressBar" name="pbar_l3">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -710,7 +719,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QProgressBar" name="pbarB">
+            <widget class="QProgressBar" name="pbar_b">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -737,7 +746,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QProgressBar" name="pbarX">
+            <widget class="QProgressBar" name="pbar_x">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -764,7 +773,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QProgressBar" name="pbarGuide">
+            <widget class="QProgressBar" name="pbar_guide">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -791,7 +800,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QProgressBar" name="pbarY">
+            <widget class="QProgressBar" name="pbar_y">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -818,7 +827,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QProgressBar" name="pbarR3">
+            <widget class="QProgressBar" name="pbar_r3">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -845,7 +854,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QProgressBar" name="pbarA">
+            <widget class="QProgressBar" name="pbar_a">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -872,7 +881,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QProgressBar" name="pbarR1">
+            <widget class="QProgressBar" name="pbar_r1">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -899,7 +908,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QProgressBar" name="pbarL1">
+            <widget class="QProgressBar" name="pbar_l1">
              <property name="minimumSize">
               <size>
                <width>1</width>
@@ -926,7 +935,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="lbl_buttons">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -947,7 +956,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="widget_3" native="true">
+         <widget class="QWidget" name="pnl_dpad" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -971,7 +980,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             <number>3</number>
            </property>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
+            <widget class="QLabel" name="lbl_dpad_6">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -992,7 +1001,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="lbl_dpad_8">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1013,7 +1022,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="0" column="0" colspan="3">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="lbl_dpad">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1031,7 +1040,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="1" column="2">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="lbl_dpad_2">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1052,7 +1061,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="3" column="2">
-            <widget class="QLabel" name="label_7">
+            <widget class="QLabel" name="lbl_dpad_4">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1073,7 +1082,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QProgressBar" name="progressBar_20">
+            <widget class="QProgressBar" name="pbar_dpad_0">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1106,7 +1115,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QProgressBar" name="progressBar_23">
+            <widget class="QProgressBar" name="pbar_dpad_down">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1139,7 +1148,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QProgressBar" name="progressBar_24">
+            <widget class="QProgressBar" name="pbar_dpad_up">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1172,7 +1181,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="2" column="2">
-            <widget class="QProgressBar" name="progressBar_22">
+            <widget class="QProgressBar" name="pbar_dpad_right">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1205,7 +1214,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QProgressBar" name="progressBar_21">
+            <widget class="QProgressBar" name="pbar_dpad_left">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -1242,7 +1251,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tab_dslog">
        <attribute name="title">
         <string>Drive Station Log</string>
        </attribute>
@@ -1263,7 +1272,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          <number>3</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="txtDsLog">
+         <widget class="QPlainTextEdit" name="txt_ds_log">
           <property name="undoRedoEnabled">
            <bool>false</bool>
           </property>
@@ -1277,7 +1286,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_3">
+      <widget class="QWidget" name="tab_robot_log">
        <attribute name="title">
         <string>Robot Log</string>
        </attribute>
@@ -1298,7 +1307,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
          <number>3</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="txtRobotLog">
+         <widget class="QPlainTextEdit" name="txt_robot_log">
           <property name="undoRedoEnabled">
            <bool>false</bool>
           </property>
@@ -1312,7 +1321,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="pnl_bottom" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -1336,7 +1345,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
         <number>3</number>
        </property>
        <item>
-        <widget class="QWidget" name="widget_2" native="true">
+        <widget class="QWidget" name="pnl_state_buttons" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -1360,7 +1369,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="btnDisable">
+           <widget class="QPushButton" name="btn_disable">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1377,18 +1386,18 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QPushButton#btnDisable{
+             <string notr="true">QPushButton#btn_disable{
 	color: #990000;
     border-style: outset;
     border-width: 2px;
     background-color: #888888;
 }
 
-QPushButton:hover#btnDisable{
+QPushButton:hover#btn_disable{
     background-color: #888888;
 }
 
-QPushButton:checked#btnDisable{
+QPushButton:checked#btn_disable{
 	border-style: inset;
     background-color: #757575;
 }
@@ -1406,7 +1415,7 @@ QPushButton:checked#btnDisable{
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnEnable">
+           <widget class="QPushButton" name="btn_enable">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1423,18 +1432,18 @@ QPushButton:checked#btnDisable{
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QPushButton#btnEnable{
+             <string notr="true">QPushButton#btn_enable{
 	color: #004d00;
     border-style: outset;
     border-width: 2px;
     background-color: #888888;
 }
 
-QPushButton:hover#btnEnable{
+QPushButton:hover#btn_enable{
     background-color: #888888;
 }
 
-QPushButton:checked#btnEnable{
+QPushButton:checked#btn_enable{
 	border-style: inset;
     background-color: #757575;
 }
@@ -1451,8 +1460,18 @@ QPushButton:checked#btnEnable{
          </layout>
         </widget>
        </item>
+       <item>
+        <widget class="QWidget" name="pnl_spacer_left" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
        <item alignment="Qt::AlignVCenter">
-        <widget class="QWidget" name="widget_7" native="true">
+        <widget class="QWidget" name="pnl_status" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -1482,20 +1501,20 @@ QPushButton:checked#btnEnable{
            <number>3</number>
           </property>
           <item>
-           <widget class="QWidget" name="pnlNetBg" native="true">
+           <widget class="QWidget" name="pnl_net_bg" native="true">
             <property name="styleSheet">
-             <string notr="true">QWidget#pnlNetBg{
+             <string notr="true">QWidget#pnl_net_bg{
 	border: 1px solid black;
     border-radius: 3px;
 }
 
-QWidget#pnlNetBgRed{
+QWidget#pnl_net_bg_red{
 	border: 1px solid black;
     border-radius: 3px;
     background-color: #c80000;
 }
 
-QWidget#pnlNetBgGreen{
+QWidget#pnl_net_bg_green{
 	border: 1px solid black;
     border-radius: 3px;
     background-color: #00c800;
@@ -1518,7 +1537,7 @@ QWidget#pnlNetBgGreen{
               <number>3</number>
              </property>
              <item>
-              <widget class="QLabel" name="lblNetworkStatus">
+              <widget class="QLabel" name="lbl_net_status">
                <property name="font">
                 <font>
                  <bold>false</bold>
@@ -1536,20 +1555,20 @@ QWidget#pnlNetBgGreen{
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="pnlRobotProgramBg" native="true">
+           <widget class="QWidget" name="pnl_program_bg" native="true">
             <property name="styleSheet">
-             <string notr="true">QWidget#pnlRobotProgramBg{
+             <string notr="true">QWidget#pnl_program_bg{
 	border: 1px solid black;
     border-radius: 3px;
 }
 
-QWidget#pnlRobotProgramBgRed{
+QWidget#pnl_program_bg_red{
 	border: 1px solid black;
     border-radius: 3px;
     background-color: #c80000;
 }
 
-QWidget#pnlRobotProgramBgGreen{
+QWidget#pnl_program_bg_green{
 	border: 1px solid black;
     border-radius: 3px;
     background-color: #00c800;
@@ -1572,7 +1591,7 @@ QWidget#pnlRobotProgramBgGreen{
               <number>3</number>
              </property>
              <item>
-              <widget class="QLabel" name="lblRobotProgram">
+              <widget class="QLabel" name="lbl_program_status">
                <property name="font">
                 <font>
                  <bold>false</bold>
@@ -1593,28 +1612,34 @@ QWidget#pnlRobotProgramBgGreen{
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="pnlBatBg" native="true">
+        <widget class="QWidget" name="pnl_bat_bg" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">/* State is selected using ID. */
-QWidget#pnlBatBgRed{
+QWidget#pnl_bat_bg_red{
     background-color: #c80000;
     border-radius: 3px;
 }
-QWidget#pnlBatBgOrange{
+QWidget#pnl_bat_bg_orange{
     background-color: #e59900;
     border-radius: 3px;
 }
-QWidget#pnlBatBgYellow{
+QWidget#pnl_bat_bg_yellow{
     background-color: #e6e600;
     border-radius: 3px;
 }
-QWidget#pnlBatBgGreen{
+QWidget#pnl_bat_bg_green{
     background-color: #00c800;
     border-radius: 3px;
 }
@@ -1637,7 +1662,7 @@ QWidget#pnlBatBgGreen{
            <number>3</number>
           </property>
           <item>
-           <widget class="QGroupBox" name="gbxMainBat">
+           <widget class="QGroupBox" name="gbx_main_bat">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -1673,7 +1698,7 @@ QWidget#pnlBatBgGreen{
               <number>10</number>
              </property>
              <item>
-              <widget class="QLabel" name="lblBatteryVoltage">
+              <widget class="QLabel" name="lbl_bat_voltage">
                <property name="text">
                 <string/>
                </property>
@@ -1689,16 +1714,26 @@ QWidget#pnlBatBgGreen{
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="widget_8" native="true">
+        <widget class="QWidget" name="pnl_spacer_right" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="pnl_settings" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>153</width>
+           <height>0</height>
+          </size>
+         </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="spacing">
-           <number>3</number>
+           <number>0</number>
           </property>
           <property name="leftMargin">
            <number>3</number>
@@ -1713,7 +1748,46 @@ QWidget#pnlBatBgGreen{
            <number>3</number>
           </property>
           <item>
-           <widget class="QWidget" name="widget_9" native="true"/>
+           <spacer name="hspc_settings">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_settings">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../res/resources.qrc">
+              <normaloff>:/gear.png</normaloff>:/gear.png</iconset>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -1736,37 +1810,37 @@ QWidget#pnlBatBgGreen{
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionPreferences"/>
-    <addaction name="actionAbout"/>
+    <addaction name="act_preferences"/>
+    <addaction name="act_about"/>
    </widget>
    <widget class="QMenu" name="menuNetwork_Table">
     <property name="title">
      <string>Network Table</string>
     </property>
     <addaction name="separator"/>
-    <addaction name="actionAdd_Indicator"/>
-    <addaction name="actionClear_Indicators"/>
+    <addaction name="act_add_indicator"/>
+    <addaction name="act_clear_indicators"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuNetwork_Table"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionAbout">
+  <action name="act_about">
    <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="actionAdd_Indicator">
+  <action name="act_add_indicator">
    <property name="text">
     <string>Add Indicator</string>
    </property>
   </action>
-  <action name="actionClear_Indicators">
+  <action name="act_clear_indicators">
    <property name="text">
     <string>Clear Indicators</string>
    </property>
   </action>
-  <action name="actionPreferences">
+  <action name="act_preferences">
    <property name="text">
     <string>Settings</string>
    </property>

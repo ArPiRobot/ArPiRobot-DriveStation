@@ -46,9 +46,9 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "ui")):
         if src_file.endswith('.ui'):
             dest_file = "ui_" + src_file.replace(".ui", ".py")
             src_path = os.path.join(dirpath, src_file)
-            dest_path = os.path.join(script_dir, "app", dest_file)
+            dest_path = os.path.join(script_dir, "src", dest_file)
             print("[Compiling]: {0} --> {1}".format(src_file, dest_file))
-            subprocess.run([uic, src_path, "-o", dest_path, "--from-imports"])
+            subprocess.run([uic, src_path, "-o", dest_path])
 
 # Compile QRC files
 for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "res")):
@@ -56,6 +56,6 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(script_dir, "res")):
         if src_file.endswith('.qrc'):
             dest_file = src_file.replace(".qrc", "") + "_rc.py"
             src_path = os.path.join(dirpath, src_file)
-            dest_path = os.path.join(script_dir, "app", dest_file)
+            dest_path = os.path.join(script_dir, "src", dest_file)
             print("[Compiling]: {0} --> {1}".format(src_file, dest_file))
             subprocess.run([rcc, src_path, "-o", dest_path])

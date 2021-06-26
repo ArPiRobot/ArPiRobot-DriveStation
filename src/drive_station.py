@@ -1,9 +1,10 @@
 
-from app.settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QListWidgetItem, QMainWindow
+from model import Controller, ControllerListModel
+from settings_dialog import SettingsDialog
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QColor
-from PySide6.QtCore import QFile, QIODevice, Qt
-from .ui_drive_station import Ui_DriveStationWindow
+from PySide6.QtCore import QFile, QIODevice
+from ui_drive_station import Ui_DriveStationWindow
 
 from enum import Enum
 
@@ -27,7 +28,7 @@ class DriveStationWindow(QMainWindow):
     COLOR_STATUS_GOOD = QColor(0, 255, 0)
 
     # State messages
-    MSG_STATE_NO_NETWORK = "Could not connect to robot at given address."
+    MSG_STATE_NO_NETWORK = "Could not connect to robot at {0}."
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
     MSG_STATE_ENABLED = "Robot enabled."
@@ -50,24 +51,24 @@ class DriveStationWindow(QMainWindow):
             ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
     
-        # TODO: Temporary. Get rid of this.
-        for i in range(25):
-            item = QListWidgetItem("Controller {0}".format(i))
-            item.setCheckState(Qt.CheckState.Unchecked)
-            self.ui.lstControllers.addItem(item)
-
         self.state: State = None
         self.set_state_no_network()
 
         # TODO: Load this from some setting, along with robot address
         self.set_battery_voltage(0.0, 7.2)  
 
+        self.controller_model = ControllerListModel(self.ui.lst_controllers)
+        self.ui.lst_controllers.setModel(self.controller_model)
+
+        for i in range(5):
+            c = Controller("Controller", i)
+            self.controller_model.add_controller(c)
+
         ########################################################################
         # Signal / slot setup
         ########################################################################
-        self.ui.btnDisable.clicked.connect(self.disable_clicked)
-        self.ui.btnEnable.clicked.connect(self.enable_clicked)
-        self.ui.actionPreferences.triggered.connect(self.open_settings)
+        self.ui.btn_disable.clicked.connect(self.disable_clicked)
+        self.ui.btn_enable.clicked.connect(self.enable_clicked)
 
 
     ############################################################################
@@ -111,10 +112,11 @@ class DriveStationWindow(QMainWindow):
     def set_state_no_network(self):
         self.state = State.NoNetwork
 
-        self.ui.btnDisable.setChecked(True)
-        self.ui.btnEnable.setChecked(False)
+        self.ui.btn_disable.setChecked(True)
+        self.ui.btn_enable.setChecked(False)
 
-        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_NETWORK))
+        # TODO: Don't use default address. Load from settings
+        self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_NETWORK).format(self.DEFAULT_ROBOT_ADDRESS))
         self.set_network_good(False)
         self.set_robot_program_good(False)
         
@@ -122,8 +124,8 @@ class DriveStationWindow(QMainWindow):
     def set_state_no_program(self):
         self.state = State.NoRobotProgram
 
-        self.ui.btnDisable.setChecked(True)
-        self.ui.btnEnable.setChecked(False)
+        self.ui.btn_disable.setChecked(True)
+        self.ui.btn_enable.setChecked(False)
 
         self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_NO_PROGRAM))
         self.set_network_good(True)
@@ -133,8 +135,8 @@ class DriveStationWindow(QMainWindow):
     def set_state_disabled(self):
         self.state = State.Disabled
 
-        self.ui.btnDisable.setChecked(True)
-        self.ui.btnEnable.setChecked(False)
+        self.ui.btn_disable.setChecked(True)
+        self.ui.btn_enable.setChecked(False)
 
         self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_DISABLED))
         self.set_network_good(True)
@@ -144,8 +146,8 @@ class DriveStationWindow(QMainWindow):
     def set_state_enabled(self):
         self.state = State.Enabled
 
-        self.ui.btnDisable.setChecked(False)
-        self.ui.btnEnable.setChecked(True)
+        self.ui.btn_disable.setChecked(False)
+        self.ui.btn_enable.setChecked(True)
 
         self.ui.statusbar.showMessage(self.tr(self.MSG_STATE_ENABLED))
         self.set_network_good(True)
@@ -154,28 +156,28 @@ class DriveStationWindow(QMainWindow):
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
         if(voltage >= nominal_bat_voltage):
-            self.ui.pnlBatBg.setObjectName("pnlBatBgGreen")
+            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_green")
         elif (voltage >= nominal_bat_voltage * 0.85):
-            self.ui.pnlBatBg.setObjectName("pnlBatBgYellow")
+            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_yellow")
         elif(voltage >= nominal_bat_voltage * 0.7):
-            self.ui.pnlBatBg.setObjectName("pnlBatBgOrange")
+            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_orange")
         else:
-            self.ui.pnlBatBg.setObjectName("pnlBatBgRed")
-        self.ui.lblBatteryVoltage.setText("{:.2f} V".format(voltage))
+            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_red")
+        self.ui.lbl_bat_voltage.setText("{:.2f} V".format(voltage))
     
 
     def set_network_good(self, good: bool):
         if(good):
-            self.ui.pnlNetBg.setObjectName("pnlNetBgGreen")
+            self.ui.pnl_net_bg.setObjectName("pnl_net_bg_green")
         else:
-            self.ui.pnlNetBg.setObjectName("pnlNetBgRed")
+            self.ui.pnl_net_bg.setObjectName("pnl_net_bg_red")
 
 
     def set_robot_program_good(self, good: bool):
         if(good):
-            self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgGreen")
+            self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
-            self.ui.pnlRobotProgramBg.setObjectName("pnlRobotProgramBgRed")
+            self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
     
     ############################################################################
     # Settings
