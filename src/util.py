@@ -51,7 +51,6 @@ class ThemeManager:
 
         if larger_fonts:
             font_size = 11
-            print("USING 11")
         else:
             font_size = 9
 

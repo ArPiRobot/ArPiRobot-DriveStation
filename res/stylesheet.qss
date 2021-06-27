@@ -183,6 +183,23 @@ QListView::item:selected{
     color: @text_color@;
 }
 
+QListView::indicator {
+    width: 18px;
+    height: 18px;
+}
+
+QListView::indicator:unchecked {
+    image: @checkbox_unchecked@;
+}
+
+QListView::indicator:checked {
+    image: @checkbox_checked@;
+}
+
+QListView::indicator:indeterminate{
+    image: @checkbox_indet@;
+}
+
 QScrollBar:vertical {
     border: 2px solid @separator_color@;
     background: @separator_color@;
@@ -268,6 +285,41 @@ QScrollBar::right-arrow:horizontal {
 
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
     background: none;
+}
+
+QComboBox {
+     background-color: @bg_color_field@;
+     color: @text_color@;
+}
+
+QComboBox:item:selected {
+    border-top: 0;
+	border-left: 0;
+	border-bottom: 0;
+	border-right: 0;
+    background-color: @highlight_color@;
+}
+
+QCheckBox {
+    color: @text_color@;
+}
+
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: @checkbox_unchecked@;
+}
+
+QCheckBox::indicator:checked {
+    image: @checkbox_checked@;
+}
+
+QCheckBox::indicator:indeterminate{
+    image: @checkbox_indet@;
 }
 
 /* Disable Button */
