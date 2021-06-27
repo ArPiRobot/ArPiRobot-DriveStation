@@ -5,7 +5,7 @@ from settings_dialog import SettingsDialog
 from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog
 from PySide6.QtCore import QFile, QIODevice, Qt
 from ui_drive_station import Ui_DriveStationWindow
-from util import HTMLDelegate, settings_manager
+from util import HTMLDelegate, settings_manager, theme_manager
 from network import State, NetworkManager
 
 
@@ -112,11 +112,15 @@ class DriveStationWindow(QMainWindow):
         dialog = SettingsDialog(self)
         res = dialog.exec()
         if res == QDialog.Accepted:
+            dialog.save_settings()
             # Update robot IP
             # TODO: Go through network manager
 
             # Update main battery voltage (but don't change current voltage
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
+
+            # Change theme
+            theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
 
     ############################################################################
     # Connection/Robot States

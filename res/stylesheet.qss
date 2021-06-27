@@ -6,6 +6,10 @@
  *       occur from variables mapped in a csv file (stylesheet-vars)
  */
 
+* {
+    font-size: |default_font_size|pt;
+}
+
 p {
     color: @text_color@;
 }
@@ -132,13 +136,12 @@ QTabBar::tab {
     padding: 2px;
 }
 
+QTabBar::tab:hover {
+    background-color: @bg_hover_color@;
+}
 QTabBar::tab:selected {
     border-color: @separator_color@;
     background-color: @bg_color_field@;
-}
-
-QTabBar::tab:hover {
-    background-color: @bg_hover_color@;
 }
 
 QTabBar::tab:!selected {
@@ -181,8 +184,8 @@ QListView::item:selected{
 }
 
 QScrollBar:vertical {
-    border: 2px solid @scrollbar_bg_color@;
-    background: @scrollbar_bg_color@;
+    border: 2px solid @separator_color@;
+    background: @separator_color@;
     width: 15px;
     margin: 22px 0 22px 0;
 }
@@ -194,14 +197,14 @@ QScrollBar::handle:vertical {
     border-radius: 1px;
 }
 QScrollBar::add-line:vertical {
-    border: 2px solid @scrollbar_color@;
+    border: 2px solid @separator_color@;
     background: @scrollbar_color@;
     height: 20px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
 }
 QScrollBar::sub-line:vertical {
-    border: 2px solid @scrollbar_color@;
+    border: 2px solid @separator_color@;
     background: @scrollbar_color@;
     height: 20px;
     subcontrol-position: top;
@@ -223,8 +226,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }
 
 QScrollBar:horizontal {
-    border: 2px solid @scrollbar_bg_color@;
-    background: @scrollbar_bg_color@;
+    border: 2px solid @separator_color@;
+    background: @separator_color@;
     height: 15px;
     margin: 0px 20px 0 20px;
 }
@@ -282,8 +285,7 @@ QPushButton:hover#btn_disable{
 
 QPushButton:checked#btn_disable{
 	border-style: inset;
-    background-color: @bg_color_press_dark@;
-    border-color: @field_outline_color_dark@;
+    background-color: @bg_color_press@;
 }
 
 /* Enable Button */
@@ -301,8 +303,7 @@ QPushButton:hover#btn_enable{
 
 QPushButton:checked#btn_enable{
 	border-style: inset;
-	border-color: @field_outline_color_dark@;
-    background-color: @bg_color_press_dark@;
+    background-color: @bg_color_press@;
 }
 
 /* Settings Button */
@@ -311,39 +312,57 @@ QPushButton#btn_settings{
     icon: @settings_icon@;
 }
 
-/* Network Status Indicator */
+
+/* Network status indicator */
 QWidget#pnl_net_bg{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
 }
 
 QWidget#pnl_net_bg_red{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
     background-color: @status_red_color@;
 }
 
 QWidget#pnl_net_bg_green{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
     background-color: @status_green_color@;
 }
 
 /* Program Status Indicator */
 QWidget#pnl_program_bg{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
 }
 
 QWidget#pnl_program_bg_red{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
     background-color: @status_red_color@;
 }
 
 QWidget#pnl_program_bg_green{
-	border: 1px solid @groupbox_border_color@;
+	border: 1px solid @text_color@;
     border-radius: 3px;
     background-color: @status_green_color@;
 }
 
+/* Battery indicator background */
+QWidget#pnl_bat_bg_red{
+    background-color: @battery_red_color@;
+    border-radius: 3px;
+}
+QWidget#pnl_bat_bg_orange{
+    background-color: @battery_orange_color@;
+    border-radius: 3px;
+}
+QWidget#pnl_bat_bg_yellow{
+    background-color: @battery_yellow_color@;
+    border-radius: 3px;
+}
+QWidget#pnl_bat_bg_green{
+    background-color: @battery_green_color@;
+    border-radius: 3px;
+}

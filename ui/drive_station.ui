@@ -17,6 +17,9 @@
    <iconset resource="../res/resources.qrc">
     <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -1321,24 +1324,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">/* State is selected using ID. */
-QWidget#pnl_bat_bg_red{
-    background-color: #c80000;
-    border-radius: 3px;
-}
-QWidget#pnl_bat_bg_orange{
-    background-color: #e59900;
-    border-radius: 3px;
-}
-QWidget#pnl_bat_bg_yellow{
-    background-color: #e6e600;
-    border-radius: 3px;
-}
-QWidget#pnl_bat_bg_green{
-    background-color: #00c800;
-    border-radius: 3px;
-}
-</string>
+          <string notr="true"/>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="spacing">
