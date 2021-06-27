@@ -1,4 +1,0 @@
-#include "win_res.rc"
-
-// Cannot use this manifest with MSVC b/c it has its own generated manifest
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "winmanifest.manifest"

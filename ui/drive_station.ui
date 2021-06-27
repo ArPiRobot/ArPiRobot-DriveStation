@@ -1131,22 +1131,7 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QPushButton#btn_disable{
-	color: #990000;
-    border-style: outset;
-    border-width: 2px;
-    background-color: #888888;
-}
-
-QPushButton:hover#btn_disable{
-    background-color: #888888;
-}
-
-QPushButton:checked#btn_disable{
-	border-style: inset;
-    background-color: #757575;
-}
-</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Disable</string>
@@ -1177,22 +1162,7 @@ QPushButton:checked#btn_disable{
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QPushButton#btn_enable{
-	color: #004d00;
-    border-style: outset;
-    border-width: 2px;
-    background-color: #888888;
-}
-
-QPushButton:hover#btn_enable{
-    background-color: #888888;
-}
-
-QPushButton:checked#btn_enable{
-	border-style: inset;
-    background-color: #757575;
-}
-</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Enable</string>
@@ -1527,10 +1497,6 @@ QWidget#pnl_bat_bg_green{
             </property>
             <property name="text">
              <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../res/resources.qrc">
-              <normaloff>:/gear.png</normaloff>:/gear.png</iconset>
             </property>
            </widget>
           </item>

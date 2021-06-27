@@ -3,10 +3,14 @@
     <file>stylesheet.qss</file>
     <file>icon.png</file>
     <file>version.txt</file>
-    <file>down_arrow.png</file>
-    <file>up_arrow.png</file>
-    <file>right_arrow.png</file>
-    <file>left_arrow.png</file>
-    <file>gear.png</file>
+
+    <file>icons/gear_dark.png</file>
+
+    <file>icons/down_arrow_dark.png</file>
+    <file>icons/up_arrow_dark.png</file>
+    <file>icons/right_arrow_dark.png</file>
+    <file>icons/left_arrow_dark.png</file>
+
+    <file>stylesheet-vars/dark.csv</file>
 </qresource>
 </RCC>
