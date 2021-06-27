@@ -2,19 +2,11 @@ from typing import Any, Callable
 
 
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog
 from PySide6.QtCore import QFile, QIODevice, Qt
 from ui_drive_station import Ui_DriveStationWindow
-from util import HTMLDelegate
-
-from enum import Enum
-
-
-class State(Enum):
-    NoNetwork = 0
-    NoRobotProgram = 1
-    Disabled = 2
-    Enabled = 3
+from util import HTMLDelegate, settings_manager
+from network import State, NetworkManager
 
 
 class ControllerListItem(QListWidgetItem):
@@ -28,7 +20,7 @@ class ControllerListItem(QListWidgetItem):
     def data(self, role: int) -> Any:
         if role == Qt.DisplayRole:
             idx = self.__index_getter(self)
-            return f"({idx}) <i>{self.name}</i>"
+            return f"<p>({idx}) <i>{self.name}</i></p>"
         elif role == Qt.CheckStateRole:
             return self.checked
         return super().data(role)
@@ -45,12 +37,10 @@ class ControllerListItem(QListWidgetItem):
 
 class DriveStationWindow(QMainWindow):
     # State messages
-    MSG_STATE_NO_NETWORK = "Could not connect to robot at {0}"
+    MSG_STATE_NO_NETWORK = "Connecting to robot at '{0}'..."
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
     MSG_STATE_ENABLED = "Robot enabled."
-
-    DEFAULT_ROBOT_ADDRESS = "192.168.10.1"
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent=parent)
@@ -74,15 +64,15 @@ class DriveStationWindow(QMainWindow):
         self.ui.statusbar.addPermanentWidget(self.lbl_status_msg)
         self.ui.statusbar.addPermanentWidget(QLabel(), 1)  # Spacer so msg label is on left
 
-        self.state: State = State.NoNetwork
-        self.set_state_no_network()
-
-        # TODO: Load this from some setting, along with robot address
-        self.set_battery_voltage(0.0, 7.2)
-
         self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
         for i in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']:
             self.ui.lst_controllers.addItem(ControllerListItem(f"Controller {i}", -1, self.ui.lst_controllers.row))
+
+        # Used to cache battery voltage so main battery nominal
+        # voltage can be changed without changing current voltage
+        self.voltage: float = 0.0
+
+        self.net_manager = NetworkManager()
 
         ########################################################################
         # Signal / slot setup
@@ -91,58 +81,75 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_enable.clicked.connect(self.enable_clicked)
         self.ui.btn_settings.clicked.connect(self.open_settings)
 
+        self.net_manager.nt_data_changed.connect(self.nt_data_changed)
+        self.net_manager.state_changed.connect(self.state_changed)
+
+        ########################################################################
+        # Initial State
+        ########################################################################
+        self.state_changed(State.NoNetwork)
+        self.set_battery_voltage(0.0, settings_manager.vbat_main)
+
     ############################################################################
     # Event Handlers (slots)
     ############################################################################
 
     def disable_clicked(self):
-        # If connected to the robot, send disable command.
-        if self.state == State.Enabled or self.state == State.Disabled:
-            # TODO: Send disable command to robot
-            self.set_state_disabled()
-        else:
-            # Clicking the button toggles the checked state.
-            # Always run the set_state function to ensure the UI is in the correct state
-            self.set_current_state()
+        # TODO: Use network manager to disable
+
+        # Don't toggle the checked state of these buttons on click.
+        # The checked state will be changed when network manager emits signal for state changed
+        self.ui.btn_disable.setChecked(not self.ui.btn_disable.isChecked())
 
     def enable_clicked(self):
-        # If connected to the robot, send enable command.
-        if self.state == State.Enabled or self.state == State.Disabled:
-            # TODO: Send enable command to robot
-            self.set_state_enabled()
-        else:
-            # Clicking the button toggles the checked state.
-            # Always run the set_state function to ensure the UI is in the correct state
-            self.set_current_state()
+        # TODO: Use network manager to enable
+
+        # Don't toggle the checked state of these buttons on click.
+        # The checked state will be changed when network manager emits signal for state changed
+        self.ui.btn_enable.setChecked(not self.ui.btn_enable.isChecked())
+
+    def open_settings(self):
+        dialog = SettingsDialog(self)
+        res = dialog.exec()
+        if res == QDialog.Accepted:
+            # Update robot IP
+            # TODO: Go through network manager
+
+            # Update main battery voltage (but don't change current voltage
+            self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
     ############################################################################
     # Connection/Robot States
     ############################################################################
 
-    def set_current_state(self):
-        if self.state == State.Disabled:
+    # Slot for NetworkManager signal
+    def state_changed(self, state):
+        if state == State.Disabled:
             self.set_state_disabled()
-        elif self.state == State.Enabled:
+        elif state == State.Enabled:
             self.set_state_enabled()
-        elif self.state == State.NoNetwork:
+        elif state == State.NoNetwork:
             self.set_state_no_network()
-        elif self.state == State.NoRobotProgram:
+        elif state == State.NoRobotProgram:
             self.set_state_no_program()
 
-    def set_state_no_network(self):
-        self.state = State.NoNetwork
+    # Slot for NetworkManager signal
+    def nt_data_changed(self, key: str, value: str):
+        if key == "vbat0":
+            self.set_battery_voltage(float(value), settings_manager.vbat_main)
+        else:
+            # TODO: Handle net table update to indicators
+            pass
 
+    def set_state_no_network(self):
         self.ui.btn_disable.setChecked(True)
         self.ui.btn_enable.setChecked(False)
 
-        # TODO: Don't use default address. Load from settings
-        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_NO_NETWORK).format(self.DEFAULT_ROBOT_ADDRESS))
+        self.lbl_status_msg.setText(self.tr(self.MSG_STATE_NO_NETWORK).format(settings_manager.robot_address))
         self.set_network_good(False)
         self.set_robot_program_good(False)
 
     def set_state_no_program(self):
-        self.state = State.NoRobotProgram
-
         self.ui.btn_disable.setChecked(True)
         self.ui.btn_enable.setChecked(False)
 
@@ -151,8 +158,6 @@ class DriveStationWindow(QMainWindow):
         self.set_robot_program_good(False)
 
     def set_state_disabled(self):
-        self.state = State.Disabled
-
         self.ui.btn_disable.setChecked(True)
         self.ui.btn_enable.setChecked(False)
 
@@ -161,8 +166,6 @@ class DriveStationWindow(QMainWindow):
         self.set_robot_program_good(True)
 
     def set_state_enabled(self):
-        self.state = State.Enabled
-
         self.ui.btn_disable.setChecked(False)
         self.ui.btn_enable.setChecked(True)
 
@@ -192,14 +195,3 @@ class DriveStationWindow(QMainWindow):
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
-
-    ############################################################################
-    # Settings
-    ############################################################################
-
-    # TODO: Load/save from/to a file
-    # TODO: Handle changing settings when settings dialog is closed
-
-    def open_settings(self):
-        dialog = SettingsDialog(self)
-        dialog.exec()

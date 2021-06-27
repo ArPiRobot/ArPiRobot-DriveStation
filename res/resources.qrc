@@ -4,13 +4,13 @@
     <file>icon.png</file>
     <file>version.txt</file>
 
-    <file>icons/gear_dark.png</file>
+    <file>icons/gear_light.png</file>
 
-    <file>icons/down_arrow_dark.png</file>
-    <file>icons/up_arrow_dark.png</file>
-    <file>icons/right_arrow_dark.png</file>
-    <file>icons/left_arrow_dark.png</file>
+    <file>icons/down_arrow_light.png</file>
+    <file>icons/up_arrow_light.png</file>
+    <file>icons/right_arrow_light.png</file>
+    <file>icons/left_arrow_light.png</file>
 
-    <file>stylesheet-vars/Dark.csv</file>
+    <file>stylesheet-vars/Default.csv</file>
 </qresource>
 </RCC>

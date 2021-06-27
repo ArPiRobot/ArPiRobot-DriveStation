@@ -1130,6 +1130,11 @@
               <height>0</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true"/>
             </property>
@@ -1160,6 +1165,11 @@
               <width>75</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
             </property>
             <property name="styleSheet">
              <string notr="true"/>
@@ -1218,22 +1228,7 @@
           <item>
            <widget class="QWidget" name="pnl_net_bg" native="true">
             <property name="styleSheet">
-             <string notr="true">QWidget#pnl_net_bg{
-	border: 1px solid black;
-    border-radius: 3px;
-}
-
-QWidget#pnl_net_bg_red{
-	border: 1px solid black;
-    border-radius: 3px;
-    background-color: #c80000;
-}
-
-QWidget#pnl_net_bg_green{
-	border: 1px solid black;
-    border-radius: 3px;
-    background-color: #00c800;
-}</string>
+             <string notr="true"/>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <property name="spacing">
@@ -1272,22 +1267,7 @@ QWidget#pnl_net_bg_green{
           <item>
            <widget class="QWidget" name="pnl_program_bg" native="true">
             <property name="styleSheet">
-             <string notr="true">QWidget#pnl_program_bg{
-	border: 1px solid black;
-    border-radius: 3px;
-}
-
-QWidget#pnl_program_bg_red{
-	border: 1px solid black;
-    border-radius: 3px;
-    background-color: #c80000;
-}
-
-QWidget#pnl_program_bg_green{
-	border: 1px solid black;
-    border-radius: 3px;
-    background-color: #00c800;
-}</string>
+             <string notr="true"/>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
              <property name="spacing">

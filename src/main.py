@@ -5,7 +5,8 @@ from PySide6.QtWidgets import QApplication, QStyleFactory
 from PySide6.QtCore import Qt, QFile, QIODevice
 
 from drive_station import DriveStationWindow
-from src.util import ThemeManager
+from util import theme_manager, settings_manager
+
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -18,12 +19,9 @@ except AttributeError:
     pass
 
 app = QApplication(sys.argv)
-
-# Custom stylesheet used is designed for fusion base
-app.setStyle(QStyleFactory.create("Fusion"))
-
-ThemeManager.load_themes()
-ThemeManager.apply_theme(app, "Dark")
+theme_manager.set_app(app)
+theme_manager.load_themes()
+# theme_manager.apply_theme("Default")
 
 ds = DriveStationWindow()
 ds.show()
