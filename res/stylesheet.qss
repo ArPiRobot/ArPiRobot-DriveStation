@@ -80,6 +80,20 @@ QMenuBar::item:selected {
     border-radius: 3px;
 }
 
+.QTextEdit{
+    color: @text_color@;
+    selection-color: @text_color@;
+	background-color: @bg_color_field@;
+    border: 1px solid @field_outline_color@;
+    border-radius: 3px;
+    selection-background-color: @highlight_color_dark@;
+    padding: 2px;
+}
+.QTextEdit:focus{
+    border: 1px solid @field_outline_focus_color@;
+    border-radius: 3px;
+}
+
 .QPlainTextEdit{
     color: @text_color@;
     selection-color: @text_color@;

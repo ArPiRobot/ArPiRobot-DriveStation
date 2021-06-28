@@ -7,6 +7,7 @@ from PySide6.QtCore import QFile, QIODevice, Qt
 from ui_drive_station import Ui_DriveStationWindow
 from util import HTMLDelegate, settings_manager, theme_manager
 from network import State, NetworkManager
+from about_dialog import AboutDialog
 
 
 class ControllerListItem(QListWidgetItem):
@@ -80,6 +81,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_disable.clicked.connect(self.disable_clicked)
         self.ui.btn_enable.clicked.connect(self.enable_clicked)
         self.ui.btn_settings.clicked.connect(self.open_settings)
+        self.ui.act_about.triggered.connect(self.open_about)
 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
@@ -121,6 +123,10 @@ class DriveStationWindow(QMainWindow):
 
             # Change theme
             theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
+
+    def open_about(self):
+        dialog = AboutDialog(self)
+        dialog.exec()
 
     ############################################################################
     # Connection/Robot States

@@ -1487,7 +1487,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="act_preferences"/>
     <addaction name="act_about"/>
    </widget>
    <widget class="QMenu" name="menuNetwork_Table">
