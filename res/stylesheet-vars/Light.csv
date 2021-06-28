@@ -1,7 +1,7 @@
 bg_color, #EEEEEE
 bg_hover_color, #CFCFCF
 bg_color_dark, #CCCCCC
-bg_color_field, #DDDDDD
+bg_color_field, #D0D0D0
 bg_color_press, #C0C0C0
 text_color, #000000
 separator_color, #AAAAAA
@@ -9,7 +9,7 @@ highlight_color, #E68A00
 highlight_color_dark, #E68A00
 field_outline_color, #888888
 field_outline_focus_color, #B36B00
-scrollbar_color, #757575
+scrollbar_color, #CACACA
 disable_btn_text_color, #990000
 enable_btn_text_color, #004D00
 groupbox_border_color, #000000
