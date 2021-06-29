@@ -36,6 +36,26 @@
       <property name="title">
        <string>Network Table</string>
       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="pnl_net_table" native="true"/>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -1507,6 +1527,9 @@
    </property>
   </action>
   <action name="act_add_indicator">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Add Indicator</string>
    </property>

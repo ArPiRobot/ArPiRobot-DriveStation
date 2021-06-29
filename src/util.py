@@ -1,7 +1,7 @@
 from typing import List
 
-from PySide6.QtCore import QSize, QFile, QIODevice, QDirIterator, QFileInfo, QStandardPaths, QDir, QSettings
-from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout, QPalette, QFont
+from PySide6.QtCore import QSize, QFile, QIODevice, QDirIterator, QFileInfo, QDir, QSettings
+from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout
 from PySide6.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem, QApplication, QStyle, QStyleFactory
 
 

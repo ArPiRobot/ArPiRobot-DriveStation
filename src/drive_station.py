@@ -3,7 +3,9 @@ from typing import Any, Callable
 
 from settings_dialog import SettingsDialog
 from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog
-from PySide6.QtCore import QFile, QIODevice, Qt
+from PySide6.QtCore import QFile, QIODevice, Qt, QRect
+
+from src.indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
 from util import HTMLDelegate, settings_manager, theme_manager
 from network import State, NetworkManager
@@ -82,6 +84,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_enable.clicked.connect(self.enable_clicked)
         self.ui.btn_settings.clicked.connect(self.open_settings)
         self.ui.act_about.triggered.connect(self.open_about)
+        self.ui.act_add_indicator.triggered.connect(self.add_indicator)
 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
@@ -95,6 +98,18 @@ class DriveStationWindow(QMainWindow):
     ############################################################################
     # Event Handlers (slots)
     ############################################################################
+
+    def add_indicator(self):
+        ind = IndicatorWidget(self.ui.pnl_net_table)
+        panel_geom = self.ui.pnl_net_table.geometry()
+        ind_geom = ind.geometry()
+        new_geom = QRect()
+        new_geom.setTop(panel_geom.height() / 2.0 - ind_geom.height() / 2.0)
+        new_geom.setLeft(panel_geom.width() / 2.0 - ind_geom.width() / 2.0)
+        new_geom.setWidth(ind_geom.width())
+        new_geom.setHeight(ind_geom.height())
+        ind.setGeometry(new_geom)
+        ind.show()
 
     def disable_clicked(self):
         # TODO: Use network manager to disable
@@ -114,11 +129,15 @@ class DriveStationWindow(QMainWindow):
         dialog = SettingsDialog(self)
         res = dialog.exec()
         if res == QDialog.Accepted:
-            dialog.save_settings()
-            # Update robot IP
-            # TODO: Go through network manager
+            old_address = settings_manager.robot_address
 
-            # Update main battery voltage (but don't change current voltage
+            dialog.save_settings()
+
+            # Update robot address if changed
+            if settings_manager.robot_address != old_address:
+                self.net_manager.robot_address_changed()
+
+            # Update main battery voltage (but don't change current voltage)
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
             # Change theme
@@ -148,7 +167,7 @@ class DriveStationWindow(QMainWindow):
         if key == "vbat0":
             self.set_battery_voltage(float(value), settings_manager.vbat_main)
         else:
-            # TODO: Handle net table update to indicators
+            # TODO: Update any indicators
             pass
 
     def set_state_no_network(self):

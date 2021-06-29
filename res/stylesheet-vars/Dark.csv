@@ -4,7 +4,7 @@ bg_color_dark, #2A2A2A
 bg_color_field, #404040
 bg_color_press, #303030
 text_color, #FFFFFF
-separator_color, #444444
+separator_color, #505050
 highlight_color, #E68A00
 highlight_color_dark, #CC7A00
 field_outline_color, #555555

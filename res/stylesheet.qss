@@ -41,10 +41,28 @@ QDialog{
 .QMenu::item{
     color: @text_color@;
 	background-color: @bg_color_dark@;
+	padding: 4px 20px 4px 10px;
 }
 
 .QMenu::item:selected{
 	background-color: @highlight_color@;
+}
+
+QMenu::indicator {
+    width: 18px;
+    height: 18px;
+}
+
+QMenu::indicator:checked {
+    image: @checkbox_checked@;
+}
+
+QMenu::indicator:unchecked {
+    image: @checkbox_unchecked@;
+}
+
+QMenu::indicator:indeterminate{
+    image: @checkbox_indet@;
 }
 
 QMenuBar::item {
@@ -90,6 +108,20 @@ QMenuBar::item:selected {
     padding: 2px;
 }
 .QTextEdit:focus{
+    border: 1px solid @field_outline_focus_color@;
+    border-radius: 3px;
+}
+
+.QTextBrowser{
+    color: @text_color@;
+    selection-color: @text_color@;
+	background-color: @bg_color_field@;
+    border: 1px solid @field_outline_color@;
+    border-radius: 3px;
+    selection-background-color: @highlight_color_dark@;
+    padding: 2px;
+}
+.QTextBrowser:focus{
     border: 1px solid @field_outline_focus_color@;
     border-radius: 3px;
 }
@@ -318,7 +350,6 @@ QCheckBox {
     color: @text_color@;
 }
 
-
 QCheckBox::indicator {
     width: 18px;
     height: 18px;
@@ -335,6 +366,19 @@ QCheckBox::indicator:checked {
 QCheckBox::indicator:indeterminate{
     image: @checkbox_indet@;
 }
+
+
+
+/******************************************************************************
+ * Styles for specific UI elements (app specific)
+ ******************************************************************************/
+
+/* Custom UI Element for Indicators Panel */
+IndicatorWidget{
+    border: 1px solid @separator_color@;
+    border-radius: 2px;
+}
+
 
 /* Disable Button */
 

@@ -40,7 +40,7 @@
         <number>3</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="txt_license">
+        <widget class="QTextBrowser" name="txt_license">
          <property name="horizontalScrollBarPolicy">
           <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
@@ -55,6 +55,12 @@
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+         <property name="openLinks">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -81,7 +87,7 @@
         <number>3</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="txt_third_party">
+        <widget class="QTextBrowser" name="txt_third_party">
          <property name="horizontalScrollBarPolicy">
           <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
@@ -96,6 +102,9 @@
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
