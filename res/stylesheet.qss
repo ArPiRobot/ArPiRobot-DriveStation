@@ -375,6 +375,11 @@ QCheckBox::indicator:indeterminate{
 
 /* Custom UI Element for Indicators Panel */
 IndicatorWidget{
+    /*border: 1px solid @separator_color@;
+    border-radius: 2px;*/
+}
+
+IndicatorWidget:focus{
     border: 1px solid @separator_color@;
     border-radius: 2px;
 }

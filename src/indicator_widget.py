@@ -1,14 +1,44 @@
-from PySide6.QtGui import QContextMenuEvent, QAction, QPaintEvent, QPainter
-from PySide6.QtWidgets import QWidget, QMenu, QStyleOption, QStyle
+from PySide6.QtCore import Signal, Qt, QRect, QPoint
+from PySide6.QtGui import QContextMenuEvent, QAction, QPaintEvent, QPainter, QFocusEvent, QColor, QMouseEvent, QCursor, \
+    QKeyEvent
+from PySide6.QtWidgets import QWidget, QMenu, QStyleOption, QStyle, QApplication
 from ui_indicator_widget import Ui_InidicatorWidget
+from enum import Enum, auto
 
+# TODO: Enforce minimum size when resizing widget
+# TODO: Fix issue when moving near edges
 
+# Some code in this widget is from or based on code from
+# https://wiki.qt.io/Widget-moveable-and-resizeable
+# https://github.com/korabelnikov/moveable-and-resize-qt-widget-on-python
 class IndicatorWidget(QWidget):
+
+    # Only support horizontal (width) resize
+    class Mode(Enum):
+        NoMode = auto()
+        Move = auto()
+        ResizeR = auto()
+        ResizeL = auto()
+
+    deleted = Signal()
+
     def __init__(self, parent):
         super().__init__(parent)
-
         self.ui = Ui_InidicatorWidget()
         self.ui.setupUi(self)
+
+        # Allow focusing the overall widget
+        self.setFocusPolicy(Qt.ClickFocus)
+
+        # Trigger events when mouse moves, even if no buttons pressed
+        self.setMouseTracking(True)
+
+        # Don't pass mouse events to label
+        self.ui.lbl_key.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+
+        # Track mouse event positions
+        self.position = QPoint()
+        self.mode = IndicatorWidget.Mode.NoMode
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = QMenu(self)
@@ -20,6 +50,8 @@ class IndicatorWidget(QWidget):
         action = menu.exec(self.mapToGlobal(event.pos()))
         if action == writable_action:
             self.ui.txt_value.setReadOnly(not writable_action.isChecked())
+        if action == delete_action:
+            self.deleted.emit()
 
     def paintEvent(self, event: QPaintEvent) -> None:
         # Reimplementing this function is necessary for stylesheet functionality
@@ -46,4 +78,74 @@ class IndicatorWidget(QWidget):
     def value(self, value: str):
         self.ui.txt_value.setText(value)
 
+    def mousePressEvent(self, event: QMouseEvent):
+        self.position = QPoint(event.globalX() - self.geometry().x(),
+                               event.globalY() - self.geometry().y())
+        if not self.hasFocus():
+            return
+        if not event.buttons() and Qt.LeftButton:
+            self.set_cursor_shape(event.pos())
 
+    def set_cursor_shape(self, e_pos: QPoint):
+        diff = 5
+
+        if (((e_pos.y() > self.y() + self.height() - diff) and  # Bottom
+             (e_pos.x() < self.x() + diff)) or  # Left
+                # Right-Bottom
+                ((e_pos.y() > self.y() + self.height() - diff) and  # Bottom
+                 (e_pos.x() > self.x() + self.width() - diff)) or  # Right
+                # Left-Top
+                ((e_pos.y() < self.y() + diff) and  # Top
+                 (e_pos.x() < self.x() + diff)) or  # Left
+                # Right-Top
+                (e_pos.y() < self.y() + diff) and  # Top
+                (e_pos.x() > self.x() + self.width() - diff)):  # Right
+            # This does not support vertical resizing
+            self.setCursor(QCursor(Qt.ArrowCursor))
+            self.mode = IndicatorWidget.Mode.Move
+        elif ((e_pos.x() < self.x() + diff) or  # Left
+              (e_pos.x() > self.x() + self.width() - diff)):  # Right
+            if e_pos.x() < self.x() + diff:  # Left
+                self.setCursor(QCursor(Qt.SizeHorCursor))
+                self.mode = IndicatorWidget.Mode.ResizeL
+            else:  # Right
+                self.setCursor(QCursor(Qt.SizeHorCursor))
+                self.mode = IndicatorWidget.Mode.ResizeR
+        else:
+            self.setCursor(QCursor(Qt.ArrowCursor))
+            self.mode = IndicatorWidget.Mode.Move
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        super().mouseMoveEvent(event)
+        if not self.hasFocus():
+            return
+        if not event.buttons() and Qt.LeftButton:
+            p = QPoint(event.x() + self.geometry().x(),
+                       event.y() + self.geometry().y())
+            self.set_cursor_shape(p)
+            return
+
+        # Moving with mouse
+        if (self.mode == IndicatorWidget.Mode.Move or self.mode == IndicatorWidget.Mode.NoMode) and \
+                event.buttons() and Qt.LeftButton:
+            to_move = event.globalPos() - self.position
+            if to_move.x() < 0:
+                return
+            if to_move.y() < 0:
+                return
+            if to_move.x() > self.parentWidget().width() - self.width():
+                return
+            self.move(to_move)
+            self.parentWidget().repaint()
+            return
+
+        # Resizing with mouse
+        if (self.mode != IndicatorWidget.Mode.Move) and event.buttons() and Qt.LeftButton:
+            if self.mode == IndicatorWidget.Mode.ResizeL:  # Left
+                new_width = event.globalX() - self.position.x() - self.geometry().x()
+                to_move = event.globalPos() - self.position
+                self.resize(self.geometry().width() - new_width, self.height())
+                self.move(to_move.x(), self.y())
+            elif self.mode == IndicatorWidget.Mode.ResizeR:  # Right
+                self.resize(event.x(), self.height())
+            self.parentWidget().repaint()

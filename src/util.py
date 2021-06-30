@@ -79,6 +79,20 @@ class ThemeManager:
 
         return True
 
+    def get_variable(self, var: str, theme: str = None) -> str:
+        if theme is None:
+            theme = self.__current_theme
+        if theme not in self.__themes:
+            return None
+        vars_file = QFile(f"{self.__THEME_PATH}/{theme}.csv")
+        if vars_file.open(QIODevice.ReadOnly):
+            for line in bytes(vars_file.readAll()).decode().splitlines(False):
+                # Index 0 = variable, Index 1 = value
+                parts = line.replace(", ", ",").split(",")
+                if parts[0] == var:
+                    return parts[1]
+        return ""
+
     def current_stylesheet(self) -> str:
         return self.__app.styleSheet()
 
