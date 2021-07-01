@@ -5,8 +5,6 @@ from PySide6.QtWidgets import QWidget, QMenu, QStyleOption, QStyle, QApplication
 from ui_indicator_widget import Ui_InidicatorWidget
 from enum import Enum, auto
 
-# TODO: Enforce minimum size when resizing widget
-# TODO: Fix issue when moving near edges
 
 # Some code in this widget is from or based on code from
 # https://wiki.qt.io/Widget-moveable-and-resizeable
@@ -130,22 +128,33 @@ class IndicatorWidget(QWidget):
                 event.buttons() and Qt.LeftButton:
             to_move = event.globalPos() - self.position
             if to_move.x() < 0:
-                return
+                to_move.setX(0)
             if to_move.y() < 0:
-                return
+                to_move.setY(0)
             if to_move.x() > self.parentWidget().width() - self.width():
-                return
+                to_move.setX(self.parentWidget().width() - self.width())
+            if to_move.y() > self.parentWidget().height() - self.height():
+                to_move.setY(self.parentWidget().height() - self.height())
             self.move(to_move)
             self.parentWidget().repaint()
-            return
 
         # Resizing with mouse
-        if (self.mode != IndicatorWidget.Mode.Move) and event.buttons() and Qt.LeftButton:
+        elif (self.mode != IndicatorWidget.Mode.Move) and event.buttons() and Qt.LeftButton:
             if self.mode == IndicatorWidget.Mode.ResizeL:  # Left
                 new_width = event.globalX() - self.position.x() - self.geometry().x()
                 to_move = event.globalPos() - self.position
-                self.resize(self.geometry().width() - new_width, self.height())
+                if to_move.x() < 0:
+                    # Trying to resize off left edge
+                    return
+                new_width = self.geometry().width() - new_width
+                if self.geometry().width() - new_width < self.minimumWidth():
+                    # Enforce minimum size
+                    new_width = self.minimumWidth()
+                self.resize(new_width, self.height())
                 self.move(to_move.x(), self.y())
             elif self.mode == IndicatorWidget.Mode.ResizeR:  # Right
+                if self.geometry().x() + event.x() > self.parentWidget().width():
+                    # Trying to resize off right edge
+                    return
                 self.resize(event.x(), self.height())
             self.parentWidget().repaint()
