@@ -1,7 +1,6 @@
-from PySide6.QtCore import Signal, Qt, QRect, QPoint
-from PySide6.QtGui import QContextMenuEvent, QAction, QPaintEvent, QPainter, QFocusEvent, QColor, QMouseEvent, QCursor, \
-    QKeyEvent
-from PySide6.QtWidgets import QWidget, QMenu, QStyleOption, QStyle, QApplication
+from PySide6.QtCore import Signal, Qt, QPoint
+from PySide6.QtGui import QContextMenuEvent, QAction, QPaintEvent, QPainter, QMouseEvent, QCursor
+from PySide6.QtWidgets import QWidget, QMenu, QStyleOption, QStyle
 from ui_indicator_widget import Ui_InidicatorWidget
 from enum import Enum, auto
 
@@ -18,7 +17,7 @@ class IndicatorWidget(QWidget):
         ResizeR = auto()
         ResizeL = auto()
 
-    deleted = Signal()
+    deleted = Signal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -49,7 +48,7 @@ class IndicatorWidget(QWidget):
         if action == writable_action:
             self.ui.txt_value.setReadOnly(not writable_action.isChecked())
         if action == delete_action:
-            self.deleted.emit()
+            self.deleted.emit(self.key)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         # Reimplementing this function is necessary for stylesheet functionality

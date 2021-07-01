@@ -18,6 +18,7 @@ class ThemeManager:
         self.__THEME_PATH = ":/stylesheet-vars/"
         self.__themes: List[str] = []
         self.__app: QApplication = None
+        self.__current_theme = ""
 
     def set_app(self, app: QApplication):
         self.__app = app
@@ -48,6 +49,8 @@ class ThemeManager:
 
         if theme not in self.__themes:
             return False
+
+        self.__current_theme = theme
 
         if larger_fonts:
             font_size = 11

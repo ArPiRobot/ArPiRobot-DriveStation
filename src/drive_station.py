@@ -1,15 +1,18 @@
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
+from PySide6.QtGui import QCloseEvent
 
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog
-from PySide6.QtCore import QFile, QIODevice, Qt, QRect
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit
+from PySide6.QtCore import QFile, QIODevice, Qt, QRect, QDir
 
 from src.indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
 from util import HTMLDelegate, settings_manager, theme_manager
 from network import State, NetworkManager
 from about_dialog import AboutDialog
+
+import json
 
 
 class ControllerListItem(QListWidgetItem):
@@ -71,11 +74,14 @@ class DriveStationWindow(QMainWindow):
         for i in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']:
             self.ui.lst_controllers.addItem(ControllerListItem(f"Controller {i}", -1, self.ui.lst_controllers.row))
 
-        # Used to cache battery voltage so main battery nominal
-        # voltage can be changed without changing current voltage
-        self.voltage: float = 0.0
+        ########################################################################
+        # Non-UI Variables
+        ########################################################################
 
+        # Don't need to mutex these. Only accessed from UI thread by using signals/slots
+        self.voltage: float = 0.0
         self.net_manager = NetworkManager()
+        self.indicators: Dict[str, IndicatorWidget] = {}
 
         ########################################################################
         # Signal / slot setup
@@ -85,6 +91,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.btn_settings.clicked.connect(self.open_settings)
         self.ui.act_about.triggered.connect(self.open_about)
         self.ui.act_add_indicator.triggered.connect(self.add_indicator)
+        self.ui.act_clear_indicators.triggered.connect(self.clear_indicators)
 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
@@ -92,24 +99,80 @@ class DriveStationWindow(QMainWindow):
         ########################################################################
         # Initial State
         ########################################################################
+        self.load_indicators()
         self.state_changed(State.NoNetwork)
         self.set_battery_voltage(0.0, settings_manager.vbat_main)
+
+    def closeEvent(self, event: QCloseEvent):
+        self.save_indicators()
+
+    def save_indicators(self):
+        try:
+            data: Dict[str, Dict] = {}
+            for key, ind in self.indicators.items():
+                data[ind.key] = {
+                    "x": ind.geometry().x(),
+                    "y": ind.geometry().y(),
+                    "width": ind.geometry().width(),
+                    "height": ind.geometry().height()
+                }
+            with open(QDir.homePath() + "/.arpirobot/dsindicators.json", "w") as data_file:
+                json.dump(data, data_file)
+        except:
+            pass
+
+    def load_indicators(self):
+        try:
+            with open(QDir.homePath() + "/.arpirobot/dsindicators.json", "r") as data_file:
+                data: Dict[str, Dict] = json.load(data_file)
+                for key, subdata in data.items():
+                    x = subdata["x"]
+                    y = subdata["y"]
+                    width = subdata["width"]
+                    height = subdata["height"]
+                    self.add_indicator_at(key, QRect(x, y, width, height))
+        except:
+            pass
 
     ############################################################################
     # Event Handlers (slots)
     ############################################################################
 
     def add_indicator(self):
+        key, ok = QInputDialog.getText(self, self.tr("Add Indicator"), self.tr("Key:"), QLineEdit.Normal)
+        if ok and key != "" and not key in self.indicators:
+            self.add_indicator_at(key, None)
+
+    def clear_indicators(self):
+        for key, ind in self.indicators.items():
+            self.indicators[key].hide()
+            self.indicators[key].deleteLater()
+        self.indicators.clear()
+
+    def add_indicator_at(self, key: str, geometry: QRect):
         ind = IndicatorWidget(self.ui.pnl_net_table)
-        panel_geom = self.ui.pnl_net_table.geometry()
-        ind_geom = ind.geometry()
-        new_geom = QRect()
-        new_geom.setTop(panel_geom.height() / 2.0 - ind_geom.height() / 2.0)
-        new_geom.setLeft(panel_geom.width() / 2.0 - ind_geom.width() / 2.0)
-        new_geom.setWidth(ind_geom.width())
-        new_geom.setHeight(ind_geom.height())
-        ind.setGeometry(new_geom)
+        ind.deleted.connect(self.indicator_deleted)
+        ind.key = key
+        # TODO: Get value from NetworkManager
+
+        if geometry is None:
+            # Place indicator in center of panel
+            panel_geom = self.ui.pnl_net_table.geometry()
+            ind_geom = ind.geometry()
+            geometry = QRect()
+            geometry.setTop(panel_geom.height() / 2.0 - ind_geom.height() / 2.0)
+            geometry.setLeft(panel_geom.width() / 2.0 - ind_geom.width() / 2.0)
+            geometry.setWidth(ind_geom.width())
+            geometry.setHeight(ind_geom.height())
+        ind.setGeometry(geometry)
         ind.show()
+        self.indicators[key] = ind
+
+    def indicator_deleted(self, key: str):
+        if key in self.indicators:
+            self.indicators[key].hide()
+            self.indicators[key].deleteLater()
+            del self.indicators[key]
 
     def disable_clicked(self):
         # TODO: Use network manager to disable
