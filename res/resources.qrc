@@ -5,6 +5,7 @@
     <file>version.txt</file>
     <file>license_text.txt</file>
     <file>third_party_licenses.txt</file>
+    <file>gamecontrollerdb.txt</file>
 
     <file>icons/gear_light.png</file>
     <file>icons/gear_dark.png</file>

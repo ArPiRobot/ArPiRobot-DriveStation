@@ -361,3 +361,30 @@ harmless for any liability incurred by, or claims asserted against, such
 Contributor by reason of your accepting any such warranty or additional
 liability.</p>
 </div>
+
+<hr />
+
+<h2>SDL_GameControllerDB (<a href="https://github.com/gabomdq/SDL_GameControllerDB">https://github.com/gabomdq/SDL_GameControllerDB</a>)</h2>
+<div style="margin-left:30px;margin-right:30px;">
+<p>Simple DirectMedia Layer
+Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org></p>
+
+<p>This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.</p>
+
+<p>Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:</p>
+
+<ol>
+    <li>The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.</li>
+    <li>Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.</li>
+    <li>This notice may not be removed or altered from any source distribution.</li>
+</ol>
+
+</div>
