@@ -79,15 +79,12 @@ class DriveStationWindow(QMainWindow):
         self.ui.statusbar.addPermanentWidget(QLabel(), 1)  # Spacer so msg label is on left
 
         self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
-        for i in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']:
-            self.ui.lst_controllers.addItem(ControllerListItem(f"Controller {i}", -1, self.ui.lst_controllers.row))
 
         # Non-UI variables
         # Don't need to mutex these. Only accessed from UI thread by using signals/slots
         self.voltage: float = 0.0
         self.net_manager = NetworkManager()
-        self.gamepad_manager = GamepadManager()
-        print(self.gamepad_manager.add_mappings_from_file(":/gamecontrollerdb.txt"))
+        self.gamepad_manager = GamepadManager(mappings_file=":/gamecontrollerdb.txt")
         self.indicators: Dict[str, IndicatorWidget] = {}
 
         # Signal / slot setup
@@ -101,10 +98,19 @@ class DriveStationWindow(QMainWindow):
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
+        self.gamepad_manager.connected.connect(self.gamepad_connected)
+        self.gamepad_manager.disconnected.connect(self.gamepad_disconnected)
+        self.gamepad_manager.axis_moved.connect(self.gamepad_axis_moved)
+        self.gamepad_manager.button_changed.connect(self.gamepad_button_changed)
+
         # Configure initial State
         self.load_indicators()
         self.state_changed(State.NoNetwork)
         self.set_battery_voltage(0.0, settings_manager.vbat_main)
+
+        # Start gamepad and network managers
+        self.gamepad_manager.start()
+        # TODO: Start network manager
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
@@ -130,6 +136,23 @@ class DriveStationWindow(QMainWindow):
     def open_about(self):
         dialog = AboutDialog(self)
         dialog.exec()
+
+    ############################################################################
+    # Gamepads
+    ############################################################################
+
+    def gamepad_connected(self, device_id: int, device_name: str):
+        print("CON")
+        self.ui.lst_controllers.addItem(ControllerListItem(device_name, device_id, self.ui.lst_controllers.row))
+
+    def gamepad_disconnected(self, device_id: int):
+        print("DC")
+
+    def gamepad_axis_moved(self, device_id: int, axis_num: int, axis_value: int):
+        pass
+
+    def gamepad_button_changed(self, device_id: int, button_num: int, is_pressed: bool):
+        pass
 
     ############################################################################
     # Indicators & Network Table
