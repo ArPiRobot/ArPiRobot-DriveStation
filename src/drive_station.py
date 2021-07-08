@@ -114,6 +114,7 @@ class DriveStationWindow(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
+        self.gamepad_manager.stop()
 
     def open_settings(self):
         dialog = SettingsDialog(self)

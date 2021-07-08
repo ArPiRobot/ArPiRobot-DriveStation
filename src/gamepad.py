@@ -17,31 +17,14 @@ class GamepadManager(QObject):
         self.mappings_file = mappings_file
         self.running = False
         self.event_thread = None
-        self.open_devices = {}
 
-    def __del__(self):
-        self.stop()
-
-    def start(self):
-        self.running = True
-        self.event_thread = Thread(target=self.event_loop)
-        self.event_thread.start()
-
-    def stop(self):
-        self.running = False
-        self.event_thread.join()
-
-    def event_loop(self):
-        # Init here b/c on some platforms controller events only work if processed
-        # on the same thread that called sdl init
-
+        # Initialize SDL2
         sdl2.SDL_SetHint(sdl2.SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, b"1")
         sdl2.SDL_SetHint(sdl2.SDL_HINT_ACCELEROMETER_AS_JOYSTICK, b"0")
         sdl2.SDL_SetHint(sdl2.SDL_HINT_MAC_BACKGROUND_APP, b"1")
 
         error = sdl2.SDL_Init(sdl2.SDL_INIT_EVENTS | sdl2.SDL_INIT_JOYSTICK | sdl2.SDL_INIT_GAMECONTROLLER)
         if error != 0:
-            print("ERROR")
             return
 
         # Load mappings from file after sdl init
@@ -57,34 +40,32 @@ class GamepadManager(QObject):
         elif self.mappings_file != "" and self.mappings_file is not None:
             sdl2.SDL_GameControllerAddMappingsFromFile(self.mappings_file.encode())
 
-        # TODO: Logging
+    def __del__(self):
+        self.stop()
+        sdl2.SDL_Quit()
 
+    def start(self):
+        self.running = True
+        self.event_thread = Thread(target=self.event_loop)
+        self.event_thread.start()
+
+    def stop(self):
+        self.running = False
+        if self.event_thread is not None:
+            self.event_thread.join()
+
+    def event_loop(self):
         while self.running:
             event = sdl2.SDL_Event()
-            if sdl2.SDL_PollEvent(event) != 0:
+            if sdl2.SDL_PollEvent(event) == 1:
                 if event.type == sdl2.SDL_CONTROLLERDEVICEADDED:
-                    # "which" is a joystick index
                     dev = sdl2.SDL_GameControllerOpen(event.cdevice.which)
                     if dev is not None:
-                        device_id = sdl2.SDL_JoystickInstanceID(sdl2.SDL_GameControllerGetJoystick(dev))
-                        device_name = sdl2.SDL_GameControllerName(dev)
-                        self.open_devices[device_id] = dev
-                        self.connected.emit(device_id, device_name.decode())
+                        instance_id = sdl2.SDL_JoystickInstanceID(sdl2.SDL_GameControllerGetJoystick(dev))
+                        name = sdl2.SDL_GameControllerName(dev)
+                        print(f"Added {name} with id {instance_id}")
                 elif event.type == sdl2.SDL_CONTROLLERDEVICEREMOVED:
-                    # "which" is an instance id
-                    if event.cdevice.which in self.open_devices:
-                        sdl2.SDL_GameControllerClose(self.open_devices[event.cdevice.which])
-                        del self.open_devices[event.cdevice.which]
-                    self.disconnected.emit(event.cdevice.which)
-                elif event.type == sdl2.SDL_CONTROLLERAXISMOTION:
-                    # "which" is an instance id
-                    self.axis_moved.emit(event.caxis.which, event.caxis.axis, event.caxis.value)
-                elif event.type == sdl2.SDL_CONTROLLERBUTTONDOWN:
-                    # "which" is an instance id
-                    self.button_changed.emit(event.cbutton.which, event.cbutton.button, True)
-                elif event.type == sdl2.SDL_CONTROLLERBUTTONUP:
-                    # "which" is an instance id
-                    self.button_changed.emit(event.cbutton.which, event.cbutton.button, False)
+                    sdl2.SDL_GameControllerClose(sdl2.SDL_GameControllerFromInstanceID(event.cdevice.which))
+                    print(f"Removed {event.cdevice.which}")
             else:
                 time.sleep(self.event_poll_delay)
-        sdl2.SDL_Quit()
