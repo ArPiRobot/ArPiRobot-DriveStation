@@ -5,7 +5,7 @@ from PySide6.QtGui import QCloseEvent
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
 from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit
-from PySide6.QtCore import QFile, QIODevice, Qt, QRect, QDir
+from PySide6.QtCore import QFile, QIODevice, QTimer, Qt, QRect, QDir
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
@@ -86,6 +86,7 @@ class DriveStationWindow(QMainWindow):
         self.net_manager = NetworkManager()
         self.gamepad_manager = GamepadManager(mappings_file=":/gamecontrollerdb.txt")
         self.indicators: Dict[str, IndicatorWidget] = {}
+        self.gp_event_timer = QTimer(self)
 
         # Signal / slot setup
         self.ui.btn_disable.clicked.connect(self.disable_clicked)
@@ -98,6 +99,7 @@ class DriveStationWindow(QMainWindow):
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
+        self.gp_event_timer.timeout.connect(self.gamepad_manager.pump_events)
         self.gamepad_manager.connected.connect(self.gamepad_connected)
         self.gamepad_manager.disconnected.connect(self.gamepad_disconnected)
         self.gamepad_manager.axis_moved.connect(self.gamepad_axis_moved)
@@ -110,10 +112,12 @@ class DriveStationWindow(QMainWindow):
 
         # Start gamepad and network managers
         self.gamepad_manager.start()
+        self.gp_event_timer.start(10)
         # TODO: Start network manager
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
+        self.gp_event_timer.stop()
         self.gamepad_manager.stop()
 
     def open_settings(self):

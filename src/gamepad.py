@@ -18,26 +18,12 @@ class GamepadManager(QObject):
         self.running = False
         self.event_thread = None
 
-    def __del__(self):
-        self.stop()
-        sdl2.SDL_Quit()
+        sdl2.SDL_SetHint(sdl2.SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, b"1")
+        sdl2.SDL_SetHint(sdl2.SDL_HINT_ACCELEROMETER_AS_JOYSTICK, b"0")
+        sdl2.SDL_SetHint(sdl2.SDL_HINT_MAC_BACKGROUND_APP, b"1")
 
-    def start(self):
-        self.running = True
-        self.event_thread = Thread(target=self.event_loop)
-        self.event_thread.start()
-
-    def stop(self):
-        self.running = False
-        if self.event_thread is not None:
-            self.event_thread.join()
-
-    def event_loop(self):
-        
-        # Intitialize SDL
-        # The thread handling events should be the thread that inited the video subsystem
-        # On some systems, the events do not work properly without video subsytem initialized
-        error = sdl2.SDL_Init(sdl2.SDL_INIT_EVENTS | sdl2.SDL_INIT_JOYSTICK | sdl2.SDL_INIT_GAMECONTROLLER | sdl2.SDL_INIT_VIDEO)
+        # Initialize SDL (on main thread for best cross platform compatibility)
+        error = sdl2.SDL_Init(sdl2.SDL_INIT_EVENTS | sdl2.SDL_INIT_JOYSTICK | sdl2.SDL_INIT_GAMECONTROLLER)
         if error != 0:
             return
 
@@ -54,10 +40,28 @@ class GamepadManager(QObject):
         elif self.mappings_file != "" and self.mappings_file is not None:
             sdl2.SDL_GameControllerAddMappingsFromFile(self.mappings_file.encode())
 
-        
+    def __del__(self):
+        self.stop()
+        sdl2.SDL_Quit()
+
+    def start(self):
+        self.running = True
+        self.event_thread = Thread(target=self.event_loop)
+        self.event_thread.start()
+
+    def stop(self):
+        self.running = False
+        if self.event_thread is not None:
+            self.event_thread.join()
+    
+    def pump_events(self):
+        # This must be called from main thread
+        sdl2.SDL_PumpEvents()
+
+    def event_loop(self):       
         while self.running:
             event = sdl2.SDL_Event()
-            if sdl2.SDL_PollEvent(event) == 1:
+            if sdl2.SDL_PeepEvents(event, 1, sdl2.SDL_GETEVENT, sdl2.SDL_FIRSTEVENT, sdl2.SDL_LASTEVENT) == 1:
                 if event.type == sdl2.SDL_CONTROLLERDEVICEADDED:
                     dev = sdl2.SDL_GameControllerOpen(event.cdevice.which)
                     if dev is not None:
