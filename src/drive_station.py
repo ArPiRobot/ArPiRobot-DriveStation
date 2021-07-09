@@ -14,6 +14,7 @@ from network import State, NetworkManager
 from about_dialog import AboutDialog
 
 import json
+import sdl2
 
 
 class ControllerListItem(QListWidgetItem):
@@ -86,7 +87,6 @@ class DriveStationWindow(QMainWindow):
         self.net_manager = NetworkManager()
         self.gamepad_manager = GamepadManager(mappings_file=":/gamecontrollerdb.txt")
         self.indicators: Dict[str, IndicatorWidget] = {}
-        self.gp_event_timer = QTimer(self)
 
         # Signal / slot setup
         self.ui.btn_disable.clicked.connect(self.disable_clicked)
@@ -99,11 +99,8 @@ class DriveStationWindow(QMainWindow):
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
-        self.gp_event_timer.timeout.connect(self.gamepad_manager.pump_events)
         self.gamepad_manager.connected.connect(self.gamepad_connected)
         self.gamepad_manager.disconnected.connect(self.gamepad_disconnected)
-        self.gamepad_manager.axis_moved.connect(self.gamepad_axis_moved)
-        self.gamepad_manager.button_changed.connect(self.gamepad_button_changed)
 
         # Configure initial State
         self.load_indicators()
@@ -112,12 +109,10 @@ class DriveStationWindow(QMainWindow):
 
         # Start gamepad and network managers
         self.gamepad_manager.start()
-        self.gp_event_timer.start(10)
         # TODO: Start network manager
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
-        self.gp_event_timer.stop()
         self.gamepad_manager.stop()
 
     def open_settings(self):
@@ -147,17 +142,15 @@ class DriveStationWindow(QMainWindow):
     ############################################################################
 
     def gamepad_connected(self, device_id: int, device_name: str):
-        print("CON")
         self.ui.lst_controllers.addItem(ControllerListItem(device_name, device_id, self.ui.lst_controllers.row))
 
     def gamepad_disconnected(self, device_id: int):
-        print("DC")
-
-    def gamepad_axis_moved(self, device_id: int, axis_num: int, axis_value: int):
-        pass
-
-    def gamepad_button_changed(self, device_id: int, button_num: int, is_pressed: bool):
-        pass
+        for i in range(self.ui.lst_controllers.count()):
+            item: ControllerListItem = self.ui.lst_controllers.item(i)
+            if item.handle == device_id:
+                self.ui.lst_controllers.takeItem(i)
+                break
+        # TODO: Disable robot
 
     ############################################################################
     # Indicators & Network Table
