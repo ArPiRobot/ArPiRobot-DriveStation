@@ -1,11 +1,12 @@
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QCloseEvent
+from PySide6.QtGui import QCloseEvent, QMouseEvent
+from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit
-from PySide6.QtCore import QFile, QIODevice, QTimer, Qt, QRect, QDir
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar
+from PySide6.QtCore import QFile, QIODevice, QModelIndex, QTimer, Qt, QRect, QDir
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
@@ -81,6 +82,11 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
 
+        # Timer to periodically update the bars for the selected controller
+        self.controller_status_timer = QTimer()
+        self.controller_status_timer.timeout.connect(self.update_controller_bars)
+        self.controller_status_timer.start(50)
+
         # Non-UI variables
         # Don't need to mutex these. Only accessed from UI thread by using signals/slots
         self.voltage: float = 0.0
@@ -96,11 +102,38 @@ class DriveStationWindow(QMainWindow):
         self.ui.act_add_indicator.triggered.connect(self.add_indicator)
         self.ui.act_clear_indicators.triggered.connect(self.clear_indicators)
 
+        self.ui.lst_controllers.viewport().installEventFilter(self)
+
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
         self.gamepad_manager.connected.connect(self.gamepad_connected)
         self.gamepad_manager.disconnected.connect(self.gamepad_disconnected)
+
+        # On some systems, fusion theme will only repaint progress bar every several pixels, leading to choppy motion
+        # To fix this, force a repaint to happen every time the value changes
+        self.ui.pbar_lx.valueChanged.connect(self.ui.pbar_lx.repaint)
+        self.ui.pbar_ly.valueChanged.connect(self.ui.pbar_ly.repaint)
+        self.ui.pbar_rx.valueChanged.connect(self.ui.pbar_rx.repaint)
+        self.ui.pbar_ry.valueChanged.connect(self.ui.pbar_ry.repaint)
+        self.ui.pbar_l2.valueChanged.connect(self.ui.pbar_l2.repaint)
+        self.ui.pbar_r2.valueChanged.connect(self.ui.pbar_r2.repaint)
+        self.ui.pbar_a.valueChanged.connect(self.ui.pbar_a.repaint)
+        self.ui.pbar_b.valueChanged.connect(self.ui.pbar_b.repaint)
+        self.ui.pbar_x.valueChanged.connect(self.ui.pbar_x.repaint)
+        self.ui.pbar_y.valueChanged.connect(self.ui.pbar_y.repaint)
+        self.ui.pbar_back.valueChanged.connect(self.ui.pbar_back.repaint)
+        self.ui.pbar_guide.valueChanged.connect(self.ui.pbar_guide.repaint)
+        self.ui.pbar_start.valueChanged.connect(self.ui.pbar_start.repaint)
+        self.ui.pbar_l3.valueChanged.connect(self.ui.pbar_l3.repaint)
+        self.ui.pbar_r3.valueChanged.connect(self.ui.pbar_r3.repaint)
+        self.ui.pbar_l1.valueChanged.connect(self.ui.pbar_l1.repaint)
+        self.ui.pbar_r1.valueChanged.connect(self.ui.pbar_r1.repaint)
+        self.ui.pbar_dpad_0.valueChanged.connect(self.ui.pbar_dpad_0.repaint)
+        self.ui.pbar_dpad_up.valueChanged.connect(self.ui.pbar_dpad_up.repaint)
+        self.ui.pbar_dpad_down.valueChanged.connect(self.ui.pbar_dpad_down.repaint)
+        self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.repaint)
+        self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.repaint)
 
         # Configure initial State
         self.load_indicators()
@@ -136,6 +169,7 @@ class DriveStationWindow(QMainWindow):
     def open_about(self):
         dialog = AboutDialog(self)
         dialog.exec()
+    
 
     ############################################################################
     # Gamepads
@@ -151,6 +185,62 @@ class DriveStationWindow(QMainWindow):
                 self.ui.lst_controllers.takeItem(i)
                 break
         # TODO: Disable robot
+    
+    def update_controller_bars(self):
+        selected_rows = [x.row() for x in self.ui.lst_controllers.selectedIndexes()]
+        idx = -1
+        if len(selected_rows) != 0:
+            idx = selected_rows[0]
+        if idx == -1:
+            self.ui.pbar_lx.setValue(0)
+            self.ui.pbar_ly.setValue(0)
+            self.ui.pbar_rx.setValue(0)
+            self.ui.pbar_ry.setValue(0)
+            self.ui.pbar_l2.setValue(0)
+            self.ui.pbar_r2.setValue(0)
+            self.ui.pbar_a.setValue(0)
+            self.ui.pbar_b.setValue(0)
+            self.ui.pbar_x.setValue(0)
+            self.ui.pbar_y.setValue(0)
+            self.ui.pbar_back.setValue(0)
+            self.ui.pbar_guide.setValue(0)
+            self.ui.pbar_start.setValue(0)
+            self.ui.pbar_l3.setValue(0)
+            self.ui.pbar_r3.setValue(0)
+            self.ui.pbar_l1.setValue(0)
+            self.ui.pbar_r1.setValue(0)
+            self.ui.pbar_dpad_0.setValue(1)
+            self.ui.pbar_dpad_left.setValue(0)
+            self.ui.pbar_dpad_right.setValue(0)
+            self.ui.pbar_dpad_up.setValue(0)
+            self.ui.pbar_dpad_down.setValue(0)
+        else:
+            device_id = self.ui.lst_controllers.item(idx).handle
+            self.ui.pbar_lx.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_LEFTX))
+            self.ui.pbar_ly.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_LEFTY))
+            self.ui.pbar_rx.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_RIGHTX))
+            self.ui.pbar_ry.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_RIGHTY))
+            self.ui.pbar_l2.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_TRIGGERLEFT))
+            self.ui.pbar_r2.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_TRIGGERRIGHT))
+            self.ui.pbar_a.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_A) else 0)
+            self.ui.pbar_b.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_B) else 0)
+            self.ui.pbar_x.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_X) else 0)
+            self.ui.pbar_y.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_Y) else 0)
+            self.ui.pbar_back.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_BACK) else 0)
+            self.ui.pbar_guide.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_GUIDE) else 0)
+            self.ui.pbar_start.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_START) else 0)
+            self.ui.pbar_l3.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_LEFTSTICK) else 0)
+            self.ui.pbar_r3.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSTICK) else 0)
+            self.ui.pbar_l1.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_LEFTSHOULDER) else 0)
+            self.ui.pbar_r1.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) else 0)
+            self.ui.pbar_dpad_left.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_LEFT) else 0)
+            self.ui.pbar_dpad_right.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_RIGHT) else 0)
+            self.ui.pbar_dpad_up.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP) else 0)
+            self.ui.pbar_dpad_down.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_DOWN) else 0)
+            self.ui.pbar_dpad_0.setValue(1 if (self.ui.pbar_dpad_down.value() == 0 and 
+                    self.ui.pbar_dpad_up.value() == 0 and
+                    self.ui.pbar_dpad_left.value == () and 
+                    self.ui.pbar_dpad_right.value() == 0) else 0)
 
     ############################################################################
     # Indicators & Network Table

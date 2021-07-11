@@ -61,6 +61,15 @@ class GamepadManager(QObject):
     def stop(self):
         self.event_poll_timer.stop()
     
+    def get_axis(self, device_id: int, axis: int) -> float:
+        dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
+        return sdl2.SDL_GameControllerGetAxis(dev, axis)
+        
+    def get_button(self, device_id: int, button: int) -> bool:
+        dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
+        value = sdl2.SDL_GameControllerGetButton(dev, button)
+        return value == 1
+
     def handle_events(self):
         # Poll events calls pump events, which must be called from thread that ran SDL_Init
         # On some systems, it is necessary to init video if SDL is started on bg thread
