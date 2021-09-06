@@ -85,7 +85,7 @@ class DriveStationWindow(QMainWindow):
         # Timer to periodically update the bars for the selected controller
         self.controller_status_timer = QTimer()
         self.controller_status_timer.timeout.connect(self.update_controller_bars)
-        self.controller_status_timer.start(50)
+        self.controller_status_timer.start(16) # ~ 60 updates / second
 
         # Non-UI variables
         # Don't need to mutex these. Only accessed from UI thread by using signals/slots
@@ -237,10 +237,13 @@ class DriveStationWindow(QMainWindow):
             self.ui.pbar_dpad_right.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_RIGHT) else 0)
             self.ui.pbar_dpad_up.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP) else 0)
             self.ui.pbar_dpad_down.setValue(1 if self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_DOWN) else 0)
-            self.ui.pbar_dpad_0.setValue(1 if (self.ui.pbar_dpad_down.value() == 0 and 
-                    self.ui.pbar_dpad_up.value() == 0 and
-                    self.ui.pbar_dpad_left.value == () and 
-                    self.ui.pbar_dpad_right.value() == 0) else 0)
+            self.ui.pbar_dpad_0.setValue(0 if (
+                self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_LEFT) or
+                self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_RIGHT) or
+                self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP) or
+                self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+            ) else 1)
+            
 
     ############################################################################
     # Indicators & Network Table
