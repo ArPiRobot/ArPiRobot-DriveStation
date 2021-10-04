@@ -21,16 +21,16 @@ class GamepadManager(QObject):
 
         # Events are only used to detect connect / disconnect
         # Axis / button state is polled
-        @sdl2.SDL_EventFilter
-        def event_filter(user_data, event):
-            if event.contents.type == sdl2.SDL_CONTROLLERDEVICEADDED or \
-                    event.contents.type == sdl2.SDL_CONTROLLERDEVICEREMOVED or \
-                    event.contents.type == sdl2.SDL_JOYDEVICEADDED or \
-                    event.contents.type == sdl2.SDL_JOYDEVICEREMOVED:
-                return 1
-            return 0
-        self.event_filter = event_filter
-        sdl2.SDL_SetEventFilter(self.event_filter, None)
+        # @sdl2.SDL_EventFilter
+        # def event_filter(user_data, event):
+        #     if event.contents.type == sdl2.SDL_CONTROLLERDEVICEADDED or \
+        #             event.contents.type == sdl2.SDL_CONTROLLERDEVICEREMOVED or \
+        #             event.contents.type == sdl2.SDL_JOYDEVICEADDED or \
+        #             event.contents.type == sdl2.SDL_JOYDEVICEREMOVED:
+        #         return 1
+        #     return 0
+        # self.event_filter = event_filter
+        # sdl2.SDL_SetEventFilter(self.event_filter, None)
 
         # Initialize SDL (on main thread for best cross platform compatibility)
         sdl2.SDL_SetHint(sdl2.SDL_HINT_ACCELEROMETER_AS_JOYSTICK, b"0")
@@ -55,13 +55,16 @@ class GamepadManager(QObject):
         sdl2.SDL_Quit()
 
     def start(self):
-        # Poll every 100ms. These are only connect / disconnect events
-        self.event_poll_timer.start(100)
+        # Poll every 250ms. These are only connect / disconnect events
+        self.event_poll_timer.start(250)
 
     def stop(self):
         self.event_poll_timer.stop()
     
-    def get_axis(self, device_id: int, axis: int) -> float:
+    def update(self):
+        sdl2.SDL_GameControllerUpdate()
+
+    def get_axis(self, device_id: int, axis: int) -> int:
         dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
         return sdl2.SDL_GameControllerGetAxis(dev, axis)
         

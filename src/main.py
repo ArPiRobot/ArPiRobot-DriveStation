@@ -7,7 +7,6 @@ from PySide6.QtCore import Qt, QFile, QIODevice
 from drive_station import DriveStationWindow
 from util import theme_manager, settings_manager
 
-
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 QApplication.setAttribute(Qt.AA_DontUseNativeMenuBar)

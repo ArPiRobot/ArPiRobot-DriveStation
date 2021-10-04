@@ -112,28 +112,28 @@ class DriveStationWindow(QMainWindow):
 
         # On some systems, fusion theme will only repaint progress bar every several pixels, leading to choppy motion
         # To fix this, force a repaint to happen every time the value changes
-        self.ui.pbar_lx.valueChanged.connect(self.ui.pbar_lx.repaint)
-        self.ui.pbar_ly.valueChanged.connect(self.ui.pbar_ly.repaint)
-        self.ui.pbar_rx.valueChanged.connect(self.ui.pbar_rx.repaint)
-        self.ui.pbar_ry.valueChanged.connect(self.ui.pbar_ry.repaint)
-        self.ui.pbar_l2.valueChanged.connect(self.ui.pbar_l2.repaint)
-        self.ui.pbar_r2.valueChanged.connect(self.ui.pbar_r2.repaint)
-        self.ui.pbar_a.valueChanged.connect(self.ui.pbar_a.repaint)
-        self.ui.pbar_b.valueChanged.connect(self.ui.pbar_b.repaint)
-        self.ui.pbar_x.valueChanged.connect(self.ui.pbar_x.repaint)
-        self.ui.pbar_y.valueChanged.connect(self.ui.pbar_y.repaint)
-        self.ui.pbar_back.valueChanged.connect(self.ui.pbar_back.repaint)
-        self.ui.pbar_guide.valueChanged.connect(self.ui.pbar_guide.repaint)
-        self.ui.pbar_start.valueChanged.connect(self.ui.pbar_start.repaint)
-        self.ui.pbar_l3.valueChanged.connect(self.ui.pbar_l3.repaint)
-        self.ui.pbar_r3.valueChanged.connect(self.ui.pbar_r3.repaint)
-        self.ui.pbar_l1.valueChanged.connect(self.ui.pbar_l1.repaint)
-        self.ui.pbar_r1.valueChanged.connect(self.ui.pbar_r1.repaint)
-        self.ui.pbar_dpad_0.valueChanged.connect(self.ui.pbar_dpad_0.repaint)
-        self.ui.pbar_dpad_up.valueChanged.connect(self.ui.pbar_dpad_up.repaint)
-        self.ui.pbar_dpad_down.valueChanged.connect(self.ui.pbar_dpad_down.repaint)
-        self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.repaint)
-        self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.repaint)
+        self.ui.pbar_lx.valueChanged.connect(self.ui.pbar_lx.update)
+        self.ui.pbar_ly.valueChanged.connect(self.ui.pbar_ly.update)
+        self.ui.pbar_rx.valueChanged.connect(self.ui.pbar_rx.update)
+        self.ui.pbar_ry.valueChanged.connect(self.ui.pbar_ry.update)
+        self.ui.pbar_l2.valueChanged.connect(self.ui.pbar_l2.update)
+        self.ui.pbar_r2.valueChanged.connect(self.ui.pbar_r2.update)
+        self.ui.pbar_a.valueChanged.connect(self.ui.pbar_a.update)
+        self.ui.pbar_b.valueChanged.connect(self.ui.pbar_b.update)
+        self.ui.pbar_x.valueChanged.connect(self.ui.pbar_x.update)
+        self.ui.pbar_y.valueChanged.connect(self.ui.pbar_y.update)
+        self.ui.pbar_back.valueChanged.connect(self.ui.pbar_back.update)
+        self.ui.pbar_guide.valueChanged.connect(self.ui.pbar_guide.update)
+        self.ui.pbar_start.valueChanged.connect(self.ui.pbar_start.update)
+        self.ui.pbar_l3.valueChanged.connect(self.ui.pbar_l3.update)
+        self.ui.pbar_r3.valueChanged.connect(self.ui.pbar_r3.update)
+        self.ui.pbar_l1.valueChanged.connect(self.ui.pbar_l1.update)
+        self.ui.pbar_r1.valueChanged.connect(self.ui.pbar_r1.update)
+        self.ui.pbar_dpad_0.valueChanged.connect(self.ui.pbar_dpad_0.update)
+        self.ui.pbar_dpad_up.valueChanged.connect(self.ui.pbar_dpad_up.update)
+        self.ui.pbar_dpad_down.valueChanged.connect(self.ui.pbar_dpad_down.update)
+        self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.update)
+        self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.update)
 
         # Configure initial State
         self.load_indicators()
@@ -187,6 +187,7 @@ class DriveStationWindow(QMainWindow):
         # TODO: Disable robot
     
     def update_controller_bars(self):
+        self.gamepad_manager.update()
         selected_rows = [x.row() for x in self.ui.lst_controllers.selectedIndexes()]
         idx = -1
         if len(selected_rows) != 0:
