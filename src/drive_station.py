@@ -50,7 +50,7 @@ class DriveStationWindow(QMainWindow):
     # Constants
     ############################################################################
 
-    # State messages
+    # Status messages
     MSG_STATE_NO_NETWORK = "Connecting to robot at '{0}'..."
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
@@ -80,6 +80,7 @@ class DriveStationWindow(QMainWindow):
         self.ui.statusbar.addPermanentWidget(self.lbl_status_msg)
         self.ui.statusbar.addPermanentWidget(QLabel(), 1)  # Spacer so msg label is on left
 
+        # Allows controller names to be partially italicized
         self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
 
         # Timer to periodically update the bars for the selected controller
@@ -87,8 +88,7 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.timeout.connect(self.update_controller_bars)
         self.controller_status_timer.start(16) # ~ 60 updates / second
 
-        # Non-UI variables
-        # Don't need to mutex these. Only accessed from UI thread by using signals/slots
+        # Non-UI element variables
         self.voltage: float = 0.0
         self.net_manager = NetworkManager()
         self.gamepad_manager = GamepadManager(mappings_file=":/gamecontrollerdb.txt")
@@ -112,28 +112,7 @@ class DriveStationWindow(QMainWindow):
 
         # On some systems, fusion theme will only repaint progress bar every several pixels, leading to choppy motion
         # To fix this, force a repaint to happen every time the value changes
-        self.ui.pbar_lx.valueChanged.connect(self.ui.pbar_lx.update)
-        self.ui.pbar_ly.valueChanged.connect(self.ui.pbar_ly.update)
-        self.ui.pbar_rx.valueChanged.connect(self.ui.pbar_rx.update)
-        self.ui.pbar_ry.valueChanged.connect(self.ui.pbar_ry.update)
-        self.ui.pbar_l2.valueChanged.connect(self.ui.pbar_l2.update)
-        self.ui.pbar_r2.valueChanged.connect(self.ui.pbar_r2.update)
-        self.ui.pbar_a.valueChanged.connect(self.ui.pbar_a.update)
-        self.ui.pbar_b.valueChanged.connect(self.ui.pbar_b.update)
-        self.ui.pbar_x.valueChanged.connect(self.ui.pbar_x.update)
-        self.ui.pbar_y.valueChanged.connect(self.ui.pbar_y.update)
-        self.ui.pbar_back.valueChanged.connect(self.ui.pbar_back.update)
-        self.ui.pbar_guide.valueChanged.connect(self.ui.pbar_guide.update)
-        self.ui.pbar_start.valueChanged.connect(self.ui.pbar_start.update)
-        self.ui.pbar_l3.valueChanged.connect(self.ui.pbar_l3.update)
-        self.ui.pbar_r3.valueChanged.connect(self.ui.pbar_r3.update)
-        self.ui.pbar_l1.valueChanged.connect(self.ui.pbar_l1.update)
-        self.ui.pbar_r1.valueChanged.connect(self.ui.pbar_r1.update)
-        self.ui.pbar_dpad_0.valueChanged.connect(self.ui.pbar_dpad_0.update)
-        self.ui.pbar_dpad_up.valueChanged.connect(self.ui.pbar_dpad_up.update)
-        self.ui.pbar_dpad_down.valueChanged.connect(self.ui.pbar_dpad_down.update)
-        self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.update)
-        self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.update)
+        self.force_instant_pbar_updates()
 
         # Configure initial State
         self.load_indicators()
@@ -170,6 +149,30 @@ class DriveStationWindow(QMainWindow):
         dialog = AboutDialog(self)
         dialog.exec()
     
+    def force_instant_pbar_updates(self):
+        self.ui.pbar_lx.valueChanged.connect(self.ui.pbar_lx.update)
+        self.ui.pbar_ly.valueChanged.connect(self.ui.pbar_ly.update)
+        self.ui.pbar_rx.valueChanged.connect(self.ui.pbar_rx.update)
+        self.ui.pbar_ry.valueChanged.connect(self.ui.pbar_ry.update)
+        self.ui.pbar_l2.valueChanged.connect(self.ui.pbar_l2.update)
+        self.ui.pbar_r2.valueChanged.connect(self.ui.pbar_r2.update)
+        self.ui.pbar_a.valueChanged.connect(self.ui.pbar_a.update)
+        self.ui.pbar_b.valueChanged.connect(self.ui.pbar_b.update)
+        self.ui.pbar_x.valueChanged.connect(self.ui.pbar_x.update)
+        self.ui.pbar_y.valueChanged.connect(self.ui.pbar_y.update)
+        self.ui.pbar_back.valueChanged.connect(self.ui.pbar_back.update)
+        self.ui.pbar_guide.valueChanged.connect(self.ui.pbar_guide.update)
+        self.ui.pbar_start.valueChanged.connect(self.ui.pbar_start.update)
+        self.ui.pbar_l3.valueChanged.connect(self.ui.pbar_l3.update)
+        self.ui.pbar_r3.valueChanged.connect(self.ui.pbar_r3.update)
+        self.ui.pbar_l1.valueChanged.connect(self.ui.pbar_l1.update)
+        self.ui.pbar_r1.valueChanged.connect(self.ui.pbar_r1.update)
+        self.ui.pbar_dpad_0.valueChanged.connect(self.ui.pbar_dpad_0.update)
+        self.ui.pbar_dpad_up.valueChanged.connect(self.ui.pbar_dpad_up.update)
+        self.ui.pbar_dpad_down.valueChanged.connect(self.ui.pbar_dpad_down.update)
+        self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.update)
+        self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.update)
+
 
     ############################################################################
     # Gamepads
