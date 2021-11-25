@@ -139,6 +139,14 @@ class NetworkManager(QObject):
         # Attempt a connect now
         self.__connect_retry_timer.start(0)
 
+    def send_enable_command(self):
+        self.__cmd_socket.write(b'ENABLE\n')
+        self.__change_state(NetworkManager.State.Enabled)
+
+    def send_disable_command(self):
+        self.__cmd_socket.write(b'DISABLE\n')
+        self.__change_state(NetworkManager.State.Disabled)
+
     def send_controller_data(self, controller_num: int, some_data):
         pass
 

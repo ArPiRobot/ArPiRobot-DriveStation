@@ -345,18 +345,18 @@ class DriveStationWindow(QMainWindow):
     ############################################################################
 
     def disable_clicked(self):
-        # TODO: Use network manager to disable
-
         # Don't toggle the checked state of these buttons on click.
         # The checked state will be changed when network manager emits signal for state changed
         self.ui.btn_disable.setChecked(not self.ui.btn_disable.isChecked())
+        
+        self.net_manager.send_disable_command()
 
     def enable_clicked(self):
-        # TODO: Use network manager to enable
-
         # Don't toggle the checked state of these buttons on click.
         # The checked state will be changed when network manager emits signal for state changed
         self.ui.btn_enable.setChecked(not self.ui.btn_enable.isChecked())
+
+        self.net_manager.send_enable_command()
 
     # Slot for NetworkManager signal
     def state_changed(self, state):
