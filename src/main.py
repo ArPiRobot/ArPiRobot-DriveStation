@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication, QStyleFactory
 from PySide6.QtCore import Qt, QFile, QIODevice
 
 from drive_station import DriveStationWindow
-from util import theme_manager, settings_manager
+from util import theme_manager, settings_manager, logger
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -26,5 +26,8 @@ theme_manager.load_themes()
 theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
 
 ds = DriveStationWindow()
+
+logger.set_ds(ds)
+
 ds.show()
 app.exec()

@@ -1,7 +1,9 @@
 
 from enum import Enum
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Dict, List, Optional
+
+from util import logger
 
 from PySide6.QtCore import QObject, QProcess, QTime, QTimer, Signal
 from PySide6.QtNetwork import QAbstractSocket, QHostAddress, QTcpSocket, QUdpSocket
@@ -65,11 +67,6 @@ class NetworkManager(QObject):
     state_changed = Signal(State)
     nt_data_changed = Signal(str, str)
 
-    nt_sync_started = Signal()              # Started sync
-    nt_sync_to_ds_done = Signal()           # Got data from robot to DS
-    nt_sync_finished = Signal(int)          # Done sending data to robot from DS
-    nt_sync_aborted = Signal()              # Sync failed for some reason
-
     has_log_data = Signal(str)
 
 
@@ -97,8 +94,10 @@ class NetworkManager(QObject):
         super().__init__()
         self.__state = NetworkManager.State.Init
         self.__robot_address = ""
-        self.__net_table = {}
-        self.__nt_modifiable = False
+        self.__net_table: Dict[str, str] = {}
+        self.__nt_modifiable = True
+        self.__sync_keys: List[str] = []
+        self.__sync_values: List[str] = []
         self.__net_table_read_buf = bytearray()
         self.__log_read_buf = bytearray()
         
@@ -168,6 +167,8 @@ class NetworkManager(QObject):
         # Change robot address
         self.__robot_address = robot_address
 
+        logger.log_info(f"Looking for robot at '{self.__robot_address}'")
+
         # Attempt a connect now
         self.__connect_retry_timer.start(0)
 
@@ -210,7 +211,7 @@ class NetworkManager(QObject):
     def __nt_start_sync(self):
         if not self.__nt_modifiable:
             return # Already syncing
-        self.nt_sync_started.emit()
+        logger.log_info("Starting network table sync.")
         self.__nt_modifiable = False
     
     def __nt_finish_sync(self, keys: List[str], values: List[str]):
@@ -223,13 +224,16 @@ class NetworkManager(QObject):
             self.__net_table[key] = value
             self.nt_data_changed.emit(key, value)
 
-        self.nt_sync_to_ds_done.emit()
+        logger.log_debug(f"Got {len(keys)} entries from robot.")
+        logger.log_debug("Done syncing keys from robot to DS. Syncing from DS to robot.")
 
         # Next, send anything the robot was missing (that the DS has) to the robot.
         # Only send the robot keys it did not have
         for key in self.__net_table.keys():
             if key not in keys:
                 self.__send_nt_key(key)
+        
+        logger.log_debug("Done syncing data from DS to robot.")
 
         # Send sync stop data to finish sync
         self.__send_nt_raw(self.NT_SYNC_STOP_DATA)
@@ -238,7 +242,7 @@ class NetworkManager(QObject):
         self.__nt_modifiable = True
 
         # Emit signal after everything complete
-        self.nt_sync_finished.emit(len(keys))
+        logger.log_info("Network table sync complete.")
 
     def __nt_abort_sync(self):
         if self.__nt_modifiable:
@@ -250,7 +254,7 @@ class NetworkManager(QObject):
             self.__send_nt_raw(self.NT_SYNC_STOP_DATA)
         
         # Inform DS (so it can log and unlock indicator panel)
-        self.nt_sync_aborted.emit()
+        logger.log_warning("Network table sync aborted.")
 
         # Allow modifications again
         self.__nt_modifiable = True
@@ -261,7 +265,7 @@ class NetworkManager(QObject):
             data = bytearray()
             data.extend(key.encode())
             data.extend(b'\xff')
-            data.extend(self.__net_table[key])
+            data.extend(self.__net_table[key].encode())
             data.extend(b'\n')
             self.__net_table_socket.write(bytes(data))
 
@@ -300,6 +304,12 @@ class NetworkManager(QObject):
 
     def __ping_finished(self, exit_code: int, exit_status: QProcess.ExitStatus):
         if exit_status == QProcess.ExitStatus.NormalExit and exit_code == 0:
+
+            # If the state was previously NoNetwork this is the first time ping succeeded. Log.
+            if self.__state == NetworkManager.State.NoNetwork:
+                logger.log_info(f"Found robot at '{self.__robot_address}'")
+                logger.log_info("Attempting to connect to robot program.")
+
             # Something found at the robot address. Attempt to connect.
             self.__change_state(NetworkManager.State.NoRobotProgram)
             
@@ -312,6 +322,13 @@ class NetworkManager(QObject):
             self.__net_table_socket.connectToHost(addr, self.NET_TABLE_PORT)
             self.__log_socket.connectToHost(addr, self.LOG_PORT)
         else:
+
+            # If the state was previously NoRobotProgram, this indicates that a 
+            # network error has occurred and caused communication between PC and robot to fail.
+            # Log
+            if self.__state == NetworkManager.State.NoRobotProgram:
+                logger.log_error(f"No longer able to find robot at '{self.__robot_address}'")
+
             # Cannot ping the robot address. No robot found at this address.
             self.__change_state(NetworkManager.State.NoNetwork)
 
@@ -360,6 +377,8 @@ class NetworkManager(QObject):
             # Cancel the connect timeout timer
             self.__connect_timeout_timer.stop()
 
+            logger.log_info("Connected to robot.")
+
             # Request the robot begin a net table sync
             self.__cmd_socket.write(self.CMD_NT_SYNC)
 
@@ -373,6 +392,9 @@ class NetworkManager(QObject):
         elif sock_error == QAbstractSocket.SocketError.RemoteHostClosedError:
             # This will likely occur at the same time for all TCP sockets. Only handle for the first one
             if self.__is_connected():
+
+                logger.log_warning("Lost connection to robot")
+
                 # If any socket is disconnected disconnect all sockets
                 self.__cmd_socket.disconnectFromHost()
                 self.__net_table_socket.disconnectFromHost()
@@ -396,6 +418,10 @@ class NetworkManager(QObject):
             # Try connect again later
             self.__retry_connect_long()
 
+    ############################################################################
+    # Incoming data handlers
+    ############################################################################
+
     def __net_table_ready_read(self):
         new_data = bytes(self.__net_table_socket.readAll())
         self.__net_table_read_buf.extend(new_data)
@@ -407,8 +433,64 @@ class NetworkManager(QObject):
         end_pos = -1
 
         # There could be multiple key / value pairs in this array. Handle all of them
-        # TODO: THIS!
+        while True:
+            end_pos = self.__net_table_read_buf.find(b'\n')
+            if end_pos == -1:
+                break
+
+            # Subset is one message
+            subset = self.__net_table_read_buf[0 : end_pos + 1]
+
+            # Handle the single message
+            if subset == self.NT_SYNC_START_DATA:
+                self.__sync_keys = []
+                self.__sync_values = []
+                self.__nt_start_sync()
+            elif subset == self.NT_SYNC_STOP_DATA:
+                self.__nt_finish_sync(self.__sync_keys, self.__sync_values)
+            else:
+                # Make sure the message has a key/value delimiter
+                delim_pos = subset.find(b'\xff')
+                if delim_pos > -1:
+                    # Data is valid. Get key and value
+                    key = subset[0:delim_pos].decode()
+                    value = subset[delim_pos + 1 : len(subset) - 1].decode()
+                    
+                    if self.__nt_modifiable:
+                        # Not in sync. Set now
+                        self.__net_table[key] = value
+                        self.nt_data_changed.emit(key, value)
+                    else:
+                        # In sync. Store for when sync is done.
+                        self.__sync_keys.append(key)
+                        self.__sync_values.append(value)
+
+            # Remove the subset that has already been handled from the buffer
+            self.__net_table_read_buf = self.__net_table_read_buf[end_pos+1:len(self.__net_table_read_buf)]
+
+
 
     def __log_ready_read(self):
-        # TODO: Do this
-        pass
+        # Append data until there is a complete line
+        new_data = bytes(self.__log_socket.readAll())
+        self.__log_read_buf.extend(new_data)
+
+        if(self.__log_read_buf.find(b'\n') != -1):
+
+            # Could be multiple newlines
+            lines = self.__log_read_buf.split(b'\n')
+
+            # If buffer ends with newline no data to leave in the buffer
+            if self.__log_read_buf.endswith(b'\n'):
+                self.__log_read_buf = bytearray()
+
+                # If it ended with a newline the lines array will end with b''. 
+                # This should not be logged.
+                del lines[len(lines) - 1]
+            else:
+                last_newline = self.__log_read_buf.rfind(b'\n')
+                self.__log_read_buf = self.__log_read_buf[last_newline+1:len(self.__log_read_buf)]
+                print(self.__log_read_buf)
+
+            for line in lines:
+                logger.log_from_robot(line.decode())

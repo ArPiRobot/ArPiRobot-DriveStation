@@ -110,9 +110,6 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.lst_controllers.viewport().installEventFilter(self)
 
-        # TODO: Handle net table sync events
-        # TODO: Logging system
-        # TODO: More logging, more logging, more logging. 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
@@ -130,7 +127,7 @@ class DriveStationWindow(QMainWindow):
 
         # Start gamepad and network managers
         self.gamepad_manager.start()
-        self.net_manager.set_robot_address(settings_manager.robot_address)
+        QTimer.singleShot(1000, lambda: self.net_manager.set_robot_address(settings_manager.robot_address))
 
         # Start after gamepad manager
         self.controller_status_timer.start(16) # ~ 60 updates / second
@@ -187,6 +184,20 @@ class DriveStationWindow(QMainWindow):
         self.ui.pbar_dpad_left.valueChanged.connect(self.ui.pbar_dpad_left.update)
         self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.update)
 
+    def log_debug(self, msg: str):
+        self.ui.txt_ds_log.appendPlainText(f"[DS DEBUG]: {msg}")
+
+    def log_info(self, msg: str):
+        self.ui.txt_ds_log.appendPlainText(f"[DS INFO]: {msg}")
+
+    def log_warning(self, msg: str):
+        self.ui.txt_ds_log.appendPlainText(f"[DS WARNING]: {msg}")
+
+    def log_error(self, msg: str):
+        self.ui.txt_ds_log.appendPlainText(f"[DS ERROR]: {msg}")
+    
+    def log_from_robot(self, msg: str):
+        self.ui.txt_robot_log.appendPlainText(msg)
 
     ############################################################################
     # Gamepads

@@ -164,8 +164,32 @@ class SettingsManager:
         self.__settings.setValue(self.__LARGE_FONTS_KEY, value)
 
 
+class Logger:
+    def __init__(self):
+        self.__ds = None
+    
+    def set_ds(self, ds):
+        self.__ds = ds
+
+    def log_debug(self, msg: str):
+        self.__ds.log_debug(msg)
+
+    def log_info(self, msg: str):
+        self.__ds.log_info(msg)
+
+    def log_warning(self, msg: str):
+        self.__ds.log_warning(msg)
+
+    def log_error(self, msg: str):
+        self.__ds.log_error(msg)
+    
+    def log_from_robot(self, msg: str):
+        self.__ds.log_from_robot(msg)
+
+
 theme_manager: ThemeManager = ThemeManager()
 settings_manager: SettingsManager = SettingsManager()
+logger: Logger = Logger()
 
 
 class HTMLDelegate(QStyledItemDelegate):
