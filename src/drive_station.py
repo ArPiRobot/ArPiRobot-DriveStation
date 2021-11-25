@@ -11,7 +11,7 @@ from PySide6.QtCore import QFile, QIODevice, QModelIndex, QTimer, Qt, QRect, QDi
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
 from util import HTMLDelegate, settings_manager, theme_manager
-from network import State, NetworkManager
+from network import NetworkManager
 from about_dialog import AboutDialog
 
 import json
@@ -116,15 +116,16 @@ class DriveStationWindow(QMainWindow):
 
         # Configure initial State
         self.load_indicators()
-        self.state_changed(State.NoNetwork)
-        self.set_battery_voltage(0.0, settings_manager.vbat_main)
+        self.set_battery_voltage(0, settings_manager.vbat_main)
+        self.set_robot_program_good(True)
 
         # Start gamepad and network managers
         self.gamepad_manager.start()
-        # TODO: Start network manager
+        self.net_manager.set_robot_address(settings_manager.robot_address)
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
+        self.net_manager.stop()
         self.gamepad_manager.stop()
 
     def open_settings(self):
@@ -135,9 +136,9 @@ class DriveStationWindow(QMainWindow):
 
             dialog.save_settings()
 
-            # Update robot address if changed
+            # Disconnect if robot address changed
             if settings_manager.robot_address != old_address:
-                self.net_manager.robot_address_changed()
+                self.net_manager.set_robot_address(settings_manager.robot_address)
 
             # Update main battery voltage (but don't change current voltage)
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
@@ -335,6 +336,10 @@ class DriveStationWindow(QMainWindow):
             self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_red")
         self.ui.lbl_bat_voltage.setText("{:.2f} V".format(voltage))
 
+        # Force stylesheet to be reapplied due to object name change
+        self.ui.pnl_bat_bg.style().unpolish(self.ui.pnl_bat_bg)
+        self.ui.pnl_bat_bg.style().polish(self.ui.pnl_bat_bg)
+
     ############################################################################
     # State Changes
     ############################################################################
@@ -355,13 +360,13 @@ class DriveStationWindow(QMainWindow):
 
     # Slot for NetworkManager signal
     def state_changed(self, state):
-        if state == State.Disabled:
+        if state == NetworkManager.State.Disabled:
             self.set_state_disabled()
-        elif state == State.Enabled:
+        elif state == NetworkManager.State.Enabled:
             self.set_state_enabled()
-        elif state == State.NoNetwork:
+        elif state == NetworkManager.State.NoNetwork:
             self.set_state_no_network()
-        elif state == State.NoRobotProgram:
+        elif state == NetworkManager.State.NoRobotProgram:
             self.set_state_no_program()
 
     def set_state_no_network(self):
@@ -402,8 +407,16 @@ class DriveStationWindow(QMainWindow):
         else:
             self.ui.pnl_net_bg.setObjectName("pnl_net_bg_red")
 
+        # Force stylesheet to be reapplied due to object name change
+        self.ui.pnl_net_bg.style().unpolish(self.ui.pnl_net_bg)
+        self.ui.pnl_net_bg.style().polish(self.ui.pnl_net_bg)
+
     def set_robot_program_good(self, good: bool):
         if good:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
+        
+        # Force stylesheet to be reapplied due to object name change
+        self.ui.pnl_program_bg.style().unpolish(self.ui.pnl_program_bg)
+        self.ui.pnl_program_bg.style().polish(self.ui.pnl_program_bg)
