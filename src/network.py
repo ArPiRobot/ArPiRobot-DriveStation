@@ -175,12 +175,10 @@ class NetworkManager(QObject):
     def send_enable_command(self):
         if self.__is_connected():
             self.__cmd_socket.write(self.CMD_ENABLE)
-            self.__change_state(NetworkManager.State.Enabled)
 
     def send_disable_command(self):
         if self.__is_connected():
             self.__cmd_socket.write(self.CMD_DISABLE)
-            self.__change_state(NetworkManager.State.Disabled)
 
     def send_controller_data(self, controller_data: bytes):
         if self.__is_connected():
@@ -190,11 +188,27 @@ class NetworkManager(QObject):
         # THIS IS A SET FROM THE UI IN THE DRIVE STATION
         # DO NOT CALL THIS FUNCTION FOR THINGS WHERE THE ROBOT CHANGED NET TABLE DATA
         # THIS WILL NOT EMIT A DATA CHANGED EVENT
+
+        # robotstate and vbat0 are special values. Do not allow direct set from ui.
+        if key == "robotstate" or key == "vbat0":
+            return
+
         if self.__nt_modifiable:
             self.__net_table[key] = value
             self.__send_nt_key[key]
             return True
         return False
+    
+    def __nt_set_from_robot(self, key: str, value: str):
+        # robotstate is special key used to tell the DS what state the robot is in
+        if key == "robotstate":
+            if value == "DISABLED":
+                self.__change_state(NetworkManager.State.Disabled)
+            elif value == "ENABLED":
+                self.__change_state(NetworkManager.State.Enabled)
+
+        self.__net_table[key] = value
+        self.nt_data_changed.emit(key, value)
     
     def get_net_table(self, key: str) -> str:
         if key not in self.__net_table:
@@ -221,8 +235,7 @@ class NetworkManager(QObject):
         for i in range(len(keys)):
             key = keys[i]
             value = values[i]
-            self.__net_table[key] = value
-            self.nt_data_changed.emit(key, value)
+            self.__nt_set_from_robot(key, value)
 
         logger.log_debug(f"Got {len(keys)} entries from robot.")
         logger.log_debug("Done syncing keys from robot to DS. Syncing from DS to robot.")
@@ -455,11 +468,10 @@ class NetworkManager(QObject):
                     # Data is valid. Get key and value
                     key = subset[0:delim_pos].decode()
                     value = subset[delim_pos + 1 : len(subset) - 1].decode()
-                    
+
                     if self.__nt_modifiable:
                         # Not in sync. Set now
-                        self.__net_table[key] = value
-                        self.nt_data_changed.emit(key, value)
+                        self.__nt_set_from_robot(key, value)
                     else:
                         # In sync. Store for when sync is done.
                         self.__sync_keys.append(key)
