@@ -206,6 +206,7 @@ class NetworkManager(QObject):
                 self.__change_state(NetworkManager.State.Disabled)
             elif value == "ENABLED":
                 self.__change_state(NetworkManager.State.Enabled)
+            return
 
         self.__net_table[key] = value
         self.nt_data_changed.emit(key, value)
