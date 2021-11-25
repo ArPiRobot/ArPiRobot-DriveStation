@@ -1,6 +1,7 @@
 
 from enum import Enum
 from abc import ABC, abstractmethod
+from typing import List, Optional
 
 from PySide6.QtCore import QObject, QProcess, QTime, QTimer, Signal
 from PySide6.QtNetwork import QAbstractSocket, QHostAddress, QTcpSocket, QUdpSocket
@@ -48,6 +49,7 @@ import platform
 # Log port  (TCP 8093):
 #     Log messages are sent as strings from the robot to the drive station on this port. No data is sent to the robot
 #     from the drive station on this port.
+            
 
 
 class NetworkManager(QObject):
@@ -63,6 +65,30 @@ class NetworkManager(QObject):
     state_changed = Signal(State)
     nt_data_changed = Signal(str, str)
 
+    nt_sync_started = Signal()              # Started sync
+    nt_sync_to_ds_done = Signal()           # Got data from robot to DS
+    nt_sync_finished = Signal(int)          # Done sending data to robot from DS
+    nt_sync_aborted = Signal()              # Sync failed for some reason
+
+    has_log_data = Signal(str)
+
+
+    # Constants
+    CONTROLLER_PORT = 8090
+    COMMAND_PORT = 8091
+    NET_TABLE_PORT = 8092
+    LOG_PORT = 8093
+
+    SHORT_RECONNECT = 1500
+    LONG_RECONNECT = 5000
+
+    CMD_ENABLE = b'ENABLE\n'
+    CMD_DISABLE = b'DISABLE\n'
+    CMD_NT_SYNC = b'NT_SYNC\n'
+
+    NT_SYNC_START_DATA = b'\xff\xff\n'
+    NT_SYNC_STOP_DATA = b'\xff\xff\xff\n'
+
     ############################################################################
     # External facing functions
     ############################################################################
@@ -72,6 +98,9 @@ class NetworkManager(QObject):
         self.__state = NetworkManager.State.Init
         self.__robot_address = ""
         self.__net_table = {}
+        self.__nt_modifiable = False
+        self.__net_table_read_buf = bytearray()
+        self.__log_read_buf = bytearray()
         
         # Socket objects
         self.__cmd_socket = QTcpSocket(self)
@@ -130,6 +159,9 @@ class NetworkManager(QObject):
             self.__net_table_socket.abort()
             self.__log_socket.abort()
 
+        # Could have been mid sync. Make sure it is aborted before connecting next time.
+        self.__nt_abort_sync()
+
         # Set state to no network
         self.__change_state(NetworkManager.State.NoNetwork)
 
@@ -140,19 +172,102 @@ class NetworkManager(QObject):
         self.__connect_retry_timer.start(0)
 
     def send_enable_command(self):
-        self.__cmd_socket.write(b'ENABLE\n')
-        self.__change_state(NetworkManager.State.Enabled)
+        if self.__is_connected():
+            self.__cmd_socket.write(self.CMD_ENABLE)
+            self.__change_state(NetworkManager.State.Enabled)
 
     def send_disable_command(self):
-        self.__cmd_socket.write(b'DISABLE\n')
-        self.__change_state(NetworkManager.State.Disabled)
+        if self.__is_connected():
+            self.__cmd_socket.write(self.CMD_DISABLE)
+            self.__change_state(NetworkManager.State.Disabled)
 
     def send_controller_data(self, controller_data: bytes):
         if self.__is_connected():
             self.__controller_socket.writeDatagram(controller_data, QHostAddress(self.__robot_address), 8090)
 
-    def set_net_table(self, key: str, value: str):
-        pass
+    def set_net_table(self, key: str, value: str) -> bool:
+        # THIS IS A SET FROM THE UI IN THE DRIVE STATION
+        # DO NOT CALL THIS FUNCTION FOR THINGS WHERE THE ROBOT CHANGED NET TABLE DATA
+        # THIS WILL NOT EMIT A DATA CHANGED EVENT
+        if self.__nt_modifiable:
+            self.__net_table[key] = value
+            self.__send_nt_key[key]
+            return True
+        return False
+    
+    def get_net_table(self, key: str) -> str:
+        if key not in self.__net_table:
+            return ""
+        return self.__net_table[key]
+    
+    def has_net_table(self, key: str) -> bool:
+        return key in self.__net_table
+
+    ############################################################################
+    # Network Table
+    ############################################################################
+
+    def __nt_start_sync(self):
+        if not self.__nt_modifiable:
+            return # Already syncing
+        self.nt_sync_started.emit()
+        self.__nt_modifiable = False
+    
+    def __nt_finish_sync(self, keys: List[str], values: List[str]):
+        
+        # First, set or add the values from the robot.
+        # The list of keys is everything the robot has in its network table
+        for i in range(len(keys)):
+            key = keys[i]
+            value = values[i]
+            self.__net_table[key] = value
+            self.nt_data_changed.emit(key, value)
+
+        self.nt_sync_to_ds_done.emit()
+
+        # Next, send anything the robot was missing (that the DS has) to the robot.
+        # Only send the robot keys it did not have
+        for key in self.__net_table.keys():
+            if key not in keys:
+                self.__send_nt_key(key)
+
+        # Send sync stop data to finish sync
+        self.__send_nt_raw(self.NT_SYNC_STOP_DATA)
+
+        # Make sure network table is modifiable again
+        self.__nt_modifiable = True
+
+        # Emit signal after everything complete
+        self.nt_sync_finished.emit(len(keys))
+
+    def __nt_abort_sync(self):
+        if self.__nt_modifiable:
+            return # Not syncing
+        
+        if self.__is_connected():
+            # If sync failed for any reason other than a disconnect send the 
+            # sync end data to unlock the robot's net table
+            self.__send_nt_raw(self.NT_SYNC_STOP_DATA)
+        
+        # Inform DS (so it can log and unlock indicator panel)
+        self.nt_sync_aborted.emit()
+
+        # Allow modifications again
+        self.__nt_modifiable = True
+
+
+    def __send_nt_key(self, key: str):
+        if self.__is_connected():
+            data = bytearray()
+            data.extend(key.encode())
+            data.extend(b'\xff')
+            data.extend(self.__net_table[key])
+            data.extend(b'\n')
+            self.__net_table_socket.write(bytes(data))
+
+    def __send_nt_raw(self, data: bytes):
+        if self.__is_connected():
+            self.__net_table_socket.write(data)
 
     ############################################################################
     # Internal connection / state functions
@@ -193,9 +308,9 @@ class NetworkManager(QObject):
 
             # Attempt connection (see TCP slots below for event handling)
             addr = QHostAddress(self.__robot_address)
-            self.__cmd_socket.connectToHost(addr, 8091)
-            self.__net_table_socket.connectToHost(addr, 8092)
-            self.__log_socket.connectToHost(addr, 8093)
+            self.__cmd_socket.connectToHost(addr, self.COMMAND_PORT)
+            self.__net_table_socket.connectToHost(addr, self.NET_TABLE_PORT)
+            self.__log_socket.connectToHost(addr, self.LOG_PORT)
         else:
             # Cannot ping the robot address. No robot found at this address.
             self.__change_state(NetworkManager.State.NoNetwork)
@@ -220,11 +335,11 @@ class NetworkManager(QObject):
     
     def __retry_connect_short(self):
         # Retry the connection after a "short" duration
-        self.__connect_retry_timer.start(1500)
+        self.__connect_retry_timer.start(self.SHORT_RECONNECT)
     
     def __retry_connect_long(self):
         # Retry the connection after a "longer" duration
-        self.__connect_retry_timer.start(5000)
+        self.__connect_retry_timer.start(self.LONG_RECONNECT)
 
     def __is_connected(self) -> bool:
         # Helper to make next if statement more readable
@@ -245,6 +360,9 @@ class NetworkManager(QObject):
             # Cancel the connect timeout timer
             self.__connect_timeout_timer.stop()
 
+            # Request the robot begin a net table sync
+            self.__cmd_socket.write(self.CMD_NT_SYNC)
+
             # Connected to the robot. The robot is disabled until an enable command is sent.
             self.__change_state(NetworkManager.State.Disabled)
 
@@ -259,6 +377,9 @@ class NetworkManager(QObject):
                 self.__cmd_socket.disconnectFromHost()
                 self.__net_table_socket.disconnectFromHost()
                 self.__log_socket.disconnectFromHost()
+
+                # Connection could have been lost during sync
+                self.__nt_abort_sync()
 
                 # For now, assume the robot can still be pingged
                 # All that is known is the connection to running program was lost
@@ -276,7 +397,18 @@ class NetworkManager(QObject):
             self.__retry_connect_long()
 
     def __net_table_ready_read(self):
-        pass
+        new_data = bytes(self.__net_table_socket.readAll())
+        self.__net_table_read_buf.extend(new_data)
+
+        # Data is encoded as
+        # key_utf8,255,value_utf8,\n
+        # This could be repeated multiple times in the buffer
+
+        end_pos = -1
+
+        # There could be multiple key / value pairs in this array. Handle all of them
+        # TODO: THIS!
 
     def __log_ready_read(self):
+        # TODO: Do this
         pass

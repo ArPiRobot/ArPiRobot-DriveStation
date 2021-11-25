@@ -11,6 +11,8 @@ QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 QApplication.setAttribute(Qt.AA_DontUseNativeMenuBar)
 
+# TODO: Stdout and Stderr redirect to log file (along with log data shown in DS log window)
+
 try:
     import ctypes
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("com.arpirobot.arpirobot-drivestation")

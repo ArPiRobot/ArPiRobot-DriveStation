@@ -110,6 +110,9 @@ class DriveStationWindow(QMainWindow):
 
         self.ui.lst_controllers.viewport().installEventFilter(self)
 
+        # TODO: Handle net table sync events
+        # TODO: Logging system
+        # TODO: More logging, more logging, more logging. 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
 
