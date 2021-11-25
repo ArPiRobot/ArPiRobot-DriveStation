@@ -16,6 +16,7 @@ from about_dialog import AboutDialog
 
 import json
 import sdl2
+import math
 
 
 class ControllerListItem(QListWidgetItem):
@@ -86,7 +87,12 @@ class DriveStationWindow(QMainWindow):
         # Timer to periodically update the bars for the selected controller
         self.controller_status_timer = QTimer()
         self.controller_status_timer.timeout.connect(self.update_controller_bars)
-        self.controller_status_timer.start(16) # ~ 60 updates / second
+
+        # Timer to send controller data to the robot
+        self.controller_send_timer = QTimer()
+        self.controller_send_timer.timeout.connect(self.send_controller_data)
+        
+        
 
         # Non-UI element variables
         self.voltage: float = 0.0
@@ -122,6 +128,10 @@ class DriveStationWindow(QMainWindow):
         # Start gamepad and network managers
         self.gamepad_manager.start()
         self.net_manager.set_robot_address(settings_manager.robot_address)
+
+        # Start after gamepad manager
+        self.controller_status_timer.start(16) # ~ 60 updates / second
+        self.controller_send_timer.start(20)
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
@@ -248,7 +258,72 @@ class DriveStationWindow(QMainWindow):
                 self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP) or
                 self.gamepad_manager.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_DOWN)
             ) else 1)
-            
+
+    def send_controller_data(self):
+        for i in range(self.ui.lst_controllers.count()):
+            item = self.ui.lst_controllers.item(i)
+            if item.checkState() == Qt.Checked:
+                device_id = item.handle
+                self.net_manager.send_controller_data(self.get_controller_data(i, device_id))
+
+    def get_controller_data(self, controller_num: int, device_id: int) -> bytes:
+        # Constants since these are known for SDL gamepads.
+        # If SDL joysticks are ever used these would need to be determined using SDL functions
+        axis_count = 6
+        button_count = 11
+        dpad_count = 1
+
+        # Packet = controller_num, axis_count, button_count, dpad_count, 2 bytes per axis, 1 byte per 8 buttons, 1 byte per two dpads, '\n'
+        # Axes are signed 16-bit integers sent across two bytes (big endian)
+        # Buttons are 1 bit per button (8 buttons per byte)
+        # Dpads are 4 bits per dpad (2 dpads per byte)
+        # packet_size = 5 + 2 * axis_count + int(math.ceil(button_count / 8.0)) + int(math.ceil(dpad_count / 2.0))
+
+        buffer = bytearray()
+
+        # Prefix info
+        buffer.extend(controller_num.to_bytes(length=1, byteorder='big'))
+        buffer.extend(axis_count.to_bytes(length=1, byteorder='big'))
+        buffer.extend(button_count.to_bytes(length=1, byteorder='big'))
+        buffer.extend(dpad_count.to_bytes(length=1, byteorder='big'))
+
+        # Encode axes
+        for i in range(axis_count):
+            val = self.gamepad_manager.get_axis(device_id, i)
+            buffer.extend(val.to_bytes(length=2, byteorder='big', signed=True))
+        
+        # Encode buttons
+        for i in range(math.ceil(button_count / 8.0)):
+            b = 0
+            for j in range(8):
+                # Shift bits left
+                b = (b << 1) & 0xFF
+
+                # If there are still buttons set next bit
+                if i * 8 + j < button_count:
+                    val = self.gamepad_manager.get_button(device_id, i * 8 + j)
+                    b |= 1 if val else 0
+            buffer.extend(b.to_bytes(length=1, byteorder='big'))
+
+        # Encode dpad data
+        for i in range(math.ceil(dpad_count / 2.0)):
+            b = 0
+            for j in range(2):
+                # Shift bits left
+                b = (b << 4) & 0xFF
+
+                # Add data if there are still dpads
+                if i * 2 + j < dpad_count:
+                    val = self.gamepad_manager.get_dpad_pos_num(device_id)
+                    b |= (val & 0x0F)
+            buffer.extend(b.to_bytes(length=1, byteorder='big'))
+
+        # End of packet character
+        buffer.extend(b'\n')
+
+        return bytes(buffer)
+
+
 
     ############################################################################
     # Indicators & Network Table
@@ -348,7 +423,7 @@ class DriveStationWindow(QMainWindow):
         # Don't toggle the checked state of these buttons on click.
         # The checked state will be changed when network manager emits signal for state changed
         self.ui.btn_disable.setChecked(not self.ui.btn_disable.isChecked())
-        
+
         self.net_manager.send_disable_command()
 
     def enable_clicked(self):

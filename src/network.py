@@ -147,8 +147,9 @@ class NetworkManager(QObject):
         self.__cmd_socket.write(b'DISABLE\n')
         self.__change_state(NetworkManager.State.Disabled)
 
-    def send_controller_data(self, controller_num: int, some_data):
-        pass
+    def send_controller_data(self, controller_data: bytes):
+        if self.__is_connected():
+            self.__controller_socket.writeDatagram(controller_data, QHostAddress(self.__robot_address), 8090)
 
     def set_net_table(self, key: str, value: str):
         pass

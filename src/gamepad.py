@@ -72,6 +72,30 @@ class GamepadManager(QObject):
         dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
         value = sdl2.SDL_GameControllerGetButton(dev, button)
         return value == 1
+    
+    def get_dpad_pos_num(self, device_id: int) -> int:
+        up = self.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP)
+        down = self.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+        left = self.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+        right = self.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
+
+        if up:
+            if right:
+                return 2
+            if left:
+                return 8
+            return 1
+        elif down:
+            if left:
+                return 6
+            if right:
+                return 4
+            return 5
+        if left:
+            return 7
+        if right:
+            return 3
+        return 0
 
     def handle_events(self):
         # Poll events calls pump events, which must be called from thread that ran SDL_Init
