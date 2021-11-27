@@ -421,7 +421,7 @@ class DriveStationWindow(QMainWindow):
             self.set_battery_voltage(float(value), settings_manager.vbat_main)
         else:
             # Update indicator if any
-            for key in self.indicators.keys():
+            if key in self.indicators.keys():
                 self.indicators[key].value = value
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
