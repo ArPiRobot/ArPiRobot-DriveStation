@@ -135,6 +135,10 @@ class NetworkManager(QObject):
         self.__net_table_socket.readyRead.connect(self.__net_table_ready_read)
         self.__log_socket.readyRead.connect(self.__log_ready_read)
 
+    @property
+    def current_state(self) -> State:
+        return self.__state
+
     def stop(self):
         # Intended to be called before closing DS application
         self.__cmd_socket.abort()

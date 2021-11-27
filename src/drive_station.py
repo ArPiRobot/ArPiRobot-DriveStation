@@ -10,7 +10,7 @@ from PySide6.QtCore import QFile, QIODevice, QModelIndex, QTimer, Qt, QRect, QDi
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
-from util import HTMLDelegate, settings_manager, theme_manager
+from util import HTMLDelegate, settings_manager, theme_manager, logger
 from network import NetworkManager
 from about_dialog import AboutDialog
 
@@ -208,13 +208,22 @@ class DriveStationWindow(QMainWindow):
     def gamepad_connected(self, device_id: int, device_name: str):
         self.ui.lst_controllers.addItem(ControllerListItem(device_name, device_id, self.ui.lst_controllers.row))
 
+    # TODO: Gamepad disconnect detection bug.
+    # Details: Windows 10 PC
+    #          SDL2 from pysdl2-dll
+    #          Connect controller. Check. Select. Move controls. See effects in UI. Then disconnect.
+    #          Disconnect seems to not work
     def gamepad_disconnected(self, device_id: int):
         for i in range(self.ui.lst_controllers.count()):
             item: ControllerListItem = self.ui.lst_controllers.item(i)
             if item.handle == device_id:
                 self.ui.lst_controllers.takeItem(i)
                 break
-        # TODO: Disable robot
+        # If a gamepad is disconnected disable the robot
+        # Gamepad numbers may have changed
+        if self.net_manager.current_state == NetworkManager.State.Enabled:
+            logger.log_warning("Gamepad disconnected. Disabling robot as controller numbers may have changed.")
+            self.net_manager.send_disable_command()
     
     def update_controller_bars(self):
         self.gamepad_manager.update()
