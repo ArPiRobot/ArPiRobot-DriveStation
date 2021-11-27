@@ -115,7 +115,7 @@ class SettingsManager:
 
         self.__DEFAULT_ROBOT_IP = "192.168.10.1"
         self.__DEFAULT_VBAT_MAIN = 7.5
-        self.__DEFAULT_THEME = "Default"
+        self.__DEFAULT_THEME = "Light"
         self.__DEFAULT_LARGE_FONTS = False
 
         # Setup

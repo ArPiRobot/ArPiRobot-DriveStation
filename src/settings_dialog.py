@@ -16,7 +16,7 @@ class SettingsDialog(QDialog):
         self.ui.txt_robot_address.setFocus()
 
         # Manually create this list, so the order can be manually selected
-        self.ui.combox_themes.addItems(["Default", "Light", "Dark"])
+        self.ui.combox_themes.addItems(["Light", "Grey", "Dark"])
         self.ui.combox_themes.setCurrentText(settings_manager.theme)
 
         self.ui.chbox_larger_font.setChecked(settings_manager.larger_fonts)
