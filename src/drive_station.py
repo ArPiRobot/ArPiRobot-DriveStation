@@ -112,6 +112,8 @@ class DriveStationWindow(QMainWindow):
 
         self.net_manager.nt_data_changed.connect(self.nt_data_changed)
         self.net_manager.state_changed.connect(self.state_changed)
+        self.net_manager.nt_sync_started.connect(lambda: self.ui.pnl_net_table.setEnabled(False))
+        self.net_manager.nt_sync_finished.connect(lambda: self.ui.pnl_net_table.setEnabled(True))
 
         self.gamepad_manager.connected.connect(self.gamepad_connected)
         self.gamepad_manager.disconnected.connect(self.gamepad_disconnected)
@@ -349,7 +351,7 @@ class DriveStationWindow(QMainWindow):
             self.add_indicator_at(key, None)
 
     def clear_indicators(self):
-        for key, ind in self.indicators.items():
+        for key in self.indicators.keys():
             self.indicators[key].hide()
             self.indicators[key].deleteLater()
         self.indicators.clear()
@@ -357,8 +359,12 @@ class DriveStationWindow(QMainWindow):
     def add_indicator_at(self, key: str, geometry: Optional[QRect]):
         ind = IndicatorWidget(self.ui.pnl_net_table)
         ind.deleted.connect(self.indicator_deleted)
+        ind.value_changed.connect(self.indicator_value_changed)
         ind.key = key
-        # TODO: Get value from NetworkManager
+        if self.net_manager.has_net_table(key):
+            ind.value = self.net_manager.get_net_table(key)
+        else:
+            ind.value = ""
         if geometry is None:
             # Place indicator in center of panel
             panel_geom = self.ui.pnl_net_table.geometry()
@@ -406,13 +412,17 @@ class DriveStationWindow(QMainWindow):
             self.indicators[key].deleteLater()
             del self.indicators[key]
 
+    def indicator_value_changed(self, key: str, value: str):
+        self.net_manager.set_net_table(key, value)
+
     # Slot for NetworkManager signal
     def nt_data_changed(self, key: str, value: str):
         if key == "vbat0":
             self.set_battery_voltage(float(value), settings_manager.vbat_main)
         else:
-            # TODO: Update any indicators
-            pass
+            # Update indicator if any
+            for key in self.indicators.keys():
+                self.indicators[key].value = value
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
         if voltage >= nominal_bat_voltage:

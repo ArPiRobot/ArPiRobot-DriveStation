@@ -66,6 +66,8 @@ class NetworkManager(QObject):
     # Signals
     state_changed = Signal(State)
     nt_data_changed = Signal(str, str)
+    nt_sync_started = Signal()          # Used by UI to disable indicator panel
+    nt_sync_finished = Signal()         # Used by UI to enable indicator panel (could be finish or abort)
 
     has_log_data = Signal(str)
 
@@ -195,7 +197,7 @@ class NetworkManager(QObject):
 
         if self.__nt_modifiable:
             self.__net_table[key] = value
-            self.__send_nt_key[key]
+            self.__send_nt_key(key)
             return True
         return False
     
@@ -226,6 +228,7 @@ class NetworkManager(QObject):
     def __nt_start_sync(self):
         if not self.__nt_modifiable:
             return # Already syncing
+        self.nt_sync_started.emit()
         logger.log_info("Starting network table sync.")
         self.__nt_modifiable = False
     
@@ -255,6 +258,8 @@ class NetworkManager(QObject):
         # Make sure network table is modifiable again
         self.__nt_modifiable = True
 
+        self.nt_sync_finished.emit()
+
         # Emit signal after everything complete
         logger.log_info("Network table sync complete.")
 
@@ -267,6 +272,8 @@ class NetworkManager(QObject):
             # sync end data to unlock the robot's net table
             self.__send_nt_raw(self.NT_SYNC_STOP_DATA)
         
+        self.nt_sync_finished.emit()
+
         # Inform DS (so it can log and unlock indicator panel)
         logger.log_warning("Network table sync aborted.")
 

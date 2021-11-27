@@ -17,7 +17,8 @@ class IndicatorWidget(QWidget):
         ResizeR = auto()
         ResizeL = auto()
 
-    deleted = Signal(str)
+    deleted = Signal(str)               # Args: key
+    value_changed = Signal(str, str)    # Args: key, value
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -33,9 +34,15 @@ class IndicatorWidget(QWidget):
         # Don't pass mouse events to label
         self.ui.lbl_key.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
+        # Detect text changed events
+        self.ui.txt_value.textEdited.connect(self.line_edit_changed)
+
         # Track mouse event positions
         self.position = QPoint()
         self.mode = IndicatorWidget.Mode.NoMode
+
+    def line_edit_changed(self, text: str):
+        self.value_changed.emit(self.key, text)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = QMenu(self)
