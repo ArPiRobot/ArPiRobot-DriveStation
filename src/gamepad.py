@@ -15,6 +15,7 @@ class GamepadManager(QObject):
         self.mappings_file = mappings_file
         self.running = False
         self.event_thread = None
+        self.dev_map = {}
 
         self.event_poll_timer = QTimer(self)
         self.event_poll_timer.timeout.connect(self.handle_events)
@@ -55,23 +56,26 @@ class GamepadManager(QObject):
         sdl2.SDL_Quit()
 
     def start(self):
-        # Poll every 250ms. These are only connect / disconnect events
-        self.event_poll_timer.start(250)
+        # Poll every 16ms (allows updates in UI of approx 60FPS)
+        self.event_poll_timer.start(16)
 
     def stop(self):
         self.event_poll_timer.stop()
     
     def update(self):
-        sdl2.SDL_GameControllerUpdate()
+        # sdl2.SDL_GameControllerUpdate()
+        pass
 
     def get_axis(self, device_id: int, axis: int) -> int:
-        dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
-        return sdl2.SDL_GameControllerGetAxis(dev, axis)
+        if device_id in self.dev_map:
+            return sdl2.SDL_GameControllerGetAxis(self.dev_map[device_id], axis)
+        return 0
         
     def get_button(self, device_id: int, button: int) -> bool:
-        dev = sdl2.SDL_GameControllerFromInstanceID(device_id)
-        value = sdl2.SDL_GameControllerGetButton(dev, button)
-        return value == 1
+        if device_id in self.dev_map:
+            value = sdl2.SDL_GameControllerGetButton(self.dev_map[device_id], button)
+            return value == 1
+        return False
     
     def get_dpad_pos_num(self, device_id: int) -> int:
         up = self.get_button(device_id, sdl2.SDL_CONTROLLER_BUTTON_DPAD_UP)
@@ -108,8 +112,12 @@ class GamepadManager(QObject):
                 dev = sdl2.SDL_GameControllerOpen(event.cdevice.which)
                 if dev is not None:
                     instance_id = sdl2.SDL_JoystickInstanceID(sdl2.SDL_GameControllerGetJoystick(dev))
+                    self.dev_map[instance_id] = dev
                     name = sdl2.SDL_GameControllerName(dev)
                     self.connected.emit(instance_id, name.decode())
             elif event.type == sdl2.SDL_CONTROLLERDEVICEREMOVED:
-                sdl2.SDL_GameControllerClose(sdl2.SDL_GameControllerFromInstanceID(event.cdevice.which))
+                sdl2.SDL_GameControllerClose(self.dev_map[event.cdevice.which])
+                del self.dev_map[event.cdevice.which]
                 self.disconnected.emit(event.cdevice.which)
+            else:
+                pass
