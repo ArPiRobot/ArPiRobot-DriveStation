@@ -20,19 +20,6 @@ class GamepadManager(QObject):
         self.event_poll_timer = QTimer(self)
         self.event_poll_timer.timeout.connect(self.handle_events)
 
-        # Events are only used to detect connect / disconnect
-        # Axis / button state is polled
-        # @sdl2.SDL_EventFilter
-        # def event_filter(user_data, event):
-        #     if event.contents.type == sdl2.SDL_CONTROLLERDEVICEADDED or \
-        #             event.contents.type == sdl2.SDL_CONTROLLERDEVICEREMOVED or \
-        #             event.contents.type == sdl2.SDL_JOYDEVICEADDED or \
-        #             event.contents.type == sdl2.SDL_JOYDEVICEREMOVED:
-        #         return 1
-        #     return 0
-        # self.event_filter = event_filter
-        # sdl2.SDL_SetEventFilter(self.event_filter, None)
-
         # Initialize SDL (on main thread for best cross platform compatibility)
         sdl2.SDL_SetHint(sdl2.SDL_HINT_ACCELEROMETER_AS_JOYSTICK, b"0")
         error = sdl2.SDL_Init(sdl2.SDL_INIT_EVENTS | sdl2.SDL_INIT_JOYSTICK | sdl2.SDL_INIT_GAMECONTROLLER)
@@ -56,15 +43,12 @@ class GamepadManager(QObject):
         sdl2.SDL_Quit()
 
     def start(self):
-        # Poll every 16ms (allows updates in UI of approx 60FPS)
-        self.event_poll_timer.start(16)
+        # Polling for events calls SDL_GameController_Update
+        # This needs to be called fast enough for UI to poll controller at 60Hz
+        self.event_poll_timer.start(16) # 1 / 16ms ~ 60Hz
 
     def stop(self):
         self.event_poll_timer.stop()
-    
-    def update(self):
-        # sdl2.SDL_GameControllerUpdate()
-        pass
 
     def get_axis(self, device_id: int, axis: int) -> int:
         if device_id in self.dev_map:
@@ -107,7 +91,7 @@ class GamepadManager(QObject):
         # But on other systems, it is not possible to init video from non main thread
         # Easiest and best supported method is to poll for events on main thread
         event = sdl2.SDL_Event()
-        if sdl2.SDL_PollEvent(event) == 1:
+        while sdl2.SDL_PollEvent(event) == 1:
             if event.type == sdl2.SDL_CONTROLLERDEVICEADDED:
                 dev = sdl2.SDL_GameControllerOpen(event.cdevice.which)
                 if dev is not None:
@@ -119,5 +103,3 @@ class GamepadManager(QObject):
                 sdl2.SDL_GameControllerClose(self.dev_map[event.cdevice.which])
                 del self.dev_map[event.cdevice.which]
                 self.disconnected.emit(event.cdevice.which)
-            else:
-                pass

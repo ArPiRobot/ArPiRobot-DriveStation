@@ -208,11 +208,6 @@ class DriveStationWindow(QMainWindow):
     def gamepad_connected(self, device_id: int, device_name: str):
         self.ui.lst_controllers.addItem(ControllerListItem(device_name, device_id, self.ui.lst_controllers.row))
 
-    # TODO: Gamepad disconnect detection bug.
-    # Details: Windows 10 PC
-    #          SDL2 from pysdl2-dll
-    #          Connect controller. Check. Select. Move controls. See effects in UI. Then disconnect.
-    #          Disconnect seems to not work
     def gamepad_disconnected(self, device_id: int):
         for i in range(self.ui.lst_controllers.count()):
             item: ControllerListItem = self.ui.lst_controllers.item(i)
@@ -226,7 +221,6 @@ class DriveStationWindow(QMainWindow):
             self.net_manager.send_disable_command()
     
     def update_controller_bars(self):
-        self.gamepad_manager.update()
         selected_rows = [x.row() for x in self.ui.lst_controllers.selectedIndexes()]
         idx = -1
         if len(selected_rows) != 0:
