@@ -1,12 +1,12 @@
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QCloseEvent, QMouseEvent
+from PySide6.QtGui import QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
 from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar
-from PySide6.QtCore import QFile, QIODevice, QModelIndex, QTimer, Qt, QRect, QDir
+from PySide6.QtCore import QFile, QIODevice, QModelIndex, QRegularExpression, QTimer, Qt, QRect, QDir
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
@@ -43,6 +43,55 @@ class ControllerListItem(QListWidgetItem):
 
     def flags(self) -> Qt.ItemFlags:
         return Qt.ItemIsDropEnabled | Qt.ItemIsEnabled | Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
+
+
+class LogHighlighter(QSyntaxHighlighter):
+
+    def __init__(self, parent: QTextDocument):
+        super().__init__(parent)
+        self.fmt_debug = QTextCharFormat()
+        self.fmt_info = QTextCharFormat()
+        self.fmt_warning = QTextCharFormat()
+        self.fmt_error = QTextCharFormat()
+        self.construct_format_from_theme()
+    
+    def construct_format_from_theme(self):
+        color_debug = theme_manager.get_variable("log_debug")
+        color_info = theme_manager.get_variable("log_info")
+        color_warning = theme_manager.get_variable("log_warning")
+        color_error = theme_manager.get_variable("log_error")
+
+        self.fmt_debug.setForeground(QColor(color_debug))
+        self.fmt_info.setForeground(QColor(color_info))
+        self.fmt_warning.setForeground(QColor(color_warning))
+        self.fmt_error.setForeground(QColor(color_error))
+    
+    def highlightBlock(self, text: str) -> None:
+        debug_expr = QRegularExpression("^\\[DEBUG\\].*$")
+        info_expr = QRegularExpression("^\\[INFO\\].*$")
+        warning_expr = QRegularExpression("^\\[WARNING\\].*$")
+        error_expr = QRegularExpression("^\\[ERROR\\].*$")
+
+        dbg = debug_expr.globalMatch(text)
+        while dbg.hasNext():
+            match = dbg.next()
+            self.setFormat(match.capturedStart(), match.capturedLength(), self.fmt_debug)
+        
+        info = info_expr.globalMatch(text)
+        while info.hasNext():
+            match = info.next()
+            self.setFormat(match.capturedStart(), match.capturedLength(), self.fmt_info)
+        
+        warning = warning_expr.globalMatch(text)
+        while warning.hasNext():
+            match = warning.next()
+            self.setFormat(match.capturedStart(), match.capturedLength(), self.fmt_warning)
+        
+        error = error_expr.globalMatch(text)
+        while error.hasNext():
+            match = error.next()
+            self.setFormat(match.capturedStart(), match.capturedLength(), self.fmt_error)
+
 
 
 class DriveStationWindow(QMainWindow):
@@ -84,6 +133,10 @@ class DriveStationWindow(QMainWindow):
         # Allows controller names to be partially italicized
         self.ui.lst_controllers.setItemDelegate(HTMLDelegate())
 
+        # Handles coloration of log output
+        self.ds_log_highlighter = LogHighlighter(self.ui.txt_ds_log.document())
+        self.robot_log_highlighter = LogHighlighter(self.ui.txt_robot_log.document())
+
         # Timer to periodically update the bars for the selected controller
         self.controller_status_timer = QTimer()
         self.controller_status_timer.timeout.connect(self.update_controller_bars)
@@ -91,8 +144,6 @@ class DriveStationWindow(QMainWindow):
         # Timer to send controller data to the robot
         self.controller_send_timer = QTimer()
         self.controller_send_timer.timeout.connect(self.send_controller_data)
-        
-        
 
         # Non-UI element variables
         self.voltage: float = 0.0
@@ -135,6 +186,12 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
+        # TODO: Remove this
+        self.log_debug("Example debug")
+        self.log_info("Example info")
+        self.log_warning("Example warning")
+        self.log_error("Example error")
+
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
         self.net_manager.stop()
@@ -157,6 +214,13 @@ class DriveStationWindow(QMainWindow):
 
             # Change theme
             theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
+
+            # Theme has changed. Re-apply syntax highlighting to logs
+            self.ds_log_highlighter.construct_format_from_theme()
+            self.robot_log_highlighter.construct_format_from_theme()
+            self.ds_log_highlighter.rehighlight()
+            self.robot_log_highlighter.rehighlight()
+
 
     def open_about(self):
         dialog = AboutDialog(self)
@@ -187,19 +251,19 @@ class DriveStationWindow(QMainWindow):
         self.ui.pbar_dpad_right.valueChanged.connect(self.ui.pbar_dpad_right.update)
 
     def log_debug(self, msg: str):
-        self.ui.txt_ds_log.appendPlainText(f"[DS DEBUG]: {msg}")
+        self.ui.txt_ds_log.append(f"[DEBUG]: {msg}")
 
     def log_info(self, msg: str):
-        self.ui.txt_ds_log.appendPlainText(f"[DS INFO]: {msg}")
+        self.ui.txt_ds_log.append(f"[INFO]: {msg}")
 
     def log_warning(self, msg: str):
-        self.ui.txt_ds_log.appendPlainText(f"[DS WARNING]: {msg}")
+        self.ui.txt_ds_log.append(f"[WARNING]: {msg}")
 
     def log_error(self, msg: str):
-        self.ui.txt_ds_log.appendPlainText(f"[DS ERROR]: {msg}")
+        self.ui.txt_ds_log.append(f"[ERROR]: {msg}")
     
     def log_from_robot(self, msg: str):
-        self.ui.txt_robot_log.appendPlainText(msg)
+        self.ui.txt_robot_log.append(msg)
 
     ############################################################################
     # Gamepads

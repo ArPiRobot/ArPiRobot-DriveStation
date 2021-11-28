@@ -26,7 +26,6 @@
     <file>icons/checkbox_unchecked_light.png</file>
     <file>icons/checkbox_indet_light.png</file>
 
-    <file>stylesheet-vars/Grey.csv</file>
     <file>stylesheet-vars/Dark.csv</file>
     <file>stylesheet-vars/Light.csv</file>
 </qresource>

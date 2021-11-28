@@ -27,3 +27,7 @@ settings_icon, url(:/icons/gear_light.png)
 checkbox_unchecked, url(:/icons/checkbox_unchecked_light.png)
 checkbox_checked, url(:/icons/checkbox_checked_light.png)
 checkbox_indet, url(:/icons/checkbox_indet_light.png)
+log_debug, #00FF00
+log_info, #FFFFFF
+log_warning, #FF7F00
+log_error, #FF0000

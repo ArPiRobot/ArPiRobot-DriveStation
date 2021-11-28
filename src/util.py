@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from PySide6.QtCore import QSize, QFile, QIODevice, QDirIterator, QFileInfo, QDir, QSettings
 from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout
@@ -19,6 +19,7 @@ class ThemeManager:
         self.__themes: List[str] = []
         self.__app: QApplication = None
         self.__current_theme = ""
+        self.__current_csv_vars: Dict[str, str] = {}
 
     def set_app(self, app: QApplication):
         self.__app = app
@@ -68,6 +69,9 @@ class ThemeManager:
 
         stylesheet_str = stylesheet_str.replace("|default_font_size|", str(font_size))
 
+        # Clear before loading vars from CSV
+        self.__current_csv_vars.clear()
+
         # Substitute values for placeholders in stylesheet
         vars_file = QFile(f"{self.__THEME_PATH}/{theme}.csv")
         if vars_file.open(QIODevice.ReadOnly):
@@ -75,6 +79,10 @@ class ThemeManager:
                 # Index 0 = variable, Index 1 = value
                 parts = line.replace(", ", ",").split(",")
                 stylesheet_str = stylesheet_str.replace(f"@{parts[0]}@", parts[1])
+
+                # If duplicate vars in CSV take the first as that will replace the placeholder in the stylesheet
+                if parts[0] not in self.__current_csv_vars:
+                    self.__current_csv_vars[parts[0]] = parts[1]
         else:
             return False
 
@@ -82,7 +90,21 @@ class ThemeManager:
 
         return True
 
-    def get_variable(self, var: str, theme: str = None) -> str:
+    def get_variable(self, var: str) -> str:
+        """
+        Get the value of a given variable for the current theme.
+        This information is saved when the theme is applied
+        and thus does not require reparsing the CSV file each time
+        """
+        if var in self.__current_csv_vars:
+            return self.__current_csv_vars[var]
+        return ""
+
+    def get_variable_for_theme(self, var: str, theme: str = None) -> str:
+        """
+        Parse the variables CSV file for the theme withthe given name.
+        Return the value of the requested variable.
+        """
         if theme is None:
             theme = self.__current_theme
         if theme not in self.__themes:

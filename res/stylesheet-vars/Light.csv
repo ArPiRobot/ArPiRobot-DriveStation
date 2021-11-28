@@ -27,3 +27,7 @@ settings_icon, url(:/icons/gear_dark.png)
 checkbox_unchecked, url(:/icons/checkbox_unchecked_dark.png)
 checkbox_checked, url(:/icons/checkbox_checked_dark.png)
 checkbox_indet, url(:/icons/checkbox_indet_dark.png)
+log_debug, #007800
+log_info, #000000
+log_warning, #B05700
+log_error, #B60000
