@@ -153,9 +153,9 @@ class IndicatorWidget(QWidget):
                     # Trying to resize off left edge
                     return
                 new_width = self.geometry().width() - new_width
-                if self.geometry().width() - new_width < self.minimumWidth():
-                    # Enforce minimum size
-                    new_width = self.minimumWidth()
+                if new_width < self.minimumWidth():
+                    # Enforce minimum size. No resize should occur
+                    return
                 self.resize(new_width, self.height())
                 self.move(to_move.x(), self.y())
             elif self.mode == IndicatorWidget.Mode.ResizeR:  # Right
