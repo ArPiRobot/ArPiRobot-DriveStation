@@ -186,12 +186,6 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
-        # TODO: Remove this
-        self.log_debug("Example debug")
-        self.log_info("Example info")
-        self.log_warning("Example warning")
-        self.log_error("Example error")
-
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
         self.net_manager.stop()
