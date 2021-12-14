@@ -99,7 +99,7 @@ Either method results in a package that can be compressed as a gzipped tarball o
 
 #### PyInstaller Method
 
-*To ensure compatibility with the most possible distributions, it is recommended to perform this build on an older linux distro (older glibc). Ubuntu 14.04 or 16.04 is recommended, however a newer version of python3 will likely be needed (either build from source or use unofficial ppa) as Pyside6 does not support anything older than python 3.6 (at time of writing). Since pyinstaller is used, this must be performed on a linux system.
+*To ensure compatibility with the most possible distributions, it is recommended to perform this build on an older linux distro (older glibc). Ubuntu 14.04 or 16.04 is recommended, however a newer version of python3 will likely be needed (either build from source or use unofficial ppa) as Pyside6 does not support anything older than python 3.6 (at time of writing). Since pyinstaller is used, this must be performed on a linux system.*
 
 ```shell
 source env/bin/activate
