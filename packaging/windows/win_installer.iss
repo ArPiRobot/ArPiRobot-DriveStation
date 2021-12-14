@@ -22,12 +22,12 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=..\COPYING
+LicenseFile=..\..\COPYING
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=.\dist\
+OutputDir=..\dist\
 OutputBaseFilename=DriveStation-Setup-{#MyAppVersion}
-SetupIconFile=..\res\icon.ico
+SetupIconFile=..\..\res\icon.ico
 UninstallDisplayIcon={app}\icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -40,9 +40,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: ".\dist\ArPiRobot-DriveStation\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-Source: "..\COPYING"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\res\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\ArPiRobot-DriveStation\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "..\..\COPYING"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\res\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

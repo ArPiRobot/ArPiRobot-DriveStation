@@ -44,7 +44,7 @@ popd > /dev/null
 ################################################################################
 # Create pyinstaller binary
 ################################################################################
-echo "**Creating Pyinstaller Binary**"
+echo "**Creating PyInstaller Binary**"
 rm -rf build/ || fail
 rm -rf dist/ArPiRobot-DriveStation || fail
 pyinstaller linux_pyinstaller/linux.spec || fail
