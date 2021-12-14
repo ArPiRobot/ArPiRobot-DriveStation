@@ -2,6 +2,8 @@
 
 ## Installation
 
+Downloads are available on the releases page.
+
 ### Windows
 
 For windows, an installer `exe` is provided. Download and run this installer.
@@ -12,7 +14,9 @@ For macOS, a zipped app is provided. Download the zip, double click it to extrac
 
 ### Linux
 
-TODO
+**Ubuntu & Other Debian Based Distros:** Download and install the `deb` package.
+
+**Other**: Install python 3, pip, and venv using your distribution's package manager or by building from source. Download and extract the `tar.gz` package. Extract it somewhere on your system and run the included `install.sh` script. This script will create a python environment for the program and a desktop menu entry for it. The included `uninstall.sh` script removes these things and should be run before deleting the directory the program is stored in.
 
 
 ## Building and Running
@@ -71,11 +75,19 @@ python change-version.py NEW_VERSION
 
 ### Windows
 
-TODO
+Packaging for windows uses two tools. First, pyinstaller is used to create a minimal python distribution and an executable for the app from the python source. Then InnoSetup is used to create an installer for the program. Since pyinstaller is used, this process must be performed on a windows PC.
+
+```shell
+# TODO
+```
 
 ### macOS
 
-TODO
+Packaging for macOS uses pyinstaller to create the app. The app is then zipped for distribution. Since pyinstaller is used, this process must be performed on a mac. Furthermore, building native apps for an arm (Apple Silicon) mac is currently not supported (at time of writing pyinstaller has support but some dependency python packages do not have native arm build for macOS available).
+
+```shell
+# TODO
+```
 
 ### Linux
 
@@ -96,6 +108,8 @@ cd packaging
 ```
 
 #### Source Method
+
+*This method is generally recommended as it produces smaller packages and is the most compatible across distributions.*
 
 ```shell
 source env/bin/activate
@@ -128,35 +142,4 @@ pyinstaller macos.spec
 cd dist
 VERSION=`head -1 ../../res/version.txt`
 zip -r ArPiRobot-DriveStation-$VERSION.app.zip ArPiRobot-DriveStation.app
-```
-
-
-**Linux (PyInstaller)**:
-
-*Not recommended as binary size is large and compatibility across distributions is hard. It is best to do this build on a older distribution to maximize compatibility. This produces a standalone executable and bundles python with the program and its dependencies (including QT). No dependencies on system packages exist (aside from C runtime libraries that every distro should have).*
-
-```shell
-cd packaging
-pyinstaller linux.spec
-cd dist
-VERSION=`head -1 ../../res/version.txt`
-tar -zcvf ArPiRobot-DriveStation-$VERSION.tar.gz ArPiRobot-DriveStation
-```
-
-**Linux (Generic Package)**:
-
-*This method will bundle the source code with a script to install the program. This script will create a python environment for this program and install required libraries. This is used as a temporary measure as most distributions do not yet (at time of writing this) include QT6 packages. As such, it is necessary to install dependencies using pip. The install script requires that python be installed using the distribution's package manager.*
-
-```shell
-cd packaging
-./linux_generic.sh
-```
-
-
-**Linux (Debian Package)**:
-
-*This method is recommended for Debian based distributions (ex Ubuntu). This will create a deb package that includes the source and other assets contained in the generic package, however, by packaging in a deb package, dependencies can be specified and will be managed when installing the package.*
-
-```shell
-# TODO: Cannot do yet. Ubuntu 21.04/21.10 does not have QT6 / PySide6 packages.
 ```
