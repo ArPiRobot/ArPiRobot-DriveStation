@@ -48,6 +48,8 @@ python src/main.py
 
 ## Packaging
 
+*NOTE: It is only supported to build a package for the same OS as you are using.*
+
 **Changing Version Number**:
 
 ```sh
@@ -57,6 +59,7 @@ python change-version.py NEW_VERSION
 *Inno Setup must be installed to create installer.*
 
 **Windows**:
+
 ```shell
 cd packaging
 pyinstaller windows.spec
@@ -65,7 +68,14 @@ C:/"Program Files (x86)"/"Inno Setup 6"/Compil32.exe /cc win_installer.iss
 
 **macOS**:
 
-TODO
+```shell
+cd packaging
+pyinstaller macos.spec
+cd dist
+VERSION=`head -1 ../../res/version.txt`
+zip -r ArPiRobot-DriveStation-$VERSION.app.zip ArPiRobot-DriveStation.app
+```
+
 
 **Linux**:
 

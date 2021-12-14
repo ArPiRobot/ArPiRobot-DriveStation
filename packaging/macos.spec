@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
+
 # PySide6 not automatically supported by pyinstaller
 # Manually add missing things
 import os
@@ -15,14 +16,16 @@ sdl_dll_dir = os.path.dirname(sdl2dll.__file__)
 block_cipher = None
 
 
-a = Analysis(['..\\src\\main.py'],
+a = Analysis(['../src/main.py'],
+             pathex=[],
              binaries=[],
              datas=[
-                (os.path.join(ps6_dir, "plugins", "platforms"), "PySide6/plugins/platforms"),
-                (sdl_dll_dir, "sdl2dll")
+                 (os.path.join(ps6_dir, "plugins", "platforms"), "PySide6/plugins/platforms"),
+                 (sdl_dll_dir, "sdl2dll")
              ],
              hiddenimports=[],
              hookspath=[],
+             hooksconfig={},
              runtime_hooks=[],
              excludes=[],
              win_no_prefer_redirects=False,
@@ -31,8 +34,9 @@ a = Analysis(['..\\src\\main.py'],
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
 exe = EXE(pyz,
-          a.scripts,
+          a.scripts, 
           [],
           exclude_binaries=True,
           name='ArPiRobot-DriveStation',
@@ -41,12 +45,20 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=False,
-          icon='..\\res\\icon.ico')
+          disable_windowed_traceback=False,
+          target_arch='x86_64',
+          codesign_identity=None,
+          entitlements_file=None,
+          icon='../res/icon.icns')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
-               a.datas,
+               a.datas, 
                strip=False,
                upx=True,
                upx_exclude=[],
                name='ArPiRobot-DriveStation')
+app = BUNDLE(coll,
+             name='ArPiRobot-DriveStation.app',
+             icon='../res/icon.icns',
+             bundle_identifier='com.arpirobot.drivestation')
