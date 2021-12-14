@@ -1,0 +1,8 @@
+Package: ArPiRobot-DriveStation
+Version: 0.4.0-alpha
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: python3, python3-venv, python3-pip
+Maintainer: Marcus Behel <marcus.behel@mindspring.com>
+Description: PC-side robot control software for ArPiRobot robots.
