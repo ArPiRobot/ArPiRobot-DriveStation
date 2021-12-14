@@ -88,7 +88,9 @@ cd packaging
 Packaging for macOS uses pyinstaller to create the app. The app is then zipped for distribution. Since pyinstaller is used, this process must be performed on a mac. Furthermore, building native apps for an arm (Apple Silicon) mac is currently not supported (at time of writing pyinstaller has support but some dependency python packages do not have native arm build for macOS available).
 
 ```shell
-# TODO
+source env/bin/activate
+cd packaging
+./macos.sh
 ```
 
 ### Linux
@@ -117,31 +119,4 @@ cd packaging
 source env/bin/activate
 cd packaging
 ./linux_source.sh
-```
-
-
-
-
-
-## Old info
-
-
-**Windows**:
-
-*Inno Setup must be installed to create installer.*
-
-```shell
-cd packaging
-pyinstaller windows.spec
-C:/"Program Files (x86)"/"Inno Setup 6"/Compil32.exe /cc win_installer.iss
-```
-
-**macOS**:
-
-```shell
-cd packaging
-pyinstaller macos.spec
-cd dist
-VERSION=`head -1 ../../res/version.txt`
-zip -r ArPiRobot-DriveStation-$VERSION.app.zip ArPiRobot-DriveStation.app
 ```
