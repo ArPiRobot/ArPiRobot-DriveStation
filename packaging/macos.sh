@@ -4,6 +4,15 @@
 # Setup
 ################################################################################
 
+PYTHON="python"
+while true; do
+  case "$1" in
+    --python ) PYTHON="$2"; shift 2 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
 function realpath() {
   OURPWD=$PWD
   cd "$(dirname "$1")"
@@ -16,7 +25,7 @@ function realpath() {
   cd "$OURPWD"
   echo "$REALPATH"
 }
-realpath "$@"
+
 
 DIR=$(realpath $(dirname $0))
 pushd "$DIR" > /dev/null
@@ -29,7 +38,7 @@ VERSION=`head -1 ../res/version.txt`
 ################################################################################
 echo "**Compiling QT Resources and UI**"
 pushd ../ > /dev/null
-python compile.py || fail
+$PYTHON compile.py || fail
 popd > /dev/null
 
 

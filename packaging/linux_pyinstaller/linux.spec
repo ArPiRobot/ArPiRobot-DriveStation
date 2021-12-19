@@ -1,13 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
+# Find sdl2dll location
+import os
+import sdl2dll
+sdl_dll_dir = os.path.dirname(sdl2dll.__file__)
+
 block_cipher = None
 
 
 a = Analysis(['../../src/main.py'],
              pathex=[],
              binaries=[],
-             datas=[],
+             datas=[\
+                 (sdl_dll_dir, "sdl2dll")
+             ],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
