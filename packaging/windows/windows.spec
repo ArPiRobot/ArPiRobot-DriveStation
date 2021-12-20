@@ -1,13 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
-# PySide6 not automatically supported by pyinstaller
-# Manually add missing things
-import os
-import PySide6
-ps6_dir = os.path.dirname(PySide6.__file__)
-
 # Find sdl2dll location
+import os
 import sdl2dll
 sdl_dll_dir = os.path.dirname(sdl2dll.__file__)
 
@@ -18,7 +13,6 @@ block_cipher = None
 a = Analysis(['..\\..\\src\\main.py'],
              binaries=[],
              datas=[
-                (os.path.join(ps6_dir, "plugins", "platforms"), "PySide6/plugins/platforms"),
                 (sdl_dll_dir, "sdl2dll")
              ],
              hiddenimports=[],
