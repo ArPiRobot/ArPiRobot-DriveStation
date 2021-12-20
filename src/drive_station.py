@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PySide6.QtGui import QAction, QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
@@ -406,10 +406,24 @@ class DriveStationWindow(QMainWindow):
     # Indicators & Network Table
     ############################################################################
 
-    def add_indicator(self):
-        key, ok = QInputDialog.getText(self, self.tr("Add Indicator"), self.tr("Key:"), QLineEdit.Normal)
-        if ok and key != "" and key not in self.indicators:
-            self.add_indicator_at(key, None)
+    def add_indicator(self, key: str = None, geometry: Optional[QRect] = None):
+        # If no key given, ask the user
+        if key is None:
+            key, ok = QInputDialog.getText(self, self.tr("Add Indicator"), self.tr("Key:"), QLineEdit.Normal)
+            if not ok:
+                return
+        
+        # Make sure there is not already an indicator for the given key
+        if key == "" or key in self.indicators:
+            return
+
+        # Remove the key from the "Add from robot" menu if needed
+        for action in self.ui.act_add_from_robot.actions():
+            if action.text() == key:
+                self.ui.act_add_from_robot.removeAction(action)
+
+        # Add the indicator
+        self.add_indicator_at(key, geometry)
 
     def clear_indicators(self):
         for key in self.indicators.keys():
@@ -463,7 +477,7 @@ class DriveStationWindow(QMainWindow):
                     y = subdata["y"]
                     width = subdata["width"]
                     height = subdata["height"]
-                    self.add_indicator_at(key, QRect(x, y, width, height))
+                    self.add_indicator(key, QRect(x, y, width, height))
         except:
             pass
 
@@ -473,6 +487,11 @@ class DriveStationWindow(QMainWindow):
             self.indicators[key].deleteLater()
             del self.indicators[key]
 
+            # This indicator will have been added to the robot
+            # Or it will be next time a robot is connected to (due to NT sync)
+            action = self.ui.act_add_from_robot.addAction(key)
+            action.triggered.connect(lambda checked: self.add_indicator(key))
+
     def indicator_value_changed(self, key: str, value: str):
         self.net_manager.set_net_table(key, value)
 
@@ -481,8 +500,19 @@ class DriveStationWindow(QMainWindow):
         if key == "vbat0":
             self.set_battery_voltage(float(value), settings_manager.vbat_main)
         else:
-            # Update indicator if any
-            if key in self.indicators.keys():
+            # If the key is already in the indicator panel, don't add it to the menu
+            if key not in self.indicators:
+                # Add to "Add from robot" menu if not already in that menu
+                action_found = False
+                for action in self.ui.act_add_from_robot.actions():
+                    if action.text() == key:
+                        action_found = True
+                        break
+                if not action_found:
+                    action = self.ui.act_add_from_robot.addAction(key)
+                    action.triggered.connect(lambda checked: self.add_indicator(key))
+            else:
+                # Inidicator is shown. Update it's value.
                 self.indicators[key].value = value
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):

@@ -1513,7 +1513,7 @@
      <x>0</x>
      <y>0</y>
      <width>816</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1526,8 +1526,15 @@
     <property name="title">
      <string>Network Table</string>
     </property>
+    <widget class="QMenu" name="act_add_from_robot">
+     <property name="title">
+      <string>Add From Robot</string>
+     </property>
+    </widget>
     <addaction name="separator"/>
     <addaction name="act_add_indicator"/>
+    <addaction name="act_add_from_robot"/>
+    <addaction name="separator"/>
     <addaction name="act_clear_indicators"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1544,7 +1551,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Add Indicator</string>
+    <string>Add New</string>
    </property>
   </action>
   <action name="act_clear_indicators">
@@ -1555,6 +1562,21 @@
   <action name="act_preferences">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionIndicators_From_Robot">
+   <property name="text">
+    <string>Add From Robot</string>
+   </property>
+  </action>
+  <action name="actionAdd_From_Robo">
+   <property name="text">
+    <string>Add From Robo</string>
+   </property>
+  </action>
+  <action name="actionExample">
+   <property name="text">
+    <string>Example</string>
    </property>
   </action>
  </widget>
