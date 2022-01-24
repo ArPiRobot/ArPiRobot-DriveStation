@@ -1,7 +1,6 @@
-import time
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QAction, QCloseEvent, QShowEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PySide6.QtGui import QAction, QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
@@ -55,13 +54,19 @@ class LogHighlighter(QSyntaxHighlighter):
         self.fmt_info = QTextCharFormat()
         self.fmt_warning = QTextCharFormat()
         self.fmt_error = QTextCharFormat()
-        self.construct_format_from_theme(False)
+        self.construct_format_from_theme()
     
-    def construct_format_from_theme(self, theme_is_dark: bool):
-        self.fmt_debug.setForeground(QColor("#00FF00") if theme_is_dark else QColor("#007800"))
-        self.fmt_info.setForeground(QColor("#FFFFFF") if theme_is_dark else QColor("#000000"))
-        self.fmt_warning.setForeground(QColor("#FF7F00") if theme_is_dark else QColor("#B05700"))
-        self.fmt_error.setForeground(QColor("#FF0000") if theme_is_dark else QColor("#B60000"))
+    def construct_format_from_theme(self):
+        # color_debug = theme_manager.get_variable("log_debug")
+        # color_info = theme_manager.get_variable("log_info")
+        # color_warning = theme_manager.get_variable("log_warning")
+        # color_error = theme_manager.get_variable("log_error")
+
+        # self.fmt_debug.setForeground(QColor(color_debug))
+        # self.fmt_info.setForeground(QColor(color_info))
+        # self.fmt_warning.setForeground(QColor(color_warning))
+        # self.fmt_error.setForeground(QColor(color_error))
+        pass
     
     def highlightBlock(self, text: str) -> None:
         debug_expr = QRegularExpression("^\\[DEBUG\\].*$")
@@ -188,18 +193,6 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
-    def select_icons_from_theme(self):
-        # Settings button icon
-        if self.ui.btn_settings.palette().color(QPalette.Window).lightness() > 128:
-            self.ui.btn_settings.setIcon(QIcon(":/gear_dark.png"))
-        else:
-            self.ui.btn_settings.setIcon(QIcon(":/gear_light.png"))
-
-    def showEvent(self, event: QShowEvent):
-        # Icon color cannot be selected properly before window is shown
-        # So apply theme after showing
-        self.change_theme()
-
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
         self.net_manager.stop()
@@ -220,49 +213,47 @@ class DriveStationWindow(QMainWindow):
             # Update main battery voltage (but don't change current voltage)
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
-            self.change_theme()
-    
-    def change_theme(self):
-        # Change theme
-        theme_manager.apply_theme(settings_manager.theme)
+            # Change theme
+            theme_manager.apply_theme(settings_manager.theme)
 
-        # Qt6 seems to have a bug when switching from a stylesheet to a palette
-        # Renders text and some other colors incorrectly, unless the window is inactive
-        # This happens when switching from Custom Light to Fusion Dark (for example)
-        # Only solution I have found is to construct a new window or manually apply the new palette to everything
-        # The following prints show that the palette doesn't change for the existing window
-        
-        # print(QApplication.palette().color(QPalette.Text).name())
-        # print(self.palette().color(QPalette.Text).name())
-        time.sleep(0.1)
-        self.change_palette_recursive(self, QApplication.palette())
-        # print(QApplication.palette().color(QPalette.Text).name())
-        # print(self.palette().color(QPalette.Text).name())
-        # print()
+            # Qt6 seems to have a bug when switching from a stylesheet to a palette
+            # Renders text and some other colors incorrectly, unless the window is inactive
+            # This happens when switching from Custom Light to Fusion Dark (for example)
+            # Only solution I have found is to construct a new window or manually apply the new palette to everything
+            # The following prints show that the palette doesn't change for the existing window
+            
+            # print(QApplication.palette().color(QPalette.Text).name())
+            # print(self.palette().color(QPalette.Text).name())
+            self.change_palette_recursive(self, QApplication.palette())
+            # print(QApplication.palette().color(QPalette.Text).name())
+            # print(self.palette().color(QPalette.Text).name())
+            # print()
 
-        # Then, the above fix may break the stylesheet if it exists
-        # So, fix that. Inheritance of stylesheets seems to work properly.
-        self.setStyleSheet(QApplication.instance().styleSheet())
-        self.style().unpolish(self)
-        self.style().polish(self)
-
-        # Theme changed. Change any icons that need it.
-        self.select_icons_from_theme()
-
-        # TODO: Any custom stylesheet additions
-        
-        # Theme has changed. Re-apply syntax highlighting to logs
-        is_dark = self.ui.txt_ds_log.palette().color(QPalette.Base).lightness() < 128
-        self.ds_log_highlighter.construct_format_from_theme(is_dark)
-        self.robot_log_highlighter.construct_format_from_theme(is_dark)
-        self.ds_log_highlighter.rehighlight()
-        self.robot_log_highlighter.rehighlight()
+            # Then, the above fix may break the stylesheet if it exists
+            # So, fix that. Inheritance of stylesheets seems to work properly.
+            self.setStyleSheet(QApplication.instance().styleSheet())
+            self.style().unpolish(self)
+            self.style().polish(self)
+            
+            # Theme has changed. Re-apply syntax highlighting to logs
+            self.ds_log_highlighter.construct_format_from_theme()
+            self.robot_log_highlighter.construct_format_from_theme()
+            self.ds_log_highlighter.rehighlight()
+            self.robot_log_highlighter.rehighlight()
     
     def change_palette_recursive(self, root: QWidget, palette: QPalette):
         root.setPalette(palette)
         for child in root.children():
             if isinstance(child, QWidget):
                 self.change_palette_recursive(child, palette)
+    
+    def change_stylesheet_recursive(self, root: QWidget, stylesheet: str):
+        root.setStyleSheet(stylesheet)
+        root.style().unpolish(self)
+        root.style().polish(self)
+        for child in root.children():
+            if isinstance(child, QWidget):
+                self.change_stylesheet_recursive(child, stylesheet)
 
     def open_about(self):
         dialog = AboutDialog(self)
