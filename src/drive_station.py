@@ -5,7 +5,7 @@ from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_T
 
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar, QApplication, QStyleFactory
+from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar, QApplication, QStyleFactory
 from PySide6.QtCore import QFile, QIODevice, QModelIndex, QRegularExpression, QTimer, Qt, QRect, QDir
 from PySide6.QtGui import QPalette, QColor, QIcon
 
@@ -107,6 +107,8 @@ class DriveStationWindow(QMainWindow):
     MSG_STATE_NO_PROGRAM = "No program running on robot."
     MSG_STATE_DISABLED = "Robot disabled."
     MSG_STATE_ENABLED = "Robot enabled."
+
+    EC_RESTART = 20
 
     ############################################################################
     # UI & Navigation
@@ -214,11 +216,44 @@ class DriveStationWindow(QMainWindow):
             # Change theme
             theme_manager.apply_theme(settings_manager.theme)
 
+            # Qt6 seems to have a bug when switching from a stylesheet to a palette
+            # Renders text and some other colors incorrectly, unless the window is inactive
+            # This happens when switching from Custom Light to Fusion Dark (for example)
+            # Only solution I have found is to construct a new window or manually apply the new palette to everything
+            # The following prints show that the palette doesn't change for the existing window
+            
+            # print(QApplication.palette().color(QPalette.Text).name())
+            # print(self.palette().color(QPalette.Text).name())
+            self.change_palette_recursive(self, QApplication.palette())
+            # print(QApplication.palette().color(QPalette.Text).name())
+            # print(self.palette().color(QPalette.Text).name())
+            # print()
+
+            # Then, the above fix may break the stylesheet if it exists
+            # So, fix that. Inheritance of stylesheets seems to work properly.
+            self.setStyleSheet(QApplication.instance().styleSheet())
+            self.style().unpolish(self)
+            self.style().polish(self)
+            
             # Theme has changed. Re-apply syntax highlighting to logs
             self.ds_log_highlighter.construct_format_from_theme()
             self.robot_log_highlighter.construct_format_from_theme()
             self.ds_log_highlighter.rehighlight()
             self.robot_log_highlighter.rehighlight()
+    
+    def change_palette_recursive(self, root: QWidget, palette: QPalette):
+        root.setPalette(palette)
+        for child in root.children():
+            if isinstance(child, QWidget):
+                self.change_palette_recursive(child, palette)
+    
+    def change_stylesheet_recursive(self, root: QWidget, stylesheet: str):
+        root.setStyleSheet(stylesheet)
+        root.style().unpolish(self)
+        root.style().polish(self)
+        for child in root.children():
+            if isinstance(child, QWidget):
+                self.change_stylesheet_recursive(child, stylesheet)
 
     def open_about(self):
         dialog = AboutDialog(self)

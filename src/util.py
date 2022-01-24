@@ -43,6 +43,7 @@ class ThemeManager:
         elif theme == "Fusion Light" or theme == "Fusion Dark":
             style = QStyleFactory.create("Fusion")
             stylesheet = ""
+            
             palette = QPalette()
             if theme == "Fusion Dark":
                 palette.setColor(QPalette.Window, QColor(53, 53, 53))
@@ -64,18 +65,9 @@ class ThemeManager:
             stylesheet = ""
             palette = style.standardPalette()
         
-        # This seems overly complicated, but ensures any order of theme changes works
-        # Switching between stylesheets and palette based themes has some bugs...
-        self.app.setStyleSheet("")
-        self.app.setPalette(self.app.style().standardPalette())
-        self.app.style().unpolish(self.app)
-        self.app.style().polish(self.app)
-        self.app.style().unpolish(self.app)
         self.app.setStyleSheet(stylesheet)
         self.app.setStyle(style)
         self.app.setPalette(palette)
-        self.app.style().unpolish(self.app)
-        self.app.style().polish(self.app)
 
         # Adjust font size
         # font = QApplication.font()
