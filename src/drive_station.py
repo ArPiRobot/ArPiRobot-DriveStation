@@ -5,12 +5,13 @@ from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_T
 
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar, QApplication, QStyleFactory
 from PySide6.QtCore import QFile, QIODevice, QModelIndex, QRegularExpression, QTimer, Qt, QRect, QDir
+from PySide6.QtGui import QPalette, QColor, QIcon
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
-from util import HTMLDelegate, settings_manager, theme_manager, logger
+from util import HTMLDelegate, settings_manager, logger, theme_manager
 from network import NetworkManager
 from about_dialog import AboutDialog
 
@@ -56,15 +57,16 @@ class LogHighlighter(QSyntaxHighlighter):
         self.construct_format_from_theme()
     
     def construct_format_from_theme(self):
-        color_debug = theme_manager.get_variable("log_debug")
-        color_info = theme_manager.get_variable("log_info")
-        color_warning = theme_manager.get_variable("log_warning")
-        color_error = theme_manager.get_variable("log_error")
+        # color_debug = theme_manager.get_variable("log_debug")
+        # color_info = theme_manager.get_variable("log_info")
+        # color_warning = theme_manager.get_variable("log_warning")
+        # color_error = theme_manager.get_variable("log_error")
 
-        self.fmt_debug.setForeground(QColor(color_debug))
-        self.fmt_info.setForeground(QColor(color_info))
-        self.fmt_warning.setForeground(QColor(color_warning))
-        self.fmt_error.setForeground(QColor(color_error))
+        # self.fmt_debug.setForeground(QColor(color_debug))
+        # self.fmt_info.setForeground(QColor(color_info))
+        # self.fmt_warning.setForeground(QColor(color_warning))
+        # self.fmt_error.setForeground(QColor(color_error))
+        pass
     
     def highlightBlock(self, text: str) -> None:
         debug_expr = QRegularExpression("^\\[DEBUG\\].*$")
@@ -112,6 +114,9 @@ class DriveStationWindow(QMainWindow):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
+
+        self.system_theme_name = QApplication.style().name()
+        self.default_font_size = QApplication.font().pointSize()
 
         # UI Setup
         self.ui = Ui_DriveStationWindow()
@@ -207,14 +212,13 @@ class DriveStationWindow(QMainWindow):
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
             # Change theme
-            theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
+            theme_manager.apply_theme(settings_manager.theme)
 
             # Theme has changed. Re-apply syntax highlighting to logs
             self.ds_log_highlighter.construct_format_from_theme()
             self.robot_log_highlighter.construct_format_from_theme()
             self.ds_log_highlighter.rehighlight()
             self.robot_log_highlighter.rehighlight()
-
 
     def open_about(self):
         dialog = AboutDialog(self)
@@ -517,13 +521,17 @@ class DriveStationWindow(QMainWindow):
 
     def set_battery_voltage(self, voltage: float, nominal_bat_voltage: float):
         if voltage >= nominal_bat_voltage:
-            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_green")
+            # self.ui.pnl_bat_bg.setStyleSheet("background-color: #00C800; border-radius: 3px")
+            pass
         elif voltage >= nominal_bat_voltage * 0.85:
-            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_yellow")
+            # self.ui.pnl_bat_bg.setStyleSheet("background-color: #E6E600; border-radius: 3px")
+            pass
         elif voltage >= nominal_bat_voltage * 0.7:
-            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_orange")
+            # self.ui.pnl_bat_bg.setStyleSheet("background-color: #E59900; border-radius: 3px")
+            pass
         else:
-            self.ui.pnl_bat_bg.setObjectName("pnl_bat_bg_red")
+            # self.ui.pnl_bat_bg.setStyleSheet("background-color: #C80000; border-radius: 3px")
+            pass
         self.ui.lbl_bat_voltage.setText("{:.2f} V".format(voltage))
 
         # Force stylesheet to be reapplied due to object name change
@@ -593,9 +601,11 @@ class DriveStationWindow(QMainWindow):
 
     def set_network_good(self, good: bool):
         if good:
-            self.ui.pnl_net_bg.setObjectName("pnl_net_bg_green")
+            # self.ui.pnl_net_bg.setStyleSheet("background-color: #00C800; border-radius: 3px")
+            pass
         else:
-            self.ui.pnl_net_bg.setObjectName("pnl_net_bg_red")
+            # self.ui.pnl_net_bg.setStyleSheet("background-color: #C80000; border-radius: 3px")
+            pass
 
         # Force stylesheet to be reapplied due to object name change
         self.ui.pnl_net_bg.style().unpolish(self.ui.pnl_net_bg)
@@ -603,9 +613,11 @@ class DriveStationWindow(QMainWindow):
 
     def set_robot_program_good(self, good: bool):
         if good:
-            self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
+            # self.ui.pnl_program_bg.setStyleSheet("background-color: #00C800; border-radius: 3px")
+            pass
         else:
-            self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
+            # self.ui.pnl_program_bg.setStyleSheet("background-color: #C80000; border-radius: 3px")
+            pass
         
         # Force stylesheet to be reapplied due to object name change
         self.ui.pnl_program_bg.style().unpolish(self.ui.pnl_program_bg)

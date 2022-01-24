@@ -1,125 +1,86 @@
 from typing import Dict, List
 
-from PySide6.QtCore import QSize, QFile, QIODevice, QDirIterator, QFileInfo, QDir, QSettings
-from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout
+from PySide6.QtCore import QSize, QFile, QIODevice, QDirIterator, QFileInfo, QDir, QSettings, Qt
+from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout, QPalette, QColor
 from PySide6.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem, QApplication, QStyle, QStyleFactory
 
 
 class ThemeManager:
-    """
-    Handles managing custom stylesheet supporting multiple "color themes".
-    Custom stylesheet uses placeholder variables (@var_name@). There are several
-    CSV files containing mappings for these placeholder variables.
-    Each is considered its own "color theme".
-    This class manages loading the template stylesheet and substituting values from CSV files.
-    """
-    def __init__(self):
-        self.__BASE_STYLESHEET = ":/stylesheet.qss"
-        self.__THEME_PATH = ":/stylesheet-vars/"
-        self.__themes: List[str] = []
-        self.__app: QApplication = None
-        self.__current_theme = ""
-        self.__current_csv_vars: Dict[str, str] = {}
+    def __init__(self) -> None:
+        self.app = None
+        self.system_theme = "Fusion"
+    
+    def set_app(self, app: QApplication) -> None:
+        self.app = app
+        self.system_theme = self.app.style().name()
+    
+    @property
+    def themes(self):
+        return ["Custom Light", "Custom Dark", "Fusion Light", "Fusion Dark", "System"]
+    
+    def apply_theme(self, theme: str):
+        style = QStyleFactory.create("Fusion")
+        stylesheet = ""
+        palette = QPalette()
 
-    def set_app(self, app: QApplication):
-        self.__app = app
-        # Custom stylesheet used is designed for fusion base
-        self.__app.setStyle(QStyleFactory.create("Fusion"))
-
-    def load_themes(self):
-        # Load a list of theme names, but do not generate stylesheets yet.
-        # Pre-generating multiple stylesheets wastes memory
-        self.__themes.clear()
-        iterator = QDirIterator(self.__THEME_PATH)
-        while iterator.hasNext():
-            info = QFileInfo(iterator.next())
-            if info.completeSuffix().lower() == "csv":
-                self.__themes.append(info.baseName())
-
-    def themes(self) -> List[str]:
-        return self.__themes.copy()
-
-    def current_theme(self) -> str:
-        return self.__current_theme
-
-    def apply_theme(self, theme: str, larger_fonts: bool) -> bool:
-        if theme is None:
-            self.__current_theme = ""
-            self.__app.setStyleSheet("")
-            return True
-
-        if theme not in self.__themes:
-            return False
-
-        self.__current_theme = theme
-
-        if larger_fonts:
-            font_size = 11
+        if theme == "Custom Light" or theme == "Custom Dark":
+            # Load stylesheet
+            stylesheet_file = QFile(":/custom-theme/stylesheet.qss")
+            if stylesheet_file.open(QIODevice.ReadOnly):
+                stylesheet = bytes(stylesheet_file.readAll()).decode()
+                stylesheet_file.close()
+            
+                # Make substitutions from csv file to use correct variant
+                vars_file = QFile(":/custom-theme/{0}.csv".format("light" if theme == "Custom Light" else "dark"))
+                if vars_file.open(QIODevice.ReadOnly):
+                    for line in bytes(vars_file.readAll()).decode().splitlines(False):
+                        # Index 0 = variable, Index 1 = value
+                        parts = line.replace(", ", ",").split(",")
+                        stylesheet = stylesheet.replace("@{0}@".format(parts[0]), parts[1])
+                    vars_file.close()
+            style = QStyleFactory.create("Fusion")
+            palette = style.standardPalette()
+        elif theme == "Fusion Light" or theme == "Fusion Dark":
+            style = QStyleFactory.create("Fusion")
+            stylesheet = ""
+            palette = QPalette()
+            if theme == "Fusion Dark":
+                palette.setColor(QPalette.Window, QColor(53, 53, 53))
+                palette.setColor(QPalette.WindowText, Qt.white)
+                palette.setColor(QPalette.Base, QColor(25, 25, 25))
+                palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+                palette.setColor(QPalette.ToolTipBase, Qt.white)
+                palette.setColor(QPalette.ToolTipText, Qt.white)
+                palette.setColor(QPalette.Text, Qt.white)
+                palette.setColor(QPalette.Button, QColor(53, 53, 53))
+                # palette.setColor(QPalette.Disabled, QPalette.Button, QColor(94, 94, 94))
+                palette.setColor(QPalette.ButtonText, Qt.white)
+                palette.setColor(QPalette.BrightText, Qt.red)
+                palette.setColor(QPalette.Link, QColor(42, 130, 218))
+                palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+                palette.setColor(QPalette.HighlightedText, Qt.black)
         else:
-            font_size = 9
+            style = QStyleFactory.create(self.system_theme)
+            stylesheet = ""
+            palette = style.standardPalette()
+        
+        # This seems overly complicated, but ensures any order of theme changes works
+        # Switching between stylesheets and palette based themes has some bugs...
+        self.app.setStyleSheet("")
+        self.app.setPalette(self.app.style().standardPalette())
+        self.app.style().unpolish(self.app)
+        self.app.style().polish(self.app)
+        self.app.style().unpolish(self.app)
+        self.app.setStyleSheet(stylesheet)
+        self.app.setStyle(style)
+        self.app.setPalette(palette)
+        self.app.style().unpolish(self.app)
+        self.app.style().polish(self.app)
 
-        # Load stylesheet. This is a stylesheet with placeholders. It cannot be used directly
-        stylesheet_str = ""
-        stylesheet_file = QFile(":/stylesheet.qss")
-        if stylesheet_file.open(QIODevice.ReadOnly):
-            stylesheet_str = bytes(stylesheet_file.readAll()).decode()
-        else:
-            return False
-        stylesheet_file.close()
-
-        stylesheet_str = stylesheet_str.replace("|default_font_size|", str(font_size))
-
-        # Clear before loading vars from CSV
-        self.__current_csv_vars.clear()
-
-        # Substitute values for placeholders in stylesheet
-        vars_file = QFile(f"{self.__THEME_PATH}/{theme}.csv")
-        if vars_file.open(QIODevice.ReadOnly):
-            for line in bytes(vars_file.readAll()).decode().splitlines(False):
-                # Index 0 = variable, Index 1 = value
-                parts = line.replace(", ", ",").split(",")
-                stylesheet_str = stylesheet_str.replace(f"@{parts[0]}@", parts[1])
-
-                # If duplicate vars in CSV take the first as that will replace the placeholder in the stylesheet
-                if parts[0] not in self.__current_csv_vars:
-                    self.__current_csv_vars[parts[0]] = parts[1]
-        else:
-            return False
-
-        self.__app.setStyleSheet(stylesheet_str)
-
-        return True
-
-    def get_variable(self, var: str) -> str:
-        """
-        Get the value of a given variable for the current theme.
-        This information is saved when the theme is applied
-        and thus does not require reparsing the CSV file each time
-        """
-        if var in self.__current_csv_vars:
-            return self.__current_csv_vars[var]
-        return ""
-
-    def get_variable_for_theme(self, var: str, theme: str = None) -> str:
-        """
-        Parse the variables CSV file for the theme withthe given name.
-        Return the value of the requested variable.
-        """
-        if theme is None:
-            theme = self.__current_theme
-        if theme not in self.__themes:
-            return None
-        vars_file = QFile(f"{self.__THEME_PATH}/{theme}.csv")
-        if vars_file.open(QIODevice.ReadOnly):
-            for line in bytes(vars_file.readAll()).decode().splitlines(False):
-                # Index 0 = variable, Index 1 = value
-                parts = line.replace(", ", ",").split(",")
-                if parts[0] == var:
-                    return parts[1]
-        return ""
-
-    def current_stylesheet(self) -> str:
-        return self.__app.styleSheet()
+        # Adjust font size
+        # font = QApplication.font()
+        # font.setPointSize(self.default_font_size + 2 if settings_manager.larger_fonts else self.default_font_size)
+        # QApplication.setFont(font)
 
 
 class SettingsManager:
@@ -137,7 +98,7 @@ class SettingsManager:
 
         self.__DEFAULT_ROBOT_IP = "192.168.10.1"
         self.__DEFAULT_VBAT_MAIN = 7.5
-        self.__DEFAULT_THEME = "Light"
+        self.__DEFAULT_THEME = "Custom Light"
         self.__DEFAULT_LARGE_FONTS = False
 
         # Setup
@@ -227,8 +188,9 @@ class HTMLDelegate(QStyledItemDelegate):
         options = QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
 
-        global theme_manager
-        self.doc.setDefaultStyleSheet(theme_manager.current_stylesheet())
+        ss = QApplication.instance().styleSheet()
+        ss = "{0}\n{1}".format(ss, "*{{font-size: {0}pt}}".format(QApplication.font().pointSize()))
+        self.doc.setDefaultStyleSheet(ss)
 
         self.doc.setHtml(options.text)
         options.text = ""
