@@ -188,13 +188,6 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
-    def select_icons_from_theme(self):
-        # Settings button icon
-        if self.ui.btn_settings.palette().color(QPalette.Window).lightness() > 128:
-            self.ui.btn_settings.setIcon(QIcon(":/gear_dark.png"))
-        else:
-            self.ui.btn_settings.setIcon(QIcon(":/gear_light.png"))
-
     def showEvent(self, event: QShowEvent):
         # Icon color cannot be selected properly before window is shown
         # So apply theme after showing
@@ -226,36 +219,18 @@ class DriveStationWindow(QMainWindow):
         # Change theme
         theme_manager.apply_theme(settings_manager.theme)
 
-        # Qt6 seems to have a bug when switching from a stylesheet to a palette
-        # Renders text and some other colors incorrectly, unless the window is inactive
-        # This happens when switching from Custom Light to Fusion Dark (for example)
-        # Only solution I have found is to construct a new window or manually apply the new palette to everything
-        # The following prints show that the palette doesn't change for the existing window
-        
-        # print(QApplication.palette().color(QPalette.Text).name())
-        # print(self.palette().color(QPalette.Text).name())
-        self.change_palette_recursive(self, QApplication.palette())
-        # print(QApplication.palette().color(QPalette.Text).name())
-        # print(self.palette().color(QPalette.Text).name())
-        # print()
-
-        # Then, the above fix may break the stylesheet if it exists
-        # So, fix that. Inheritance of stylesheets seems to work properly.
-        self.setStyleSheet(QApplication.instance().styleSheet())
-        self.style().unpolish(self)
-        self.style().polish(self)
-
-        # Theme changed. Change any icons that need it.
-        self.select_icons_from_theme()
+        # Settings button icon
+        if self.ui.btn_settings.palette().color(QPalette.Window).lightness() > 128:
+            self.ui.btn_settings.setIcon(QIcon(":/gear_dark.png"))
+        else:
+            self.ui.btn_settings.setIcon(QIcon(":/gear_light.png"))
 
         # Custom tweaks to window specific UI elements
         is_dark = self.ui.btn_disable.palette().color(QPalette.Button).lightness() < 128
         disable_txt_color = "#FF0000" if is_dark else "#990000"
         enable_txt_color = "#00AA00" if is_dark else "#004D00"
-        btn_border_color = (self.ui.btn_disable.palette().color(QPalette.Button).lighter(150) if is_dark else self.ui.btn_disable.palette().color(QPalette.Button).darker(150)).name()
-        base_btn_sheet = "QPushButton{{ color: {0}; border-style: outset; border-width: 2px; border-color: {1} }} QPushButton:checked{{ border-style: inset; }}"
-        self.ui.btn_disable.setStyleSheet(base_btn_sheet.format(disable_txt_color, btn_border_color))
-        self.ui.btn_enable.setStyleSheet(base_btn_sheet.format(enable_txt_color, btn_border_color))
+        self.ui.btn_disable.setStyleSheet("color: {0}".format(disable_txt_color))
+        self.ui.btn_enable.setStyleSheet("color: {0}".format(enable_txt_color))
         
         # Theme has changed. Re-apply syntax highlighting to logs
         is_dark = self.ui.txt_ds_log.palette().color(QPalette.Base).lightness() < 128

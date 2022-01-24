@@ -9,19 +9,20 @@ class ThemeManager:
     def __init__(self) -> None:
         self.app = None
         self.system_theme = "Fusion"
+        self.default_font_size = 9
     
     def set_app(self, app: QApplication) -> None:
         self.app = app
         self.system_theme = self.app.style().name()
+        self.default_font_size = self.app.font().pointSize()
     
     @property
     def themes(self):
-        return ["Custom Light", "Custom Dark", "Fusion Light", "Fusion Dark", "System"]
+        return ["Custom Light", "Custom Dark", "Fusion", "System"]
     
     def apply_theme(self, theme: str):
         style = QStyleFactory.create("Fusion")
         stylesheet = ""
-        palette = QPalette()
 
         if theme == "Custom Light" or theme == "Custom Dark":
             # Load stylesheet
@@ -39,40 +40,19 @@ class ThemeManager:
                         stylesheet = stylesheet.replace("@{0}@".format(parts[0]), parts[1])
                     vars_file.close()
             style = QStyleFactory.create("Fusion")
-            palette = style.standardPalette()
-        elif theme == "Fusion Light" or theme == "Fusion Dark":
+        elif theme == "Fusion" or theme == "Fusion Dark":
             style = QStyleFactory.create("Fusion")
             stylesheet = ""
-            
-            palette = QPalette()
-            if theme == "Fusion Dark":
-                palette.setColor(QPalette.Window, QColor(53, 53, 53))
-                palette.setColor(QPalette.WindowText, Qt.white)
-                palette.setColor(QPalette.Base, QColor(25, 25, 25))
-                palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-                palette.setColor(QPalette.ToolTipBase, Qt.white)
-                palette.setColor(QPalette.ToolTipText, Qt.white)
-                palette.setColor(QPalette.Text, Qt.white)
-                palette.setColor(QPalette.Button, QColor(53, 53, 53))
-                # palette.setColor(QPalette.Disabled, QPalette.Button, QColor(94, 94, 94))
-                palette.setColor(QPalette.ButtonText, Qt.white)
-                palette.setColor(QPalette.BrightText, Qt.red)
-                palette.setColor(QPalette.Link, QColor(42, 130, 218))
-                palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-                palette.setColor(QPalette.HighlightedText, Qt.black)
         else:
             style = QStyleFactory.create(self.system_theme)
             stylesheet = ""
-            palette = style.standardPalette()
         
         self.app.setStyleSheet(stylesheet)
         self.app.setStyle(style)
-        self.app.setPalette(palette)
 
         # Adjust font size
-        # font = QApplication.font()
-        # font.setPointSize(self.default_font_size + 2 if settings_manager.larger_fonts else self.default_font_size)
-        # QApplication.setFont(font)
+        size = self.default_font_size + 2 if settings_manager.larger_fonts else self.default_font_size
+        self.app.setStyleSheet("{0}\n{1}".format(self.app.styleSheet(), "*{{font-size: {0}pt}}".format(size)))
 
 
 class SettingsManager:
