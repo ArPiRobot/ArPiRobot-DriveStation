@@ -234,7 +234,6 @@ class DriveStationWindow(QMainWindow):
         
         # print(QApplication.palette().color(QPalette.Text).name())
         # print(self.palette().color(QPalette.Text).name())
-        time.sleep(0.1)
         self.change_palette_recursive(self, QApplication.palette())
         # print(QApplication.palette().color(QPalette.Text).name())
         # print(self.palette().color(QPalette.Text).name())
@@ -249,7 +248,14 @@ class DriveStationWindow(QMainWindow):
         # Theme changed. Change any icons that need it.
         self.select_icons_from_theme()
 
-        # TODO: Any custom stylesheet additions
+        # Custom tweaks to window specific UI elements
+        is_dark = self.ui.btn_disable.palette().color(QPalette.Button).lightness() < 128
+        disable_txt_color = "#FF0000" if is_dark else "#990000"
+        enable_txt_color = "#00AA00" if is_dark else "#004D00"
+        btn_border_color = (self.ui.btn_disable.palette().color(QPalette.Button).lighter(150) if is_dark else self.ui.btn_disable.palette().color(QPalette.Button).darker(150)).name()
+        base_btn_sheet = "QPushButton{{ color: {0}; border-style: outset; border-width: 2px; border-color: {1} }} QPushButton:checked{{ border-style: inset; }}"
+        self.ui.btn_disable.setStyleSheet(base_btn_sheet.format(disable_txt_color, btn_border_color))
+        self.ui.btn_enable.setStyleSheet(base_btn_sheet.format(enable_txt_color, btn_border_color))
         
         # Theme has changed. Re-apply syntax highlighting to logs
         is_dark = self.ui.txt_ds_log.palette().color(QPalette.Base).lightness() < 128
