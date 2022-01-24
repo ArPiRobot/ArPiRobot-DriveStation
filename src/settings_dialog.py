@@ -1,8 +1,7 @@
 
-from typing import List
 from PySide6.QtWidgets import QDialog
 from ui_settings_dialog import Ui_SettingsDialog
-from util import settings_manager, theme_manager
+from util import settings_manager
 
 
 class SettingsDialog(QDialog):
@@ -17,12 +16,8 @@ class SettingsDialog(QDialog):
         self.ui.txt_robot_address.setFocus()
 
         # Manually create this list, so the order can be manually selected
-        self.ui.combox_themes.addItems(theme_manager.themes)
-
-        if settings_manager.theme in theme_manager.themes:
-            self.ui.combox_themes.setCurrentText(settings_manager.theme)
-        else:
-            self.ui.combox_themes.setCurrentIndex(0)
+        self.ui.combox_themes.addItems(["Light", "Dark"])
+        self.ui.combox_themes.setCurrentText(settings_manager.theme)
 
         self.ui.chbox_larger_font.setChecked(settings_manager.larger_fonts)
 
