@@ -29,4 +29,4 @@ ds = DriveStationWindow()
 logger.set_ds(ds)
 
 ds.show()
-app.exec()
+ec = app.exec()
