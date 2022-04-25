@@ -13,6 +13,11 @@ while true; do
   esac
 done
 
+function fail(){
+    echo "**Failed!**"
+    exit 1
+}
+
 function realpath() {
   OURPWD=$PWD
   cd "$(dirname "$1")"
@@ -46,26 +51,30 @@ popd > /dev/null
 # Create pyinstaller binary
 ################################################################################
 echo "**Creating PyInstaller Binary**"
-rm -rf build/ || fail
-rm -rf dist/ArPiRobot-DriveStation.app/ || fail
-rm -rf dist/ArPiRobot-DriveStation/ || fail
-pyinstaller macos/macos.spec || fail
+rm -rf macos/build/ || fail
+rm -rf macos/dist/ArPiRobot-DeployTool.app/ || fail
+rm -rf macos/dist/ArPiRobot-DeployTool/ || fail
+cd macos/
+pyinstaller macos.spec || fail
+cd ..
 
 
 ################################################################################
 # Create Zip
 ################################################################################
 echo "**Creating Zip**"
-pushd dist > /dev/null
-zip -r ArPiRobot-DriveStation-$VERSION.app.zip ArPiRobot-DriveStation.app
+pushd macos/dist > /dev/null
+zip -r ArPiRobot-DeployTool-$VERSION.app.zip ArPiRobot-DeployTool.app
 popd > /dev/null
+mkdir ./dist/
+cp macos/dist/ArPiRobot-DeployTool-$VERSION.app.zip ./dist
 
 ################################################################################
 # Cleanup
 ################################################################################
 
-rm -rf build/
-rm -rf dist/ArPiRobot-DriveStation.app/
-rm -rf dist/ArPiRobot-DriveStation/
+rm -rf macos/build/
+rm -rf macos/dist/ArPiRobot-DeployTool.app/
+rm -rf macos/dist/ArPiRobot-DeployTool/
 
 popd > /dev/null
