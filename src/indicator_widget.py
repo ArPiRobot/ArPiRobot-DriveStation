@@ -35,14 +35,14 @@ class IndicatorWidget(QWidget):
         self.ui.lbl_key.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
         # Detect text changed events
-        self.ui.txt_value.textEdited.connect(self.line_edit_changed)
+        self.ui.txt_value.editingFinished.connect(self.line_edit_changed)
 
         # Track mouse event positions
         self.position = QPoint()
         self.mode = IndicatorWidget.Mode.NoMode
 
-    def line_edit_changed(self, text: str):
-        self.value_changed.emit(self.key, text)
+    def line_edit_changed(self):
+        self.value_changed.emit(self.key, self.ui.txt_value.text())
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = QMenu(self)
