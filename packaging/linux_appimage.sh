@@ -31,8 +31,8 @@ ln -s usr/share/icons/hicolor/256x256/apps/arpirobot-drivestation.png AppDir/arp
 cp arpirobot-drivestation.appdata.xml AppDir/
 
 # Install requirements, compile resources, and copy sources to appimage
-AppDir/AppRun -m pip install -r ../../requirements.txt
-AppDir/AppRun ../../compile.py
+AppDir/AppRun -m pip install -U -r ../../requirements.txt --ignore-installed
+PATH=AppDir/usr/bin:$PATH AppDir/AppRun ../../compile.py
 cp -r ../../src AppDir/src
 
 # Change apprun script
