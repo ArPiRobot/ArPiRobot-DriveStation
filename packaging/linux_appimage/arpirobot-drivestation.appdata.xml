@@ -3,14 +3,11 @@
     <id>arpirobot-drivestation</id>
     <metadata_license>MIT</metadata_license>
     <project_license>LGPL-3.0</project_license>
-    <name>ArPiRobot-DriveStation</name>
+    <name>ArPiRobot Drive Station</name>
     <summary>PC-side robot control software for ArPiRobot robots.</summary>
     <description>
         <p>Control ArPiRobot robot using a gamepad connected to your PC.</p>
     </description>
     <launchable type="desktop-id">arpirobot-drivestation.desktop</launchable>
     <url type="homepage"></url>
-    <provides>
-        <binary>python{{ python-version }}</binary>
-    </provides>
 </component>
