@@ -7,3 +7,6 @@ Comment=PC-side robot control software for ArPiRobot robots.
 Icon=arpirobot-drivestation
 Categories=
 Terminal=false
+X-AppImage-Version=0.4.0-beta4
+X-AppImage-Name=ArPiRobot-DeployTool
+X-AppImage-Arch=x86_64
