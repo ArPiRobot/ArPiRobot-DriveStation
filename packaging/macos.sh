@@ -52,8 +52,8 @@ popd > /dev/null
 ################################################################################
 echo "**Creating PyInstaller Binary**"
 rm -rf macos/build/ || fail
-rm -rf macos/dist/ArPiRobot-DeployTool.app/ || fail
-rm -rf macos/dist/ArPiRobot-DeployTool/ || fail
+rm -rf macos/dist/ArPiRobot-DriveStation.app/ || fail
+rm -rf macos/dist/ArPiRobot-DriveStation/ || fail
 cd macos/
 pyinstaller macos.spec || fail
 cd ..
@@ -64,17 +64,17 @@ cd ..
 ################################################################################
 echo "**Creating Zip**"
 pushd macos/dist > /dev/null
-zip -r ArPiRobot-DeployTool-$VERSION.app.zip ArPiRobot-DeployTool.app
+zip -r ArPiRobot-DriveStation-macOS-x64.app.zip ArPiRobot-DriveStation.app
 popd > /dev/null
 mkdir ./dist/
-cp macos/dist/ArPiRobot-DeployTool-$VERSION.app.zip ./dist
+cp macos/dist/ArPiRobot-DriveStation-macOS-x64.app.zip ./dist
 
 ################################################################################
 # Cleanup
 ################################################################################
 
 rm -rf macos/build/
-rm -rf macos/dist/ArPiRobot-DeployTool.app/
-rm -rf macos/dist/ArPiRobot-DeployTool/
+rm -rf macos/dist/ArPiRobot-DriveStation.app/
+rm -rf macos/dist/ArPiRobot-DriveStation/
 
 popd > /dev/null

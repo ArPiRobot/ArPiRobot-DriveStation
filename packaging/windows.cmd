@@ -9,7 +9,7 @@ cd packaging
 
 echo **Creating PyInstaller Binary**
 rmdir /Q/S .\windows\build\
-rmdir /Q/S .\windows\dist\ArPiRobot-DeployTool\
+rmdir /Q/S .\windows\dist\ArPiRobot-DriveStation\
 cd .\windows
 pyinstaller windows.spec
 cd ..
@@ -17,4 +17,4 @@ cd ..
 echo **Creating Installer**
 C:\"Program Files (x86)"\"Inno Setup 6"\Compil32.exe /cc windows\win_installer.iss
 
-rmdir /Q/S .\windows\dist\ArPiRobot-DeployTool
+rmdir /Q/S .\windows\dist\ArPiRobot-DriveStation

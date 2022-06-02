@@ -86,7 +86,7 @@ fi
 if [ "$BUILD_TAR" == "yes" ]; then
     echo "**Creating tar.gz package**"
     pushd dist > /dev/null
-    tar -zcvf ArPiRobot-DriveStation-${VERSION}.tar.gz ./ArPiRobot-DriveStation/ || fail
+    tar -zcvf ArPiRobot-DriveStation-Linux-Any.tar.gz ArPiRobot-DriveStation/ || fail
     popd > /dev/null
 fi
 
@@ -109,8 +109,12 @@ if [ "$BUILD_DEB" == "yes" ]; then
     mkdir arpirobot-drivestation_$VERSION/DEBIAN
     mkdir arpirobot-drivestation_$VERSION/opt
     mkdir arpirobot-drivestation_$VERSION/opt/ArPiRobot-DriveStation
+    mkdir -p arpirobot-drivestation_$VERSION/usr/share/doc/arpirobot-drivestation/
+    mkdir -p arpirobot-drivestation_$VERSION/usr/share/metainfo/
 
     # Copy files
+    cp ../linux_source/arpirobot-drivestation.appdata.xml ./arpirobot-drivestation_$VERSION/usr/share/metainfo/
+    cp ./ArPiRobot-DriveStation/COPYING ./arpirobot-drivestation_$VERSION/usr/share/doc/arpirobot-drivestation/copyright
     cp -r ./ArPiRobot-DriveStation/* ./arpirobot-drivestation_$VERSION/opt/ArPiRobot-DriveStation/
     cp ../linux_source/deb_control ./arpirobot-drivestation_$VERSION/DEBIAN/control
     cp ../linux_source/deb_prerm ./arpirobot-drivestation_$VERSION/DEBIAN/prerm
@@ -119,6 +123,7 @@ if [ "$BUILD_DEB" == "yes" ]; then
 
     # Generate package
     dpkg-deb --build arpirobot-drivestation_$VERSION || fail
+    mv arpirobot-drivestation_$VERSION.deb ArPiRobot-DriveStation-Ubuntu-Any.deb
 
     rm -rf ./arpirobot-drivestation_$VERSION/
 

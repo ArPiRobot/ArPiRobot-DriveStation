@@ -26,7 +26,7 @@ LicenseFile=..\..\COPYING
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=..\dist\
-OutputBaseFilename=DriveStation-Setup-{#MyAppVersion}
+OutputBaseFilename=ArPiRobot-DriveStation-Windows-x64
 SetupIconFile=..\..\res\icon.ico
 UninstallDisplayIcon={app}\icon.ico
 Compression=lzma

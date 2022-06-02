@@ -2,6 +2,7 @@
 Type=Application
 Name=ArPiRobot Drive Station
 Exec=AppRun
+StartupWMClass=ArPiRobot-DriveStation
 Comment=PC-side robot control software for ArPiRobot robots.
 Icon=arpirobot-drivestation
 Categories=
