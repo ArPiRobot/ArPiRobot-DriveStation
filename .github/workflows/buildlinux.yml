@@ -1,4 +1,4 @@
-name: Build Linux (x64 AppImage + Any Source)
+name: Build Linux (x64)
 on: [workflow_dispatch]
 jobs:
   Build:
