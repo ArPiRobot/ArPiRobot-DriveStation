@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QAction, QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PySide6.QtGui import QAction, QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument, QColor, QPalette, QIcon
+from PySide6.QtWidgets import QApplication
 from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
@@ -56,10 +57,18 @@ class LogHighlighter(QSyntaxHighlighter):
         self.construct_format_from_theme()
     
     def construct_format_from_theme(self):
-        color_debug = theme_manager.get_variable("log_debug")
-        color_info = theme_manager.get_variable("log_info")
-        color_warning = theme_manager.get_variable("log_warning")
-        color_error = theme_manager.get_variable("log_error")
+        if QApplication.palette().color(QPalette.Window).valueF() >= 0.5:
+            # Light theme highlight colors
+            color_debug = "#007800"
+            color_info = "#000000"
+            color_warning = "#B05700"
+            color_error = "#B60000"
+        else:
+            # Dark theme highlight colors
+            color_debug = "#00FF00"
+            color_info = "#FFFFFF"
+            color_warning = "#FF7F00"
+            color_error = "#FF0000"
 
         self.fmt_debug.setForeground(QColor(color_debug))
         self.fmt_info.setForeground(QColor(color_info))
@@ -186,6 +195,126 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
+        self.__on_theme_change()
+
+    def __on_theme_change(self):
+        color_status_red = "#C80000"
+        color_status_green = "00C800"
+        color_battery_red = "#C80000"
+        color_battery_orange = "#E59900"
+        color_battery_yellow = "#E6E600"
+        color_battery_green = "#00C800"
+        color_text = QApplication.palette().color(QPalette.Text).name()
+        is_dark = QApplication.palette().color(QPalette.Window).valueF() < 0.5
+        settings_icon = ":/icons/gear_light.png" if is_dark else ":/icons/gear_dark.png"
+        color_disable_btn = "#FF0000" if is_dark else "#990000"
+        color_enable_btn = "#00AA00" if is_dark else "#004D00"
+        btn_border = QApplication.palette().color(QPalette.Window).darker(175).name()
+
+        self.ui.pnl_bat_bg.setStyleSheet("""
+            QWidget#pnl_bat_bg_red{{
+                background-color: {red_color};
+                border-radius: 3px;
+            }}
+            QWidget#pnl_bat_bg_orange{{
+                background-color: {orange_color};
+                border-radius: 3px;
+            }}
+            QWidget#pnl_bat_bg_yellow{{
+                background-color: {yellow_color};
+                border-radius: 3px;
+            }}
+            QWidget#pnl_bat_bg_green{{
+                background-color: {green_color};
+                border-radius: 3px;
+            }}
+        """.format(
+            red_color=color_battery_red, 
+            orange_color=color_battery_orange, 
+            yellow_color=color_battery_yellow, 
+            green_color=color_battery_green,
+            text_color=color_text
+        ))
+
+        self.ui.pnl_net_bg.setStyleSheet("""
+            QWidget#pnl_net_bg{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+            }}
+            QWidget#pnl_net_bg_red{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+                background-color: {red_color};
+            }}
+            QWidget#pnl_net_bg_green{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+                background-color: {green_color};
+            }}
+        """.format(
+            text_color=color_text,
+            red_color=color_status_red,
+            green_color=color_status_green
+        ))
+
+        self.ui.pnl_program_bg.setStyleSheet("""
+            QWidget#pnl_program_bg{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+            }}
+            QWidget#pnl_program_bg_red{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+                background-color: {red_color};
+            }}
+            QWidget#pnl_program_bg_green{{
+                border: 1px solid {text_color};
+                border-radius: 3px;
+                background-color: {green_color};
+            }}
+        """.format(
+            text_color=color_text,
+            red_color=color_status_red,
+            green_color=color_status_green
+        ))
+
+        self.ui.btn_settings.setIcon(QIcon(settings_icon))
+
+        # self.ui.btn_disable.setStyleSheet("""
+        #     QPushButton{{
+        #         color: {text_color};
+        #         border-style: outset;
+        #         border-width: 2px;
+        #         border-radius: 1px;
+        #         border-color: {border_color};
+        #     }}
+        #     QPushButton:checked{{
+        #         border-style: inset;
+        #     }}
+        # """.format(
+        #     text_color=color_disable_btn,
+        #     border_color=btn_border
+        # ))
+        self.ui.btn_disable.setStyleSheet("color: {};".format(color_disable_btn))
+
+        # self.ui.btn_enable.setStyleSheet("""
+        #     QPushButton{{
+        #         color: {text_color};
+        #         border-style: outset;
+        #         border-width: 2px;
+        #         border-radius: 1px;
+        #         border-color: {border_color};
+        #     }}
+        #     QPushButton:checked{{
+        #         border-style: inset;
+        #     }}
+        # """.format(
+        #     text_color=color_enable_btn,
+        #     border_color=btn_border
+        # ))
+        self.ui.btn_enable.setStyleSheet("color: {};".format(color_enable_btn))
+
+
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
         self.net_manager.stop()
@@ -208,6 +337,7 @@ class DriveStationWindow(QMainWindow):
 
             # Change theme
             theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
+            self.__on_theme_change()
 
             # Theme has changed. Re-apply syntax highlighting to logs
             self.ds_log_highlighter.construct_format_from_theme()
