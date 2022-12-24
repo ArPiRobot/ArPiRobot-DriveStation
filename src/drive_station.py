@@ -314,6 +314,19 @@ class DriveStationWindow(QMainWindow):
         # ))
         self.ui.btn_enable.setStyleSheet("color: {};".format(color_enable_btn))
 
+        for ind in self.indicators.values():
+            ind.setStyleSheet("""
+            IndicatorWidget{{
+                
+            }}
+            IndicatorWidget:focus{{
+                border: 1px solid {text_color};
+                border-radius: 2px;
+            }}
+            """.format(
+                text_color=color_text
+            ))
+
 
     def closeEvent(self, event: QCloseEvent):
         self.save_indicators()
