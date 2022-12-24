@@ -143,8 +143,8 @@ class HTMLDelegate(QStyledItemDelegate):
         options = QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
 
-        global theme_manager
-        self.doc.setDefaultStyleSheet(theme_manager.current_stylesheet())
+        # global theme_manager
+        # self.doc.setDefaultStyleSheet(theme_manager.current_stylesheet())
 
         self.doc.setHtml(options.text)
         options.text = ""
