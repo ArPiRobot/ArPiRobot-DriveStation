@@ -593,6 +593,21 @@ class DriveStationWindow(QMainWindow):
             geometry.setWidth(ind_geom.width())
             geometry.setHeight(ind_geom.height())
         ind.setGeometry(geometry)
+
+        # Apply correct stylesheet
+        color_text = QApplication.palette().color(QPalette.Text).name()
+        ind.setStyleSheet("""
+        IndicatorWidget{{
+            
+        }}
+        IndicatorWidget:focus{{
+            border: 1px solid {text_color};
+            border-radius: 2px;
+        }}
+        """.format(
+            text_color=color_text
+        ))
+
         ind.show()
         self.indicators[key] = ind
 
