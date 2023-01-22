@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ArPiRobot Drive Station"
-#define MyAppVersion "0.4.0-beta4"
+#define MyAppVersion "1.0.0-rc1"
 #define MyAppPublisher "Marcus Behel"
 #define MyAppURL "http://mb3hel.github.io/arpirobot"
 #define MyAppExeName "ArPiRobot-DriveStation.exe"
