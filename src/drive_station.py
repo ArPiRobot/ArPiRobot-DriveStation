@@ -619,7 +619,8 @@ class DriveStationWindow(QMainWindow):
                     "x": ind.geometry().x(),
                     "y": ind.geometry().y(),
                     "width": ind.geometry().width(),
-                    "height": ind.geometry().height()
+                    "height": ind.geometry().height(),
+                    "editable": not ind.ui.txt_value.isReadOnly()
                 }
             with open(QDir.homePath() + "/.arpirobot/dsindicators.json", "w") as data_file:
                 json.dump(data, data_file)
@@ -636,6 +637,8 @@ class DriveStationWindow(QMainWindow):
                     width = subdata["width"]
                     height = subdata["height"]
                     self.add_indicator(key, QRect(x, y, width, height))
+                    if "editable" in subdata:
+                        self.indicators[key].ui.txt_value.setReadOnly(not subdata["editable"])
         except:
             pass
 
