@@ -68,6 +68,7 @@ cp -r ../src/ ./dist/ArPiRobot-DriveStation/
 cp ../requirements.txt ./dist/ArPiRobot-DriveStation/
 cp -r ../res/icon.png ./dist/ArPiRobot-DriveStation/
 cp ../COPYING ./dist/ArPiRobot-DriveStation
+cp ../COPYING.LESSER ./dist/ArPiRobot-DriveStation
 cp linux_source/install.sh ./dist/ArPiRobot-DriveStation
 cp linux_source/uninstall.sh ./dist/ArPiRobot-DriveStation
 cp linux_source/start.sh ./dist/ArPiRobot-DriveStation
