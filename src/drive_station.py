@@ -198,18 +198,19 @@ class DriveStationWindow(QMainWindow):
         self.__on_theme_change()
 
     def __on_theme_change(self):
-        color_status_red = "#C80000"
-        color_status_green = "00C800"
-        color_battery_red = "#C80000"
-        color_battery_orange = "#E59900"
-        color_battery_yellow = "#E6E600"
-        color_battery_green = "#00C800"
         color_text = QApplication.palette().color(QPalette.Text).name()
         is_dark = QApplication.palette().color(QPalette.Window).valueF() < 0.5
         settings_icon = ":/icons/gear_light.png" if is_dark else ":/icons/gear_dark.png"
         color_disable_btn = "#FF0000" if is_dark else "#990000"
         color_enable_btn = "#00AA00" if is_dark else "#004D00"
         btn_border = QApplication.palette().color(QPalette.Window).darker(175).name()
+
+        color_status_red = "#800000" if is_dark else "#C80000"
+        color_status_green = "#008000" if is_dark else "#00C800"
+        color_battery_red = "#800000" if is_dark else "#C80000"
+        color_battery_orange = "#B37800" if is_dark else "#E59900"
+        color_battery_yellow = "#BCBC00" if is_dark else "#E6E600"
+        color_battery_green = "#008000" if is_dark else "#00C800"
 
         self.ui.pnl_bat_bg.setStyleSheet("""
             QWidget#pnl_bat_bg_red{{
@@ -767,7 +768,9 @@ class DriveStationWindow(QMainWindow):
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
-        
+        print(self.ui.pnl_program_bg.objectName())
+        print(self.ui.pnl_program_bg.styleSheet())
+        print()
         # Force stylesheet to be reapplied due to object name change
         self.ui.pnl_program_bg.style().unpolish(self.ui.pnl_program_bg)
         self.ui.pnl_program_bg.style().polish(self.ui.pnl_program_bg)
