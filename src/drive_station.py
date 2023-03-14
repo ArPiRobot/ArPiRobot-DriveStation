@@ -768,9 +768,6 @@ class DriveStationWindow(QMainWindow):
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_green")
         else:
             self.ui.pnl_program_bg.setObjectName("pnl_program_bg_red")
-        print(self.ui.pnl_program_bg.objectName())
-        print(self.ui.pnl_program_bg.styleSheet())
-        print()
         # Force stylesheet to be reapplied due to object name change
         self.ui.pnl_program_bg.style().unpolish(self.ui.pnl_program_bg)
         self.ui.pnl_program_bg.style().polish(self.ui.pnl_program_bg)
