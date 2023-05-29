@@ -206,6 +206,10 @@ class DriveStationWindow(QMainWindow):
         p = app.palette()
         for cg in [QPalette.ColorGroup.Active, QPalette.ColorGroup.Current, QPalette.ColorGroup.Disabled, QPalette.ColorGroup.Inactive]:
             p.setColor(cg, QPalette.ColorRole.Base, p.color(cg, QPalette.ColorRole.Base))
+        
+        # Fixes some elements turning wrong color when window looses focus
+        p.setColor(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Button, p.color(QPalette.ColorGroup.Active, QPalette.ColorRole.Button))
+        
         app.setPalette(p)
 
         # Determine if color scheme is light or dark
