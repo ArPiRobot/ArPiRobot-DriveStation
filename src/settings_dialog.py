@@ -20,5 +20,4 @@ class SettingsDialog(QDialog):
     def save_settings(self):
         settings_manager.robot_address = self.ui.txt_robot_address.text()
         settings_manager.vbat_main = float(self.ui.txt_bat_voltage.text())
-        settings_manager.theme = self.ui.combox_themes.currentText()
         settings_manager.larger_fonts = self.ui.chbox_larger_font.isChecked()
