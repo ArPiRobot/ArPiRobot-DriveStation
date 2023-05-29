@@ -200,12 +200,20 @@ class DriveStationWindow(QMainWindow):
 
     # Handles all the colors set by stylesheets for various things in the UI
     def __on_color_change(self):
-        color_text = QApplication.palette().color(QPalette.Text).name()
+
+        # Determine if color scheme is light or dark
+        # Note: not using QApplication.styleHints().colorScheme()
+        # because this doesn't account for actual palette just what system recommends
+        # thus if command line flags or environment var are used to alter this (eg -platform windows:darkmode=0)\
+        # this would be incorrect. Future QT may introduce colorScheme value to QPalette instead.
         is_dark = QApplication.palette().color(QPalette.Window).valueF() < 0.5
+        
+
+        # Pick colors / icons based on light or dark scheme
+        color_text = QApplication.palette().color(QPalette.Text).name()
         settings_icon = ":/icons/gear_light.png" if is_dark else ":/icons/gear_dark.png"
         color_disable_btn = "#FF0000" if is_dark else "#990000"
         color_enable_btn = "#00AA00" if is_dark else "#004D00"
-
         color_status_red = "#800000" if is_dark else "#C80000"
         color_status_green = "#008000" if is_dark else "#00C800"
         color_battery_red = "#800000" if is_dark else "#C80000"
