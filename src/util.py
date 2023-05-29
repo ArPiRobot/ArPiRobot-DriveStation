@@ -17,20 +17,7 @@ class ThemeManager:
         self.system_theme = self.app.style().name()
         self.default_font_size = QFont().pointSizeF()
     
-    @property
-    def themes(self) -> List[str]:
-        return [
-            "System",
-            "Fusion"
-        ]
-    
-    def apply_theme(self, theme: str, larger_fonts: bool):
-        # Apply style
-        if theme == "Fusion":
-            self.app.setStyle("Fusion")
-        else:
-            self.app.setStyle(self.system_theme)
-
+    def apply_theme(self, larger_fonts: bool):
         # Support larger fonts
         size = self.default_font_size
         if larger_fonts:
@@ -48,12 +35,10 @@ class SettingsManager:
 
         self.__ROBOT_IP_KEY = "robot-address"
         self.__VBAT_MAIN_KEY = "vbat-main"
-        self.__THEME_KEY = "theme"
         self.__LARGE_FONTS_KEY = "larger-fonts"
 
         self.__DEFAULT_ROBOT_IP = "192.168.10.1"
         self.__DEFAULT_VBAT_MAIN = 7.5
-        self.__DEFAULT_THEME = "Light"
         self.__DEFAULT_LARGE_FONTS = False
 
         # Setup
@@ -64,8 +49,6 @@ class SettingsManager:
             self.__settings.setValue(self.__ROBOT_IP_KEY, self.__DEFAULT_ROBOT_IP)
         if self.__settings.value(self.__VBAT_MAIN_KEY, None) is None:
             self.__settings.setValue(self.__VBAT_MAIN_KEY, self.__DEFAULT_VBAT_MAIN)
-        if self.__settings.value(self.__THEME_KEY, None) is None:
-            self.__settings.setValue(self.__THEME_KEY, self.__DEFAULT_THEME)
         if self.__settings.value(self.__LARGE_FONTS_KEY, None) is None:
             self.__settings.setValue(self.__LARGE_FONTS_KEY, self.__DEFAULT_LARGE_FONTS)
 
@@ -84,14 +67,6 @@ class SettingsManager:
     @vbat_main.setter
     def vbat_main(self, value: float):
         self.__settings.setValue(self.__VBAT_MAIN_KEY, value)
-
-    @property
-    def theme(self) -> str:
-        return self.__settings.value(self.__THEME_KEY, self.__DEFAULT_THEME)
-
-    @theme.setter
-    def theme(self, value: str):
-        self.__settings.setValue(self.__THEME_KEY, value)
 
     @property
     def larger_fonts(self) -> bool:

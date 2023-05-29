@@ -350,7 +350,7 @@ class DriveStationWindow(QMainWindow):
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
             # Change theme
-            theme_manager.apply_theme(settings_manager.theme, settings_manager.larger_fonts)
+            theme_manager.apply_theme(settings_manager.larger_fonts)
             self.__on_theme_change()
 
             # Theme has changed. Re-apply syntax highlighting to logs
