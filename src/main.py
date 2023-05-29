@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt, QFile, QIODevice
 from PySide6.QtGui import QPalette, QColor, QGuiApplication
 
 from drive_station import DriveStationWindow
-from util import theme_manager, settings_manager, logger
+from util import logger
 
 
 QApplication.setAttribute(Qt.AA_DontUseNativeMenuBar)
@@ -58,9 +58,6 @@ if platform.system() == "Linux":
 
 app = QApplication(sys.argv)
 app.setStyle("Fusion")
-
-theme_manager.set_app(app)
-theme_manager.apply_theme(settings_manager.larger_fonts)
 
 ds = DriveStationWindow()
 

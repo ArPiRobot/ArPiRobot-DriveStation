@@ -5,26 +5,6 @@ from PySide6.QtGui import QTextDocument, QAbstractTextDocumentLayout, QFont
 from PySide6.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem, QApplication, QStyle, QStyleFactory
 
 
-class ThemeManager:
-    def __init__(self):
-        self.system_theme = ""
-        self.default_font_size: float = 9
-        self.large_font_factor = 1.2
-        self.app = None
-
-    def set_app(self, app: QApplication):
-        self.app = app
-        self.system_theme = self.app.style().name()
-        self.default_font_size = QFont().pointSizeF()
-    
-    def apply_theme(self, larger_fonts: bool):
-        # Support larger fonts
-        size = self.default_font_size
-        if larger_fonts:
-            size *= self.large_font_factor
-        self.app.setStyleSheet("{0}\n{1}".format(self.app.styleSheet(), "*{{font-size: {0}pt}}".format(size)))
-
-
 class SettingsManager:
     """
     Thin wrapper over QSettings object to manage drive station settings
@@ -100,7 +80,6 @@ class Logger:
         self.__ds.log_from_robot(msg)
 
 
-theme_manager: ThemeManager = ThemeManager()
 settings_manager: SettingsManager = SettingsManager()
 logger: Logger = Logger()
 
@@ -117,9 +96,6 @@ class HTMLDelegate(QStyledItemDelegate):
         painter.save()
         options = QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
-
-        # global theme_manager
-        # self.doc.setDefaultStyleSheet(theme_manager.current_stylesheet())
 
         self.doc.setHtml(options.text)
         options.text = ""

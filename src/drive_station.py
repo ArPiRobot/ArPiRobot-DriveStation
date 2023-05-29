@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, Optional
 
-from PySide6.QtGui import QAction, QCloseEvent, QColor, QMouseEvent, QRgba64, QSyntaxHighlighter, QTextCharFormat, QTextDocument, QColor, QPalette, QIcon
+from PySide6.QtGui import QAction, QCloseEvent, QColor,  QFont, QSyntaxHighlighter, QTextCharFormat, QTextDocument, QColor, QPalette, QIcon
 from PySide6.QtWidgets import QApplication
 from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
@@ -11,7 +11,7 @@ from PySide6.QtCore import QFile, QIODevice, QModelIndex, QRegularExpression, QT
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
-from util import HTMLDelegate, settings_manager, theme_manager, logger
+from util import HTMLDelegate, settings_manager, logger
 from network import NetworkManager
 from about_dialog import AboutDialog
 
@@ -195,15 +195,16 @@ class DriveStationWindow(QMainWindow):
         self.controller_status_timer.start(16) # ~ 60 updates / second
         self.controller_send_timer.start(20)
 
-        self.__on_theme_change()
+        self.__set_font_size()
+        self.__on_color_change()
 
-    def __on_theme_change(self):
+    # Handles all the colors set by stylesheets for various things in the UI
+    def __on_color_change(self):
         color_text = QApplication.palette().color(QPalette.Text).name()
         is_dark = QApplication.palette().color(QPalette.Window).valueF() < 0.5
         settings_icon = ":/icons/gear_light.png" if is_dark else ":/icons/gear_dark.png"
         color_disable_btn = "#FF0000" if is_dark else "#990000"
         color_enable_btn = "#00AA00" if is_dark else "#004D00"
-        btn_border = QApplication.palette().color(QPalette.Window).darker(175).name()
 
         color_status_red = "#800000" if is_dark else "#C80000"
         color_status_green = "#008000" if is_dark else "#00C800"
@@ -212,6 +213,7 @@ class DriveStationWindow(QMainWindow):
         color_battery_yellow = "#BCBC00" if is_dark else "#E6E600"
         color_battery_green = "#008000" if is_dark else "#00C800"
 
+        # Indicator panel colors
         self.ui.pnl_bat_bg.setStyleSheet("""
             QWidget#pnl_bat_bg_red{{
                 background-color: {red_color};
@@ -236,7 +238,6 @@ class DriveStationWindow(QMainWindow):
             green_color=color_battery_green,
             text_color=color_text
         ))
-
         self.ui.pnl_net_bg.setStyleSheet("""
             QWidget#pnl_net_bg{{
                 border: 1px solid {text_color};
@@ -257,7 +258,6 @@ class DriveStationWindow(QMainWindow):
             red_color=color_status_red,
             green_color=color_status_green
         ))
-
         self.ui.pnl_program_bg.setStyleSheet("""
             QWidget#pnl_program_bg{{
                 border: 1px solid {text_color};
@@ -279,42 +279,14 @@ class DriveStationWindow(QMainWindow):
             green_color=color_status_green
         ))
 
+        # Icon of settings button
         self.ui.btn_settings.setIcon(QIcon(settings_icon))
 
-        # self.ui.btn_disable.setStyleSheet("""
-        #     QPushButton{{
-        #         color: {text_color};
-        #         border-style: outset;
-        #         border-width: 2px;
-        #         border-radius: 1px;
-        #         border-color: {border_color};
-        #     }}
-        #     QPushButton:checked{{
-        #         border-style: inset;
-        #     }}
-        # """.format(
-        #     text_color=color_disable_btn,
-        #     border_color=btn_border
-        # ))
+        # Text color of Enable / Disable buttons
         self.ui.btn_disable.setStyleSheet("color: {};".format(color_disable_btn))
-
-        # self.ui.btn_enable.setStyleSheet("""
-        #     QPushButton{{
-        #         color: {text_color};
-        #         border-style: outset;
-        #         border-width: 2px;
-        #         border-radius: 1px;
-        #         border-color: {border_color};
-        #     }}
-        #     QPushButton:checked{{
-        #         border-style: inset;
-        #     }}
-        # """.format(
-        #     text_color=color_enable_btn,
-        #     border_color=btn_border
-        # ))
         self.ui.btn_enable.setStyleSheet("color: {};".format(color_enable_btn))
 
+        # All indicators for network table
         for ind in self.indicators.values():
             ind.setStyleSheet("""
             IndicatorWidget{{
@@ -327,6 +299,13 @@ class DriveStationWindow(QMainWindow):
             """.format(
                 text_color=color_text
             ))
+
+    def __set_font_size(self):
+        size = QFont().pointSizeF()
+        if settings_manager.larger_fonts:
+            size *= 1.2
+        app = QApplication.instance()
+        app.setStyleSheet("{0}\n{1}".format(app.styleSheet(), "*{{font-size: {0}pt}}".format(size)))
 
 
     def closeEvent(self, event: QCloseEvent):
@@ -349,9 +328,8 @@ class DriveStationWindow(QMainWindow):
             # Update main battery voltage (but don't change current voltage)
             self.set_battery_voltage(self.voltage, settings_manager.vbat_main)
 
-            # Change theme
-            theme_manager.apply_theme(settings_manager.larger_fonts)
-            self.__on_theme_change()
+            # Support larger fonts
+            self.__set_font_size()
 
             # Theme has changed. Re-apply syntax highlighting to logs
             self.ds_log_highlighter.construct_format_from_theme()
