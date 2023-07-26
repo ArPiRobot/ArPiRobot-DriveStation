@@ -108,7 +108,7 @@ if [ "$BUILD_RUN" == "yes" ]; then
     chmod +x ./makeself-2.5.0.run
     ./makeself-2.5.0.run
     pushd dist > /dev/null
-    ../makeself-2.5.0/makeself.sh --target /opt/ArPiRobot-DriveStation/ --needroot --gzip ArPiRobot-DriveStation ArPiRobot-DriveStation.run "ArPiRobot Drive Station Installer" ./install.sh
+    ../makeself-2.5.0/makeself.sh --target /opt/ArPiRobot-DriveStation/ --needroot --gzip ArPiRobot-DriveStation ArPiRobot-DriveStation-Linux.run "ArPiRobot Drive Station Installer" ./install.sh
     popd > /dev/null
 fi
 
