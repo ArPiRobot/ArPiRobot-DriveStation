@@ -56,6 +56,37 @@ if platform.system() == "Linux":
             os.environ['XCURSOR_THEME'] = cursor_theme[1:-2]
 
 
+# Theme fixes (only needed for dark theme; light always works properly)
+if app.styleHints().colorScheme() == Qt.ColorScheme.Dark:
+    if platform.system() == "Windows":
+        # Somehow, this fixes checkboxes being blue on windows dark theme.
+        # Not really sure why, but it does.
+        app = QApplication.instance()
+        p = app.palette()
+        for cg in [QPalette.ColorGroup.Active, QPalette.ColorGroup.Current, QPalette.ColorGroup.Disabled, QPalette.ColorGroup.Inactive]:
+            p.setColor(cg, QPalette.ColorRole.Base, p.color(cg, QPalette.ColorRole.Base))
+        app.setPalette(p)
+    elif platform.system() == "Darwin":
+        # TODO: Button text color wrong when inactive
+        pass
+    else:
+        is_plasma = os.environ['XDG_CURRENT_DESKTOP'].find("KDE") != -1
+        is_lxqt = os.environ['XDG_CURRENT_DESKTOP'].find("LXQt") != -1
+
+        if not is_lxqt and not is_plasma:
+            print("Correcting linux dark colors")
+            # Some disabled and inactive colors are wrong on gtk desktops
+            # This does not impact plasma (and presumably would not impact LXQt)
+            # https://bugreports.qt.io/browse/QTBUG-113486
+            p = app.palette()
+            p.setColor(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Button, p.color(QPalette.ColorGroup.Active, QPalette.ColorRole.Button))
+            p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Button, p.color(QPalette.ColorGroup.Active, QPalette.ColorRole.Button).lighter())
+            # TODO: Button borders
+            app.setPalette(p)
+
+            # TODO: Sometimes (manjaro but not ubuntu), inactive text color (buttontext) is wrong like macos
+            pass
+
 app = QApplication(sys.argv)
 app.setStyle("Fusion")
 
