@@ -28,6 +28,7 @@ function confirm() {
 
 BUILD_TAR="ask"
 BUILD_DEB="ask"
+BUILD_RUN="ask"
 PYTHON="python"
 
 while true; do
@@ -35,6 +36,7 @@ while true; do
     --tar ) BUILD_TAR="$2"; shift 2 ;;
     --deb ) BUILD_DEB="$2"; shift 2 ;;
     --python ) PYTHON="$2"; shift 2 ;;
+    --run ) BUILD_RUN="$2": shift 2 ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -88,6 +90,25 @@ if [ "$BUILD_TAR" == "yes" ]; then
     echo "**Creating tar.gz package**"
     pushd dist > /dev/null
     tar -zcvf ArPiRobot-DriveStation-Linux-Any.tar.gz ArPiRobot-DriveStation/ || fail
+    popd > /dev/null
+fi
+
+
+################################################################################
+# Self-extracting package (.run)
+################################################################################
+if [ "$BUILD_RUN" == "ask" ]; then
+    if confirm "Create self extracting .run package?"; then
+        BUILD_RUN="yes"
+    fi
+fi
+if [ "$BUILD_RUN" == "yes" ]; then
+    echo "**Creating .run package**"
+    wget https://github.com/megastep/makeself/releases/download/release-2.5.0/makeself-2.5.0.run
+    chmod +x ./makeself-2.5.0.run
+    ./makeself-2.5.0.run
+    pushd dist > /dev/null
+    ../makeself-2.5.0/makeself.sh --target /opt/ArPiRobot-DriveStationSelf/ --needroot --gzip ArPiRobot-DriveStation ArPiRobot-DriveStation.run "ArPiRobot Drive Station Installer" ./install.sh
     popd > /dev/null
 fi
 

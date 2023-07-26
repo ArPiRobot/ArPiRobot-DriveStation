@@ -35,4 +35,7 @@ echo "Adding desktop menu entry"
 printf "[Desktop Entry]\nVersion=1.1\nType=Application\nTerminal=false\nName=ArPiRobot Drive Station\nComment=PC-side robot control software for ArPiRobot robots.\nIcon=$DIR/icon.png\nExec=$DIR/start.sh\nStartupWMClass=ArPiRobot-DriveStation\nActions=\nCategories=Development;\nStartupNotify=true\nStartupWMClass=com-arpirobot-drivestation-DriveStation\n" > ArPiRobot-DriveStation.desktop
 xdg-desktop-menu install --novendor ArPiRobot-DriveStation.desktop
 
+# Fix directory permissions so non-root users can read it (and subdirectories)
+chmod -R 755 "$DIR"
+
 popd > /dev/null
