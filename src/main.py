@@ -55,6 +55,8 @@ if platform.system() == "Linux":
         if 'XCURSOR_THEME' not in os.environ:
             os.environ['XCURSOR_THEME'] = cursor_theme[1:-2]
 
+app = QApplication(sys.argv)
+app.setStyle("Fusion")
 
 # Theme fixes (only needed for dark theme; light always works properly)
 if app.styleHints().colorScheme() == Qt.ColorScheme.Dark:
@@ -74,7 +76,6 @@ if app.styleHints().colorScheme() == Qt.ColorScheme.Dark:
         is_lxqt = os.environ['XDG_CURRENT_DESKTOP'].find("LXQt") != -1
 
         if not is_lxqt and not is_plasma:
-            print("Correcting linux dark colors")
             # Some disabled and inactive colors are wrong on gtk desktops
             # This does not impact plasma (and presumably would not impact LXQt)
             # https://bugreports.qt.io/browse/QTBUG-113486
@@ -86,9 +87,6 @@ if app.styleHints().colorScheme() == Qt.ColorScheme.Dark:
 
             # TODO: Sometimes (manjaro but not ubuntu), inactive text color (buttontext) is wrong like macos
             pass
-
-app = QApplication(sys.argv)
-app.setStyle("Fusion")
 
 ds = DriveStationWindow()
 
