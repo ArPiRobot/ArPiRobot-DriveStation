@@ -9,10 +9,10 @@ if ! which python3 > /dev/null; then
     exit 1
 fi
 
-if touch test.txt; then
+if touch test.txt 2> /dev/null; then
     rm test.txt
 else
-    echo "Run as root."
+    echo "Run as root (sudo)."
     exit 2
 fi
 
