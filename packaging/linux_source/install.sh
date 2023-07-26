@@ -4,16 +4,21 @@ DIR=$(realpath $(dirname $0))
 
 pushd "$DIR" > /dev/null
 
-if ! which python3 > /dev/null; then
-    echo "Python 3 must be installed."
-    exit 1
-fi
-
 if touch test.txt 2> /dev/null; then
     rm test.txt
 else
     echo "Run as root (sudo)."
     exit 2
+fi
+
+if ! which python3 > /dev/null; then
+    echo "Python 3 must be installed."
+    exit 1
+fi
+
+if ! ping -c 1 google.com > /dev/null 2>&1; then
+    echo "Internet access is required during install!"
+    exit 1
 fi
 
 # Remove virtual env if one exists
