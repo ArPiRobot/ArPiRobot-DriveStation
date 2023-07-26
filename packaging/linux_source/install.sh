@@ -26,7 +26,7 @@ if ! python3 -m venv env; then
     exit 3
 fi
 source env/bin/activate
-python -m pip install -r -U requirements.txt > /dev/null
+python -m pip install -U -r requirements.txt > /dev/null
 deactivate
 
 # Desktop menu entry

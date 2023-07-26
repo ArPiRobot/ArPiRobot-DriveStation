@@ -76,7 +76,7 @@ cp linux_source/uninstall.sh ./dist/ArPiRobot-DriveStation
 cp linux_source/start.sh ./dist/ArPiRobot-DriveStation
 
 # Remove pyinstaller from requirements.txt
-sed -i "s/pyinstaller//g" ./dist/ArPiRobot-DriveStation/requirements.txt
+sed -i "s/pyinstaller.*//g" ./dist/ArPiRobot-DriveStation/requirements.txt
 
 ################################################################################
 # Tarball package
