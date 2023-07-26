@@ -36,7 +36,7 @@ while true; do
     --tar ) BUILD_TAR="$2"; shift 2 ;;
     --deb ) BUILD_DEB="$2"; shift 2 ;;
     --python ) PYTHON="$2"; shift 2 ;;
-    --run ) BUILD_RUN="$2": shift 2 ;;
+    --run ) BUILD_RUN="$2"; shift 2 ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -53,7 +53,7 @@ VERSION=`head -1 ../res/version.txt`
 ################################################################################
 echo "**Compiling QT Resources and UI**"
 pushd ../ > /dev/null
-python compile.py || fail
+"$PYTHON" compile.py || fail
 popd > /dev/null
 
 
@@ -108,7 +108,7 @@ if [ "$BUILD_RUN" == "yes" ]; then
     chmod +x ./makeself-2.5.0.run
     ./makeself-2.5.0.run
     pushd dist > /dev/null
-    ../makeself-2.5.0/makeself.sh --target /opt/ArPiRobot-DriveStationSelf/ --needroot --gzip ArPiRobot-DriveStation ArPiRobot-DriveStation.run "ArPiRobot Drive Station Installer" ./install.sh
+    ../makeself-2.5.0/makeself.sh --target /opt/ArPiRobot-DriveStation/ --needroot --gzip ArPiRobot-DriveStation ArPiRobot-DriveStation.run "ArPiRobot Drive Station Installer" ./install.sh
     popd > /dev/null
 fi
 
