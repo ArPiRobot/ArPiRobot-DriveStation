@@ -19,7 +19,7 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
-        /opt/ArPiRobot-DriveStation/uninstall.sh
+        /opt/ArPiRobot-DriveStation/uninstall.sh -q
     ;;
 
     failed-upgrade)
