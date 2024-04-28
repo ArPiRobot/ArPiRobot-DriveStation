@@ -3,6 +3,6 @@ Version: 1.0.4
 Section: base
 Priority: optional
 Architecture: all
-Depends: python3, python3-venv, python3-pip
+Depends: python3, python3-venv, python3-pip, libxcb-cursor0
 Maintainer: Marcus Behel <marcus.behel@mindspring.com>
 Description: PC-side robot control software for ArPiRobot robots.

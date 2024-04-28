@@ -35,11 +35,23 @@ python -m pip install -U -r requirements.txt > /dev/null
 deactivate
 
 # Desktop menu entry
-xdg-desktop-menu uninstall ArPiRobot-DriveStation.desktop > /dev/null 2>&1
+xdg-desktop-menu uninstall io.github.arpirobot.DriveStation.desktop > /dev/null 2>&1
 echo "Adding desktop menu entry"
-printf "[Desktop Entry]\nVersion=1.1\nType=Application\nTerminal=false\nName=ArPiRobot Drive Station\nComment=PC-side robot control software for ArPiRobot robots.\nIcon=$DIR/icon.png\nExec=$DIR/start.sh\nActions=\nCategories=Development;\nStartupNotify=true\n" > ArPiRobot-DriveStation.desktop
-chmod 755 ArPiRobot-DriveStation.desktop
-xdg-desktop-menu install --novendor ArPiRobot-DriveStation.desktop
+cat << EOF > io.github.arpirobot.DriveStation.desktop
+[Desktop Entry]
+Version=1.1
+Type=Application
+Terminal=false
+Name=ArPiRobot Drive Station
+Comment=PC-side robot control software for ArPiRobot robots.
+Icon=$DIR/icon.png
+Exec=$DIR/start.sh
+Categories=GNOME;Development;
+StartupNotify=true
+StartupWMClass=DriveStation
+EOF
+chmod 755 io.github.arpirobot.DriveStation.desktop
+xdg-desktop-menu install --novendor io.github.arpirobot.DriveStation.desktop
 
 # Fix directory permissions so non-root users can read it (and subdirectories)
 chmod -R 755 "$DIR"

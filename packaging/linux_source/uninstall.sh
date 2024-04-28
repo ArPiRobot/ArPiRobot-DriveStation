@@ -38,8 +38,8 @@ echo "Removing pycache"
 find src -type d -name __pycache__ -exec rm -r {} \; > /dev/null 2>&1
 
 echo "Removing desktop menu entry"
-xdg-desktop-menu uninstall ArPiRobot-DriveStation.desktop > /dev/null 2>&1
-rm ArPiRobot-DriveStation.desktop
+xdg-desktop-menu uninstall io.github.arpirobot.DriveStation.desktop > /dev/null 2>&1
+rm io.github.arpirobot.DriveStation.desktop
 
 echo "Deleting $DIR"
 rm -rf "$DIR"
