@@ -46,9 +46,8 @@ Name=ArPiRobot Drive Station
 Comment=PC-side robot control software for ArPiRobot robots.
 Icon=$DIR/icon.png
 Exec=$DIR/start.sh
-Categories=GNOME;Development;
-StartupNotify=true
-StartupWMClass=DriveStation
+Categories=Development;
+StartupWMClass=io.github.arpirobot.DriveStation
 EOF
 chmod 755 io.github.arpirobot.DriveStation.desktop
 xdg-desktop-menu install --novendor io.github.arpirobot.DriveStation.desktop
