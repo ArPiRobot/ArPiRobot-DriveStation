@@ -52,6 +52,10 @@ if platform.system() == "Linux":
 app = QApplication(sys.argv)
 app.setStyle("Fusion")
 
+# This method of associating desktop file with window works on both X11 and wayland
+# See: https://bugreports.qt.io/browse/QTBUG-117772?jql=text%20~%20%22wmclass%22
+app.setDesktopFileName("ArPiRobot-DriveStation")
+
 # Theme fixes (only needed for dark theme; light always works properly)
 if app.styleHints().colorScheme() == Qt.ColorScheme.Dark:
     if platform.system() == "Windows":
