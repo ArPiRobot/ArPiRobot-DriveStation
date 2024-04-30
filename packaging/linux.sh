@@ -9,19 +9,6 @@ function fail(){
     exit 1
 }
 
-function realpath() {
-  OURPWD=$PWD
-  cd "$(dirname "$1")"
-  LINK=$(readlink "$(basename "$1")")
-  while [ "$LINK" ]; do
-    cd "$(dirname "$LINK")"
-    LINK=$(readlink "$(basename "$1")")
-  done
-  REALPATH="$PWD/$(basename "$1")"
-  cd "$OURPWD"
-  echo "$REALPATH"
-}
-
 
 DIR=$(realpath $(dirname $0))
 pushd "$DIR" > /dev/null
@@ -42,30 +29,34 @@ popd > /dev/null
 # Create pyinstaller binary
 ################################################################################
 echo "**Creating PyInstaller Binary**"
-rm -rf macos/build/ || fail
-rm -rf macos/dist/ArPiRobot-DriveStation.app/ || fail
-rm -rf macos/dist/ArPiRobot-DriveStation/ || fail
-cd macos/
-pyinstaller macos.spec || fail
+rm -rf linux/build/ || fail
+rm -rf linux/dist/ArPiRobot-DriveStation/ || fail
+cd linux/
+pyinstaller linux.spec || fail
 cd ..
 
 
 ################################################################################
-# Create Zip
+# Create AppImage
 ################################################################################
-echo "**Creating Zip**"
-pushd macos/dist > /dev/null
-zip -r ArPiRobot-DriveStation-macOS-x64.app.zip ArPiRobot-DriveStation.app
-popd > /dev/null
+echo "**Creating AppImage**"
+wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
+chmod +x ./appimagetool
+pushd linux/ > /dev/null
+cp io.github.arpirobot.DriveStation.desktop dist/ArPiRobot-DriveStation
+cp io.github.arpirobot.DriveStation.appdata.xml dist/ArPiRobot-DriveStation
+cp ../../res/icon.png dist/ArPiRobot-DriveStation
+mv dist/ArPiRobot-DriveStation/ArPiRobot-DriveStation dist/ArPiRobot-DriveStation/AppRun
 mkdir ./dist/
-cp macos/dist/ArPiRobot-DriveStation-macOS-x64.app.zip ./dist
+../appimagetool dist/ArPiRobot-DriveStation ../dist/ArPiRobot-DriveStation-Liunx-x64.AppImage
+popd > /dev/null
 
 ################################################################################
 # Cleanup
 ################################################################################
 
-rm -rf macos/build/
-rm -rf macos/dist/ArPiRobot-DriveStation.app/
-rm -rf macos/dist/ArPiRobot-DriveStation/
+rm -rf linux/build/
+rm -rf linux/dist/ArPiRobot-DriveStation/
+rm -f appimagetool
 
 popd > /dev/null
