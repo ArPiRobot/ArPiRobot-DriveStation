@@ -48,7 +48,7 @@ cp io.github.arpirobot.DriveStation.appdata.xml dist/ArPiRobot-DriveStation
 cp ../../res/icon.png dist/ArPiRobot-DriveStation
 mv dist/ArPiRobot-DriveStation/ArPiRobot-DriveStation dist/ArPiRobot-DriveStation/AppRun
 mkdir ../dist/
-../appimagetool dist/ArPiRobot-DriveStation ../dist/ArPiRobot-DriveStation-Liunx-x64.AppImage
+../appimagetool --appimage-extract-and-run dist/ArPiRobot-DriveStation ../dist/ArPiRobot-DriveStation-Liunx-x64.AppImage
 popd > /dev/null
 
 ################################################################################
