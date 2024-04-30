@@ -39,7 +39,7 @@ jobs:
   #         retention-days: 1
   BuildLinux:
     runs-on: ubuntu-latest
-    container: python:3.10.12-slim-buster
+    container: python:3.10.12-buster
     steps:
       - uses: actions/checkout@v2
       - run: apt-get update
