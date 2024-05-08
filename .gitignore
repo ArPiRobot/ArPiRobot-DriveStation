@@ -143,5 +143,5 @@ cython_debug/
 .vscode/
 .idea/
 
-# Individual developer scripts
-config.vim
+# Editor config
+.lvimrc
