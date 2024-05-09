@@ -1,13 +1,13 @@
 from typing import Any, Callable, Dict, Optional
+import typing
 
-from PySide6.QtGui import QAction, QCloseEvent, QColor,  QFont, QSyntaxHighlighter, QTextCharFormat, QTextDocument, QColor, QPalette, QIcon
+from PySide6.QtGui import QCloseEvent, QColor, QFont, QSyntaxHighlighter, QTextCharFormat, QTextDocument, QPalette, QIcon
 from PySide6.QtWidgets import QApplication
-from sdl2.gamecontroller import SDL_CONTROLLER_AXIS_LEFTY, SDL_CONTROLLER_AXIS_TRIGGERLEFT, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, SDL_CONTROLLER_BUTTON_BACK, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_START
 
 from gamepad import GamepadManager
 from settings_dialog import SettingsDialog
-from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit, QProgressBar
-from PySide6.QtCore import QFile, QIODevice, QModelIndex, QRegularExpression, QTimer, Qt, QRect, QDir
+from PySide6.QtWidgets import QMainWindow, QLabel, QListWidgetItem, QDialog, QInputDialog, QLineEdit
+from PySide6.QtCore import QFile, QIODevice, QRegularExpression, QTimer, Qt, QRect, QDir
 
 from indicator_widget import IndicatorWidget
 from ui_drive_station import Ui_DriveStationWindow
@@ -29,21 +29,22 @@ class ControllerListItem(QListWidgetItem):
         self.__index_getter = index_getter
 
     def data(self, role: int) -> Any:
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             idx = self.__index_getter(self)
             return f"<p>({idx}) <i>{self.name}</i></p>"
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.ItemDataRole.CheckStateRole:
             return self.checked
         return super().data(role)
 
     def setData(self, role: int, value: Any):
-        if role == Qt.CheckStateRole:
+        if role == Qt.ItemDataRole.CheckStateRole:
             self.checked = value
         else:
             super().setData(role, value)
 
-    def flags(self) -> Qt.ItemFlags:
-        return Qt.ItemIsDropEnabled | Qt.ItemIsEnabled | Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
+    def flags(self) -> Qt.ItemFlag:
+        return Qt.ItemFlag.ItemIsDropEnabled | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEnabled | \
+                Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
 
 
 class LogHighlighter(QSyntaxHighlighter):
@@ -57,7 +58,7 @@ class LogHighlighter(QSyntaxHighlighter):
         self.construct_format_from_theme()
     
     def construct_format_from_theme(self):
-        if QApplication.palette().color(QPalette.Window).valueF() >= 0.5:
+        if QApplication.palette().color(QPalette.ColorRole.Window).valueF() >= 0.5:
             # Light theme highlight colors
             color_debug = "#007800"
             color_info = "#000000"
@@ -128,8 +129,8 @@ class DriveStationWindow(QMainWindow):
 
         # Append version to about label
         version_file = QFile(":/version.txt")
-        if version_file.open(QIODevice.ReadOnly):
-            ver = bytes(version_file.readLine()).decode().replace("\n", "").replace("\r", "")
+        if version_file.open(QIODevice.OpenModeFlag.ReadOnly):
+            ver = bytes(version_file.readLine().data()).decode().replace("\n", "").replace("\r", "")
             self.setWindowTitle(self.windowTitle() + " v" + ver)
         version_file.close()
 
@@ -204,11 +205,11 @@ class DriveStationWindow(QMainWindow):
         # because this doesn't account for actual palette just what system recommends
         # thus if command line flags or environment var are used to alter this (eg -platform windows:darkmode=0)\
         # this would be incorrect. Future QT may introduce colorScheme value to QPalette instead.
-        is_dark = QApplication.palette().color(QPalette.Window).valueF() < 0.5
+        is_dark = QApplication.palette().color(QPalette.ColorRole.Window).valueF() < 0.5
         
 
         # Pick colors / icons based on light or dark scheme
-        color_text = QApplication.palette().color(QPalette.Text).name()
+        color_text = QApplication.palette().color(QPalette.ColorRole.Text).name()
         settings_icon = ":/icons/gear_light.png" if is_dark else ":/icons/gear_dark.png"
         color_disable_btn = "#FF0000" if is_dark else "#990000"
         color_enable_btn = "#00AA00" if is_dark else "#004D00"
@@ -310,7 +311,7 @@ class DriveStationWindow(QMainWindow):
         size = QFont().pointSizeF()
         if settings_manager.larger_fonts:
             size *= 1.2
-        app = QApplication.instance()
+        app = typing.cast(QApplication, QApplication.instance())
         app.setStyleSheet("{0}\n{1}".format(app.styleSheet(), "*{{font-size: {0}pt}}".format(size)))
 
 
@@ -322,7 +323,7 @@ class DriveStationWindow(QMainWindow):
     def open_settings(self):
         dialog = SettingsDialog(self)
         res = dialog.exec()
-        if res == QDialog.Accepted:
+        if res == QDialog.DialogCode.Accepted:
             old_address = settings_manager.robot_address
 
             dialog.save_settings()
@@ -396,7 +397,7 @@ class DriveStationWindow(QMainWindow):
 
     def gamepad_disconnected(self, device_id: int):
         for i in range(self.ui.lst_controllers.count()):
-            item: ControllerListItem = self.ui.lst_controllers.item(i)
+            item = typing.cast(ControllerListItem, self.ui.lst_controllers.item(i))
             if item.handle == device_id:
                 self.ui.lst_controllers.takeItem(i)
                 break
@@ -435,7 +436,7 @@ class DriveStationWindow(QMainWindow):
             self.ui.pbar_dpad_up.setValue(0)
             self.ui.pbar_dpad_down.setValue(0)
         else:
-            device_id = self.ui.lst_controllers.item(idx).handle
+            device_id =  typing.cast(ControllerListItem, self.ui.lst_controllers.item(idx)).handle
             self.ui.pbar_lx.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_LEFTX))
             self.ui.pbar_ly.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_LEFTY))
             self.ui.pbar_rx.setValue(self.gamepad_manager.get_axis(device_id, sdl2.SDL_CONTROLLER_AXIS_RIGHTX))
@@ -466,8 +467,8 @@ class DriveStationWindow(QMainWindow):
 
     def send_controller_data(self):
         for i in range(self.ui.lst_controllers.count()):
-            item = self.ui.lst_controllers.item(i)
-            if item.checkState() == Qt.Checked:
+            item =  typing.cast(ControllerListItem, self.ui.lst_controllers.item(i))
+            if item.checkState() == Qt.CheckState.Checked:
                 device_id = item.handle
                 self.net_manager.send_controller_data(self.get_controller_data(i, device_id))
 
@@ -534,10 +535,10 @@ class DriveStationWindow(QMainWindow):
     # Indicators & Network Table
     ############################################################################
 
-    def add_indicator(self, key: str = None, geometry: Optional[QRect] = None):
+    def add_indicator(self, key: Optional[str] = None, geometry: Optional[QRect] = None):
         # If no key given, ask the user
         if key is None:
-            key, ok = QInputDialog.getText(self, self.tr("Add Indicator"), self.tr("Key:"), QLineEdit.Normal)
+            key, ok = QInputDialog.getText(self, self.tr("Add Indicator"), self.tr("Key:"), QLineEdit.EchoMode.Normal)
             if not ok:
                 return
         
@@ -573,14 +574,14 @@ class DriveStationWindow(QMainWindow):
             panel_geom = self.ui.pnl_net_table.geometry()
             ind_geom = ind.geometry()
             geometry = QRect()
-            geometry.setTop(panel_geom.height() / 2.0 - ind_geom.height() / 2.0)
-            geometry.setLeft(panel_geom.width() / 2.0 - ind_geom.width() / 2.0)
+            geometry.setTop(int(panel_geom.height() / 2.0 - ind_geom.height() / 2.0))
+            geometry.setLeft(int(panel_geom.width() / 2.0 - ind_geom.width() / 2.0))
             geometry.setWidth(ind_geom.width())
             geometry.setHeight(ind_geom.height())
         ind.setGeometry(geometry)
 
         # Apply correct stylesheet
-        color_text = QApplication.palette().color(QPalette.Text).name()
+        color_text = QApplication.palette().color(QPalette.ColorRole.Text).name()
         ind.setStyleSheet("""
         IndicatorWidget{{
             

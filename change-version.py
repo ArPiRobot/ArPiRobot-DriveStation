@@ -30,3 +30,4 @@ with open("res/version.txt", 'w') as file:
 # Change in package resources
 replaceInFileRegex("packaging/windows/win_installer.iss", "#define MyAppVersion \".*\"", "#define MyAppVersion \"" + sys.argv[1] + "\"")
 replaceInFileRegex("packaging/linux_source/deb_control", "Version: .*\n", "Version: " + sys.argv[1] + "\n")
+replaceInFileRegex("pyproject.toml", "version = .*\n", "version = \"" + sys.argv[1] + "\"\n")
