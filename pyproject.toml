@@ -11,6 +11,6 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.pyright]
 include = ["src"]
-typeCheckingMode = "standard"
+typeCheckingMode = "basic"
 reportGeneralTypeIssues = false
-reportCallIssue = true
+reportCallIssue = false

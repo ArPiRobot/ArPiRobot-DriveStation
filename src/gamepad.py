@@ -1,6 +1,4 @@
-import ctypes
-from PySide6.QtCore import QObject, QTimer, Signal, QFile, QTemporaryFile, QDir
-from threading import Thread
+from PySide6.QtCore import QObject, QTimer, Signal, QFile, QDir
 import sdl2
 import time
 

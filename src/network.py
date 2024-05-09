@@ -1,11 +1,10 @@
 
 from enum import Enum
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from util import logger
 
-from PySide6.QtCore import QObject, QProcess, QTime, QTimer, Signal
+from PySide6.QtCore import QObject, QProcess, QTimer, Signal
 from PySide6.QtNetwork import QAbstractSocket, QHostAddress, QTcpSocket, QUdpSocket
 
 import platform
@@ -197,7 +196,7 @@ class NetworkManager(QObject):
 
         # robotstate and vbat0 are special values. Do not allow direct set from ui.
         if key == "robotstate" or key == "vbat0":
-            return
+            return False
 
         if self.__nt_modifiable:
             self.__net_table[key] = value
@@ -448,7 +447,7 @@ class NetworkManager(QObject):
     ############################################################################
 
     def __net_table_ready_read(self):
-        new_data = bytes(self.__net_table_socket.readAll())
+        new_data = bytes(self.__net_table_socket.readAll().data())
         self.__net_table_read_buf.extend(new_data)
 
         # Data is encoded as
@@ -496,7 +495,7 @@ class NetworkManager(QObject):
 
     def __log_ready_read(self):
         # Append data until there is a complete line
-        new_data = bytes(self.__log_socket.readAll())
+        new_data = bytes(self.__log_socket.readAll().data())
         self.__log_read_buf.extend(new_data)
 
         if(self.__log_read_buf.find(b'\n') != -1):

@@ -5,21 +5,21 @@ import platform
 import multiprocessing
 import subprocess
 
-from PySide6.QtWidgets import QApplication, QStyleFactory
-from PySide6.QtCore import Qt, QFile, QIODevice
-from PySide6.QtGui import QPalette, QColor, QGuiApplication
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette, QGuiApplication
 
 from drive_station import DriveStationWindow
 from util import logger
 
 
-QApplication.setAttribute(Qt.AA_DontUseNativeMenuBar)
+QApplication.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeMenuBar)
 
 # TODO: Stdout and Stderr redirect to log file (along with log data shown in DS log window)
 
 try:
     import ctypes
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("io.github.arpirobot.DriveStation")
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("io.github.arpirobot.DriveStation") # type: ignore
 except AttributeError:
     pass
 
