@@ -59,7 +59,8 @@ class SettingsManager:
 
 class Logger:
     def __init__(self):
-        self.__ds = None
+        from drive_station import DriveStationWindow
+        self.__ds: Optional[DriveStationWindow] = None
     
     def set_ds(self, ds):
         self.__ds = ds
