@@ -35,6 +35,7 @@ import platform
 #     "ENABLE" = Enable the robot
 #     "DISABLE" = Disable the robot
 #     "NT_SYNC" = Start network table sync (always triggered by drive station)
+#     "TEST" = Sent from DS to robot to check if TCP still alive (on some OSes this requires an attempted write)
 # Net Table port (TCP 8092):
 #     Data is sent and received on the net table port.
 #     New keys are sent to the drive station in the format shown below
@@ -83,6 +84,7 @@ class NetworkManager(QObject):
     CMD_ENABLE = b'ENABLE\n'
     CMD_DISABLE = b'DISABLE\n'
     CMD_NT_SYNC = b'NT_SYNC\n'
+    CMD_TEST = b'TEST\n'
 
     NT_SYNC_START_DATA = b'\xff\xff\n'
     NT_SYNC_STOP_DATA = b'\xff\xff\xff\n'
@@ -184,6 +186,10 @@ class NetworkManager(QObject):
     def send_disable_command(self):
         if self.__is_connected():
             self.__cmd_socket.write(self.CMD_DISABLE)
+
+    def send_test_command(self):
+        if self.__is_connected():
+            self.__cmd_socket.write(self.CMD_TEST)
 
     def send_controller_data(self, controller_data: bytes):
         if self.__is_connected():

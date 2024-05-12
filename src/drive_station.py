@@ -155,6 +155,10 @@ class DriveStationWindow(QMainWindow):
         self.controller_send_timer = QTimer()
         self.controller_send_timer.timeout.connect(self.send_controller_data)
 
+        # Timer to send TEST command (allows TCP connection dropped to be detected in some circumstances)
+        self.test_tcp_timer = QTimer()
+        self.test_tcp_timer.timeout.connect(self.do_test_tcp)
+
         # Non-UI element variables
         self.voltage: float = 0.0
         self.net_manager = NetworkManager()
@@ -193,11 +197,16 @@ class DriveStationWindow(QMainWindow):
         QTimer.singleShot(1000, lambda: self.net_manager.set_robot_address(settings_manager.robot_address))
 
         # Start after gamepad manager
-        self.controller_status_timer.start(16) # ~ 60 updates / second
+        self.controller_status_timer.start(16)  # ~ 60 updates / second
         self.controller_send_timer.start(20)
+
+        self.test_tcp_timer.start(2000)         # Once every 2 seconds
 
         self.__set_font_size()
         self.__on_color_change()
+
+    def do_test_tcp(self):
+        self.net_manager.send_test_command()
 
     def __on_color_change(self):
         # Determine if color scheme is light or dark
