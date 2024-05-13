@@ -141,15 +141,24 @@ class NetworkManager(QObject):
         self.__log_socket.readyRead.connect(self.__log_ready_read)
 
     def __set_sockopts(self, qt_sock: QTcpSocket):
+        # Enabling keepalive (and configuring keepalive settings)
+        # is needed for connection drops (eg wifi disconnect / change network)
+        # to cause disconnect to be detected on macOS / Linux
+
         sock = socket.fromfd(qt_sock.socketDescriptor(), socket.AF_INET, socket.SOCK_STREAM)
-        if platform.system() == "Linux":
-            # If this is not configured, it is not possible to detect connection loss on Linux 
-            # (eg due to changing / loosing wifi connection)
+        if platform.system() == "Linux" or platform.system() == "Windows" or platform.system() == "FreeBSD":
+            # https://learn.microsoft.com/en-us/windows/win32/winsock/ipproto-tcp-socket-options
+            # https://man7.org/linux/man-pages/man0/sys_socket.h.0p.html
+            # https://man7.org/linux/man-pages/man7/tcp.7.html
+            # https://man.freebsd.org/cgi/man.cgi?setsockopt
+            # https://man.freebsd.org/cgi/man.cgi?query=tcp&sektion=4
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)      # type: ignore
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # type: ignore # 3 keepalive packets before disconnect
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 2)     # type: ignore # Idle time (sec) before sending keepalives
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # type: ignore # Seconds between keepalive packets
         elif platform.system() == "Darwin":
+            # https://www.unix.com/man-page/mojave/2/getsockopt/
+            # 
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)      # type: ignore
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # type: ignore # 3 keepalive packets before disconnect
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPALIVE, 2)    # type: ignore # Idle time (sec) before sending keepalives
