@@ -145,10 +145,15 @@ class NetworkManager(QObject):
         if platform.system() == "Linux":
             # If this is not configured, it is not possible to detect connection loss on Linux 
             # (eg due to changing / loosing wifi connection)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # 3 keepalive packets before disconnect
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 2)     # Idle time (sec) before sending keepalives
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # Seconds between keepalive packets
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)      # type: ignore
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # type: ignore # 3 keepalive packets before disconnect
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 2)     # type: ignore # Idle time (sec) before sending keepalives
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # type: ignore # Seconds between keepalive packets
+        elif platform.system() == "Darwin":
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)      # type: ignore
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # type: ignore # 3 keepalive packets before disconnect
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPALIVE, 2)    # type: ignore # Idle time (sec) before sending keepalives
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # type: ignore # Seconds between keepalive packets
 
     @property
     def current_state(self) -> State:
