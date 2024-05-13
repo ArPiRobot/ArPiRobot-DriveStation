@@ -8,6 +8,7 @@ from PySide6.QtCore import QObject, QProcess, QTimer, Signal
 from PySide6.QtNetwork import QAbstractSocket, QHostAddress, QTcpSocket, QUdpSocket
 
 import platform
+import socket
 
 # Networking protocol
 # The drive station uses four ports to communicate with the robot.
@@ -101,6 +102,7 @@ class NetworkManager(QObject):
         self.__sync_values: List[str] = []
         self.__net_table_read_buf = bytearray()
         self.__log_read_buf = bytearray()
+        self.__did_handle_disconnect = False
         
         # Socket objects
         self.__cmd_socket = QTcpSocket(self)
@@ -137,6 +139,16 @@ class NetworkManager(QObject):
 
         self.__net_table_socket.readyRead.connect(self.__net_table_ready_read)
         self.__log_socket.readyRead.connect(self.__log_ready_read)
+
+    def __set_sockopts(self, qt_sock: QTcpSocket):
+        sock = socket.fromfd(qt_sock.socketDescriptor(), socket.AF_INET, socket.SOCK_STREAM)
+        if platform.system() == "Linux":
+            # If this is not configured, it is not possible to detect connection loss on Linux 
+            # (eg due to changing / loosing wifi connection)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # 3 keepalive packets before disconnect
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 2)     # Idle time (sec) before sending keepalives
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # Seconds between keepalive packets
 
     @property
     def current_state(self) -> State:
@@ -401,9 +413,15 @@ class NetworkManager(QObject):
     ############################################################################
 
     def __tcp_connected(self, socket: QTcpSocket):
+        # Set socket options (OS specific)
+        self.__set_sockopts(socket)
+
+        # Check if all sockets connected
         if self.__is_connected():
             # Cancel the connect timeout timer
             self.__connect_timeout_timer.stop()
+
+            self.__did_handle_disconnect = False
 
             logger.log_info("Connected to robot.")
 
@@ -414,25 +432,25 @@ class NetworkManager(QObject):
             self.__change_state(NetworkManager.State.Disabled)
 
     def __tcp_disconnected(self, socket: QTcpSocket):
-        print("GOT DISCONNECT SIGNAL")
-        if self.__is_connected():
+        if not self.__did_handle_disconnect:
+            self.__did_handle_disconnect = True
 
-                logger.log_warning("Lost connection to robot")
+            logger.log_warning("Lost connection to robot")
 
-                # If any socket is disconnected disconnect all sockets
-                self.__cmd_socket.disconnectFromHost()
-                self.__net_table_socket.disconnectFromHost()
-                self.__log_socket.disconnectFromHost()
+            # If any socket is disconnected disconnect all sockets
+            self.__cmd_socket.disconnectFromHost()
+            self.__net_table_socket.disconnectFromHost()
+            self.__log_socket.disconnectFromHost()
 
-                # Connection could have been lost during sync
-                self.__nt_abort_sync()
+            # Connection could have been lost during sync
+            self.__nt_abort_sync()
 
-                # For now, assume the robot can still be pingged
-                # All that is known is the connection to running program was lost
-                self.__change_state(NetworkManager.State.NoRobotProgram)
+            # For now, assume the robot can still be pingged
+            # All that is known is the connection to running program was lost
+            self.__change_state(NetworkManager.State.NoRobotProgram)
 
-                # Was connected to robot. Try to connect again in near future in case the robot is still there.
-                self.__retry_connect_short()
+            # Was connected to robot. Try to connect again in near future in case the robot is still there.
+            self.__retry_connect_short()
 
     def __tcp_error_occurred(self, socket: QTcpSocket, sock_error: QAbstractSocket.SocketError):
         if sock_error == QAbstractSocket.SocketError.ConnectionRefusedError:
@@ -440,8 +458,9 @@ class NetworkManager(QObject):
             self.__tcp_cancel_connect()
         elif sock_error == QAbstractSocket.SocketError.RemoteHostClosedError:
             # This will likely occur at the same time for all TCP sockets. Only handle for the first one
-            if self.__is_connected():
-
+            if not self.__did_handle_disconnect:
+                self.__did_handle_disconnect = True
+                
                 logger.log_warning("Lost connection to robot")
 
                 # If any socket is disconnected disconnect all sockets
@@ -466,6 +485,8 @@ class NetworkManager(QObject):
 
             # Try connect again later
             self.__retry_connect_long()
+        else:
+            logger.log_warning("Unhandled socket error {}".format(sock_error))
 
     ############################################################################
     # Incoming data handlers
