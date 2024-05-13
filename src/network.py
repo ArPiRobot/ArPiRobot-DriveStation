@@ -131,6 +131,10 @@ class NetworkManager(QObject):
         self.__net_table_socket.errorOccurred.connect(lambda se: self.__tcp_error_occurred(self.__net_table_socket, se))
         self.__log_socket.errorOccurred.connect(lambda se: self.__tcp_error_occurred(self.__log_socket, se))
 
+        self.__cmd_socket.disconnected.connect(lambda: self.__tcp_disconnected(self.__cmd_socket))
+        self.__net_table_socket.disconnected.connect(lambda: self.__tcp_disconnected(self.__net_table_socket))
+        self.__log_socket.disconnected.connect(lambda: self.__tcp_disconnected(self.__log_socket))
+
         self.__net_table_socket.readyRead.connect(self.__net_table_ready_read)
         self.__log_socket.readyRead.connect(self.__log_ready_read)
 
@@ -408,6 +412,27 @@ class NetworkManager(QObject):
 
             # Connected to the robot. The robot is disabled until an enable command is sent.
             self.__change_state(NetworkManager.State.Disabled)
+
+    def __tcp_disconnected(self, socket: QTcpSocket):
+        print("GOT DISCONNECT SIGNAL")
+        if self.__is_connected():
+
+                logger.log_warning("Lost connection to robot")
+
+                # If any socket is disconnected disconnect all sockets
+                self.__cmd_socket.disconnectFromHost()
+                self.__net_table_socket.disconnectFromHost()
+                self.__log_socket.disconnectFromHost()
+
+                # Connection could have been lost during sync
+                self.__nt_abort_sync()
+
+                # For now, assume the robot can still be pingged
+                # All that is known is the connection to running program was lost
+                self.__change_state(NetworkManager.State.NoRobotProgram)
+
+                # Was connected to robot. Try to connect again in near future in case the robot is still there.
+                self.__retry_connect_short()
 
     def __tcp_error_occurred(self, socket: QTcpSocket, sock_error: QAbstractSocket.SocketError):
         if sock_error == QAbstractSocket.SocketError.ConnectionRefusedError:
