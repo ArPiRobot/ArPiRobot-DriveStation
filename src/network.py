@@ -158,7 +158,7 @@ class NetworkManager(QObject):
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 1)    # type: ignore # Seconds between keepalive packets
         elif platform.system() == "Darwin":
             # https://www.unix.com/man-page/mojave/2/getsockopt/
-            # 
+            # https://www.unix.com/man-page/mojave/4/tcp/
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)      # type: ignore
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)      # type: ignore # 3 keepalive packets before disconnect
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPALIVE, 2)    # type: ignore # Idle time (sec) before sending keepalives
