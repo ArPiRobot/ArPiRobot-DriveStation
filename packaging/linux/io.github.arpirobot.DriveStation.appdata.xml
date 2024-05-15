@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>io.github.arpirobot.DriveStation</id>
+    <metadata_license>MIT</metadata_license>
+    <project_license>LGPL-3.0</project_license>
+    <name>ArPiRobot Drive Station</name>
+    <summary>PC-side robot control software for ArPiRobot robots.</summary>
+    <description>
+        <p>Control ArPiRobot robot using a gamepad connected to your PC.</p>
+    </description>
+    <launchable type="desktop-id">io.github.arpirobot.DriveStation.desktop</launchable>
+    <url type="homepage">https://arpirobot.github.io/</url>
+</component>
