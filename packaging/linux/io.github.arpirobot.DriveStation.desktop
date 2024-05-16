@@ -8,3 +8,6 @@ Icon=icon
 Exec=AppRun
 Categories=Development;
 StartupWMClass=io.github.arpirobot.DriveStation
+X-AppImage-Version=1.1.0-rc1
+X-AppImage-Name=ArPiRobot-DeployTool
+X-AppImage-Arch=x86_64
