@@ -47,7 +47,9 @@ chmod +x ./appimagetool
 pushd linux/ > /dev/null
 cp io.github.arpirobot.DriveStation.desktop dist/ArPiRobot-DriveStation
 cp io.github.arpirobot.DriveStation.appdata.xml dist/ArPiRobot-DriveStation
-cp ../../res/icon.png dist/ArPiRobot-DriveStation
+mkdir -p dist/ArPiRobot-DriveStation/usr/share/icons/hicolor/256x256/apps/
+cp ../../res/icon.png dist/ArPiRobot-DriveStation/usr/share/icons/hicolor/256x256/apps/arpirobot-drivestation.png
+ln -s ./usr/share/icons/hicolor/256x256/apps/arpirobot-drivestation.png dist/ArPiRobot-DriveStation/arpirobot-drivestation.png
 mv dist/ArPiRobot-DriveStation/ArPiRobot-DriveStation dist/ArPiRobot-DriveStation/AppRun
 mkdir -p ../dist/
 dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=../appimagetool
