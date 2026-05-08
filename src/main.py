@@ -12,8 +12,9 @@ from PySide6.QtGui import QPalette, QGuiApplication
 from drive_station import DriveStationWindow
 from util import logger
 
-
-QApplication.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeMenuBar)
+# Now that pyside6 + plasma wayland global menu work, re-enable this
+# This should also apply to macos
+# QApplication.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeMenuBar)
 
 # TODO: Stdout and Stderr redirect to log file (along with log data shown in DS log window)
 
